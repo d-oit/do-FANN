@@ -1,0 +1,174 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "opencode",
+  "autoupdate": true,
+  "share": "manual",
+  "instructions": [
+    "OPENCODE_README.md",
+    "README.md"
+  ],
+  "agent": {
+    "orchestrator": {
+      "description": "Main coordinator for the ruv-fann multi-project repository",
+      "prompt": "You are the Project Orchestrator for the ruv-fann multi-project repository. You coordinate between multiple AI/ML projects including Rust FANN library, CUDA WASM, swarm systems, and computer vision components. Your role is to ensure smooth integration and efficient development across all projects. Always consider dependencies and build order when planning tasks.",
+      "tools": {
+        "todo_write": true,
+        "todo_read": true,
+        "task": true,
+        "memory": true,
+        "bash": true,
+        "read": true,
+        "write": true
+      }
+    },
+    "rust-core": {
+      "description": "Rust development specialist for the core FANN neural network library",
+      "prompt": "You are a Rust expert specializing in neural network implementations. Focus on clean, efficient, and well-documented code. Consider performance implications, memory safety, and GPU acceleration opportunities. Follow Rust best practices and create comprehensive tests for all functionality.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "memory": true
+      }
+    },
+    "wasm-engineer": {
+      "description": "WebAssembly and CUDA WASM integration specialist",
+      "prompt": "You are a WebAssembly specialist focusing on GPU acceleration and CUDA integration. Your expertise includes compiling complex Rust code to WASM, optimizing performance, and creating seamless JavaScript bindings. Consider browser compatibility and performance constraints.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "memory": true
+      }
+    },
+    "swarm-architect": {
+      "description": "Multi-agent swarm systems and MCP protocol specialist",
+      "prompt": "You are a swarm system architect specializing in multi-agent coordination. Focus on creating efficient communication patterns, robust error handling, and scalable architectures. Consider the MCP protocol standards and best practices for distributed AI systems.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "task": true,
+        "memory": true
+      }
+    },
+    "ml-researcher": {
+      "description": "Machine learning and neural network specialist",
+      "prompt": "You are an ML researcher focused on advancing neural network capabilities. Stay current with the latest research, implement cutting-edge algorithms, and optimize performance. Document your findings thoroughly and consider both theoretical and practical implications.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "webfetch": true,
+        "memory": true
+      }
+    },
+    "cv-engineer": {
+      "description": "Computer vision and OpenCV integration specialist",
+      "prompt": "You are a computer vision specialist integrating OpenCV with Rust. Focus on efficient image processing, real-time performance, and robust feature extraction. Consider memory usage and processing speed for production applications.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "memory": true
+      }
+    },
+    "test-engineer": {
+      "description": "Comprehensive testing and validation specialist",
+      "prompt": "You are a testing specialist ensuring code quality across all projects. Create comprehensive test suites covering unit tests, integration tests, performance tests, and GPU/WASM specific tests. Focus on edge cases and production reliability.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "task": true,
+        "memory": true
+      }
+    },
+    "docs-specialist": {
+      "description": "Technical documentation and API documentation specialist",
+      "prompt": "You are a documentation specialist creating clear, comprehensive documentation. Focus on making complex technical concepts accessible to developers at all levels. Include practical examples and maintain consistency across all documentation.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "glob": true,
+        "memory": true,
+        "webfetch": true
+      }
+    },
+    "performance-optimizer": {
+      "description": "Performance optimization specialist",
+      "prompt": "You are a performance optimization specialist. Focus on identifying bottlenecks, optimizing algorithms, and improving resource utilization. Consider both CPU and GPU performance, memory efficiency, and parallel processing opportunities.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "memory": true
+      }
+    }
+  },
+  "formatter": {
+    "rustfmt": {
+      "command": [
+        "rustfmt",
+        "$FILE"
+      ],
+      "extensions": [
+        ".rs"
+      ]
+    },
+    "prettier": {
+      "command": [
+        "npx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
+      "extensions": [
+        ".js",
+        ".ts",
+        ".jsx",
+        ".tsx",
+        ".json",
+        ".md"
+      ]
+    }
+  },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask"
+  },
+  "mcp": {
+    "ruv-swarm": {
+      "type": "local",
+      "command": [
+        "npx",
+        "ruv-swarm@1.0.17",
+        "mcp",
+        "start",
+        "--stability"
+      ]
+    }
+  }
+}
