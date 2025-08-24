@@ -3,10 +3,7 @@
   "theme": "opencode",
   "autoupdate": true,
   "share": "manual",
-  "instructions": [
-    "OPENCODE_README.md",
-    "README.md"
-  ],
+  "instructions": ["OPENCODE_README.md", "README.md"],
   "agent": {
     "orchestrator": {
       "description": "Main coordinator for the ruv-fann multi-project repository with swarm orchestration capabilities",
@@ -18,7 +15,19 @@
         "memory": true,
         "bash": true,
         "read": true,
-        "write": true
+        "write": true,
+        "mcp__ruv-swarm__swarm_init": true,
+        "mcp__ruv-swarm__swarm_status": true,
+        "mcp__ruv-swarm__swarm_monitor": true,
+        "mcp__ruv-swarm__agent_spawn": true,
+        "mcp__ruv-swarm__agent_list": true,
+        "mcp__ruv-swarm__agent_metrics": true,
+        "mcp__ruv-swarm__task_orchestrate": true,
+        "mcp__ruv-swarm__task_status": true,
+        "mcp__ruv-swarm__task_results": true,
+        "mcp__ruv-swarm__benchmark_run": true,
+        "mcp__ruv-swarm__memory_usage": true,
+        "mcp__ruv-swarm__features_detect": true
       }
     },
     "rust-core": {
@@ -31,7 +40,11 @@
         "bash": true,
         "grep": true,
         "glob": true,
-        "memory": true
+        "memory": true,
+        "mcp__ruv-swarm__agent_spawn": true,
+        "mcp__ruv-swarm__task_orchestrate": true,
+        "mcp__ruv-swarm__benchmark_run": true,
+        "mcp__ruv-swarm__memory_usage": true
       }
     },
     "wasm-engineer": {
@@ -58,7 +71,22 @@
         "grep": true,
         "glob": true,
         "task": true,
-        "memory": true
+        "memory": true,
+        "mcp__ruv-swarm__swarm_init": true,
+        "mcp__ruv-swarm__swarm_status": true,
+        "mcp__ruv-swarm__swarm_monitor": true,
+        "mcp__ruv-swarm__agent_spawn": true,
+        "mcp__ruv-swarm__agent_list": true,
+        "mcp__ruv-swarm__agent_metrics": true,
+        "mcp__ruv-swarm__task_orchestrate": true,
+        "mcp__ruv-swarm__task_status": true,
+        "mcp__ruv-swarm__task_results": true,
+        "mcp__ruv-swarm__benchmark_run": true,
+        "mcp__ruv-swarm__memory_usage": true,
+        "mcp__ruv-swarm__features_detect": true,
+        "mcp__ruv-swarm__neural_status": true,
+        "mcp__ruv-swarm__neural_train": true,
+        "mcp__ruv-swarm__neural_patterns": true
       }
     },
     "ml-researcher": {
@@ -127,7 +155,15 @@
         "bash": true,
         "grep": true,
         "glob": true,
-        "memory": true
+        "memory": true,
+        "mcp__ruv-swarm__benchmark_run": true,
+        "mcp__ruv-swarm__memory_usage": true,
+        "mcp__ruv-swarm__agent_metrics": true,
+        "mcp__ruv-swarm__swarm_monitor": true,
+        "mcp__ruv-swarm__features_detect": true,
+        "mcp__ruv-swarm__neural_status": true,
+        "mcp__ruv-swarm__task_orchestrate": true,
+        "mcp__ruv-swarm__swarm_status": true
       }
     },
     "command-verifier": {
@@ -144,9 +180,18 @@
         "memory": true
       }
     }
-  },
+  }, 
   "mcp": {
-   
+    "ruv-swarm": {
+      "type": "local",
+      "command": [
+        "npx",
+        "ruv-swarm",
+        "mcp",
+        "start",
+        "--protocol=stdio"
+      ]
     
+    }
   }
 }
