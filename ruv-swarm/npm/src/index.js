@@ -15,13 +15,21 @@ let wasmModule = null;
 let wasmInstance = null;
 
 /**
- * WASM loader with feature detection and caching
+ * Enhanced WASM loader with feature detection, caching, and performance monitoring
  */
 class WASMLoader {
   constructor(options = {}) {
     this.useSIMD = options.useSIMD && this.detectSIMDSupport();
     this.wasmPath = options.wasmPath || path.join(new URL('.', import.meta.url).pathname, '..', 'wasm');
     this.debug = options.debug || false;
+    this.performanceMode = options.performanceMode || 'balanced'; // 'performance', 'balanced', 'compatibility'
+    this.cache = new Map();
+    this.loadMetrics = {
+      loadTime: 0,
+      instantiationTime: 0,
+      cacheHits: 0,
+      cacheMisses: 0,
+    };
   }
 
   detectSIMDSupport() {
@@ -46,24 +54,64 @@ class WASMLoader {
   }
 
   async loadModule() {
+    const cacheKey = `${this.useSIMD}-${this.performanceMode}`;
+    if (this.cache.has(cacheKey)) {
+      this.loadMetrics.cacheHits++;
+      return this.cache.get(cacheKey);
+    }
+
+    this.loadMetrics.cacheMisses++;
+    const startTime = performance.now();
+
     if (wasmModule) {
+      this.loadMetrics.loadTime = performance.now() - startTime;
       return wasmModule;
     }
 
     // Use the generated WASM bindings directly (ES module import)
     try {
-      const wasmJsPath = path.join(this.wasmPath, 'ruv_swarm_wasm.js');
+      const moduleName = this.selectOptimalModule();
+      const wasmJsPath = path.join(this.wasmPath, `${moduleName}.js`);
+      const instantiationStart = performance.now();
+
       const wasmBindings = await import(path.resolve(wasmJsPath));
+      await wasmBindings.default(); // Initialize the module
+
+      this.loadMetrics.instantiationTime = performance.now() - instantiationStart;
       wasmModule = wasmBindings;
+
+      // Cache the loaded module
+      this.cache.set(cacheKey, wasmBindings);
+
+      this.loadMetrics.loadTime = performance.now() - startTime;
+
+      if (this.debug) {
+        console.log(`Loaded WASM module: ${moduleName}`, this.loadMetrics);
+      }
+
       return wasmModule;
     } catch (error) {
       if (this.debug) {
         console.error('Failed to load WASM bindings:', error);
       }
+      throw error;
     }
 
+  selectOptimalModule() {
+    // Performance mode selection
+    switch (this.performanceMode) {
+      case 'performance':
+        return this.useSIMD ? 'ruv_swarm_simd' : 'ruv_swarm_opt';
+      case 'compatibility':
+        return 'ruv_swarm_wasm';
+      case 'balanced':
+      default:
+        return this.useSIMD ? 'ruv_swarm_simd' : 'ruv_swarm_wasm';
+    }
+  }
+
     // Fallback to manual loading
-    const moduleFile = this.useSIMD ? 'ruv_swarm_simd.wasm' : 'ruv_swarm_wasm_bg.wasm';
+    const moduleFile = this.selectOptimalModule() + '_bg.wasm';
     const wasmFilePath = path.join(this.wasmPath, moduleFile);
 
     try {

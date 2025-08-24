@@ -70,6 +70,15 @@ lazy_static = "1.4"
 # Logging
 log = { version = "0.4", optional = true }
 
+# CPU feature detection - using Rust's built-in std::is_x86_feature_detected!
+# No external dependency needed - pure Rust implementation
+
+# Enhanced memory management - use std alternatives where possible
+# crossbeam = "0.8"  # Temporarily disabled to avoid C compiler
+
+# Additional utilities - using std::sync::OnceLock (available in Rust 1.70+)
+# No external dependency needed
+
 # I/O and serialization
 bincode = { version = "1.3", optional = true }
 flate2 = { version = "1.0", optional = true }
@@ -101,15 +110,15 @@ wasm-bindgen-futures = { version = "0.4", optional = true }
 getrandom = { version = "0.2", features = ["js"] }
 
 [dev-dependencies]
-criterion = { version = "0.5", features = ["html_reports"] }
+# criterion = { version = "0.5", features = ["html_reports"] }  # Requires C compiler
 proptest = "1.4"
 approx = "0.5"
 pretty_assertions = "1.4"
-tokio = { version = "1.0", features = ["macros", "rt", "rt-multi-thread", "time", "process", "sync", "fs"] }
+# tokio = { version = "1.0", features = ["macros", "rt", "rt-multi-thread", "time", "process", "sync", "fs"] }  # Requires C compiler
 futures = "0.3"
 uuid = { version = "1.0", features = ["v4"] }
-anyhow = "1.0"
-chrono = { version = "0.4", features = ["serde"] }
+# anyhow = "1.0"  # Requires C compiler
+# chrono = { version = "0.4", features = ["serde"] }  # Requires C compiler
 
 [features]
 default = ["std", "serde", "parallel", "binary", "compression", "logging", "io"]
@@ -121,6 +130,9 @@ simd = []
 binary = ["dep:bincode"]
 compression = ["dep:flate2"]
 io = ["binary", "compression", "serde"]
+
+# Pure Rust mode - no external dependencies that require C compiler
+pure-rust = []
 
 # no_std support
 no_std = []

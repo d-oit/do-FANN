@@ -15,8 +15,8 @@ use num_traits::Float;
 use std::collections::HashMap;
 use thiserror::Error;
 
-// #[cfg(feature = "parallel")]
-// use rayon::prelude::*;
+#[cfg(feature = "parallel")]
+use rayon::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct TrainingData<T: Float> {
@@ -147,6 +147,22 @@ pub trait LearningRateSchedule<T: Float> {
     fn get_rate(&mut self, epoch: usize) -> T;
 }
 
+/// Advanced learning rate scheduler with additional capabilities
+pub trait AdvancedLearningRateSchedule<T: Float>: LearningRateSchedule<T> {
+    /// Get the current learning rate without updating internal state
+    fn peek_rate(&self, epoch: usize) -> T;
+
+    /// Reset the scheduler to initial state
+    fn reset(&mut self);
+
+    /// Get scheduler-specific metrics
+    fn metrics(&self) -> HashMap<String, T> {
+        HashMap::new()
+    }
+}
+
+// Learning rate schedulers are defined below and exported at module level
+
 /// Exponential decay learning rate schedule
 pub struct ExponentialDecay<T: Float> {
     initial_rate: T,
@@ -165,6 +181,23 @@ impl<T: Float> ExponentialDecay<T> {
 impl<T: Float> LearningRateSchedule<T> for ExponentialDecay<T> {
     fn get_rate(&mut self, epoch: usize) -> T {
         self.initial_rate * self.decay_rate.powi(epoch as i32)
+    }
+}
+
+impl<T: Float> AdvancedLearningRateSchedule<T> for ExponentialDecay<T> {
+    fn peek_rate(&self, epoch: usize) -> T {
+        self.initial_rate * self.decay_rate.powi(epoch as i32)
+    }
+
+    fn reset(&mut self) {
+        // No internal state to reset
+    }
+
+    fn metrics(&self) -> HashMap<String, T> {
+        let mut metrics = HashMap::new();
+        metrics.insert("initial_rate".to_string(), self.initial_rate);
+        metrics.insert("decay_rate".to_string(), self.decay_rate);
+        metrics
     }
 }
 
@@ -189,6 +222,234 @@ impl<T: Float> LearningRateSchedule<T> for StepDecay<T> {
     fn get_rate(&mut self, epoch: usize) -> T {
         let drops = epoch / self.epochs_per_drop;
         self.initial_rate * self.drop_rate.powi(drops as i32)
+    }
+}
+
+impl<T: Float> AdvancedLearningRateSchedule<T> for StepDecay<T> {
+    fn peek_rate(&self, epoch: usize) -> T {
+        let drops = epoch / self.epochs_per_drop;
+        self.initial_rate * self.drop_rate.powi(drops as i32)
+    }
+
+    fn reset(&mut self) {
+        // No internal state to reset
+    }
+
+    fn metrics(&self) -> HashMap<String, T> {
+        let mut metrics = HashMap::new();
+        metrics.insert("initial_rate".to_string(), self.initial_rate);
+        metrics.insert("drop_rate".to_string(), self.drop_rate);
+        metrics.insert(
+            "epochs_per_drop".to_string(),
+            T::from(self.epochs_per_drop).unwrap(),
+        );
+        metrics
+    }
+}
+
+/// Cosine annealing learning rate schedule
+/// Gradually decreases learning rate following a cosine curve
+pub struct CosineAnnealing<T: Float> {
+    initial_rate: T,
+    min_rate: T,
+    total_epochs: usize,
+}
+
+impl<T: Float> CosineAnnealing<T> {
+    pub fn new(initial_rate: T, min_rate: T, total_epochs: usize) -> Self {
+        Self {
+            initial_rate,
+            min_rate,
+            total_epochs,
+        }
+    }
+}
+
+impl<T: Float> LearningRateSchedule<T> for CosineAnnealing<T> {
+    fn get_rate(&mut self, epoch: usize) -> T {
+        if epoch >= self.total_epochs {
+            return self.min_rate;
+        }
+
+        let progress = T::from(epoch).unwrap() / T::from(self.total_epochs).unwrap();
+        let cosine = (T::from(std::f64::consts::PI).unwrap() * progress).cos();
+
+        let rate_range = self.initial_rate - self.min_rate;
+        self.min_rate + rate_range * (T::one() + cosine) / (T::one() + T::one())
+    }
+}
+
+impl<T: Float> AdvancedLearningRateSchedule<T> for CosineAnnealing<T> {
+    fn peek_rate(&self, epoch: usize) -> T {
+        if epoch >= self.total_epochs {
+            return self.min_rate;
+        }
+
+        let progress = T::from(epoch).unwrap() / T::from(self.total_epochs).unwrap();
+        let cosine = (T::from(std::f64::consts::PI).unwrap() * progress).cos();
+
+        let rate_range = self.initial_rate - self.min_rate;
+        self.min_rate + rate_range * (T::one() + cosine) / (T::one() + T::one())
+    }
+
+    fn reset(&mut self) {
+        // No internal state to reset
+    }
+
+    fn metrics(&self) -> HashMap<String, T> {
+        let mut metrics = HashMap::new();
+        metrics.insert("initial_rate".to_string(), self.initial_rate);
+        metrics.insert("min_rate".to_string(), self.min_rate);
+        metrics.insert(
+            "total_epochs".to_string(),
+            T::from(self.total_epochs).unwrap(),
+        );
+        metrics
+    }
+}
+
+/// Warm restarts learning rate schedule
+/// Periodically resets learning rate to initial value with cosine annealing
+pub struct WarmRestarts<T: Float> {
+    initial_rate: T,
+    min_rate: T,
+    restart_period: usize,
+    current_period: usize,
+}
+
+impl<T: Float> WarmRestarts<T> {
+    pub fn new(initial_rate: T, min_rate: T, restart_period: usize) -> Self {
+        Self {
+            initial_rate,
+            min_rate,
+            restart_period,
+            current_period: 0,
+        }
+    }
+}
+
+impl<T: Float> LearningRateSchedule<T> for WarmRestarts<T> {
+    fn get_rate(&mut self, epoch: usize) -> T {
+        let cycle_epoch = epoch % self.restart_period;
+        self.current_period = epoch / self.restart_period;
+
+        if cycle_epoch == 0 && epoch > 0 {
+            // Reset to initial rate at restart
+            return self.initial_rate;
+        }
+
+        let progress = T::from(cycle_epoch).unwrap() / T::from(self.restart_period).unwrap();
+        let cosine = (T::from(std::f64::consts::PI).unwrap() * progress).cos();
+
+        let rate_range = self.initial_rate - self.min_rate;
+        self.min_rate + rate_range * (T::one() + cosine) / (T::one() + T::one())
+    }
+}
+
+impl<T: Float> AdvancedLearningRateSchedule<T> for WarmRestarts<T> {
+    fn peek_rate(&self, epoch: usize) -> T {
+        let cycle_epoch = epoch % self.restart_period;
+
+        if cycle_epoch == 0 && epoch > 0 {
+            return self.initial_rate;
+        }
+
+        let progress = T::from(cycle_epoch).unwrap() / T::from(self.restart_period).unwrap();
+        let cosine = (T::from(std::f64::consts::PI).unwrap() * progress).cos();
+
+        let rate_range = self.initial_rate - self.min_rate;
+        self.min_rate + rate_range * (T::one() + cosine) / (T::one() + T::one())
+    }
+
+    fn reset(&mut self) {
+        self.current_period = 0;
+    }
+
+    fn metrics(&self) -> HashMap<String, T> {
+        let mut metrics = HashMap::new();
+        metrics.insert("initial_rate".to_string(), self.initial_rate);
+        metrics.insert("min_rate".to_string(), self.min_rate);
+        metrics.insert(
+            "restart_period".to_string(),
+            T::from(self.restart_period).unwrap(),
+        );
+        metrics.insert(
+            "current_period".to_string(),
+            T::from(self.current_period).unwrap(),
+        );
+        metrics
+    }
+}
+
+/// OneCycle learning rate schedule
+/// Increases learning rate to a maximum then decreases following cosine annealing
+pub struct OneCycle<T: Float> {
+    max_rate: T,
+    min_rate: T,
+    total_epochs: usize,
+    pct_start: T, // Percentage of epochs for increasing phase
+}
+
+impl<T: Float> OneCycle<T> {
+    pub fn new(max_rate: T, min_rate: T, total_epochs: usize, pct_start: T) -> Self {
+        Self {
+            max_rate,
+            min_rate,
+            total_epochs,
+            pct_start,
+        }
+    }
+}
+
+impl<T: Float> LearningRateSchedule<T> for OneCycle<T> {
+    fn get_rate(&mut self, epoch: usize) -> T {
+        let progress = T::from(epoch).unwrap() / T::from(self.total_epochs).unwrap();
+
+        if progress <= self.pct_start {
+            // Increasing phase - linear increase from min_rate to max_rate
+            let phase_progress = progress / self.pct_start;
+            self.min_rate + (self.max_rate - self.min_rate) * phase_progress
+        } else {
+            // Decreasing phase - cosine annealing from max_rate to min_rate
+            let phase_progress = (progress - self.pct_start) / (T::one() - self.pct_start);
+            let cosine = (T::from(std::f64::consts::PI).unwrap() * phase_progress).cos();
+
+            let rate_range = self.max_rate - self.min_rate;
+            self.min_rate + rate_range * (T::one() + cosine) / (T::one() + T::one())
+        }
+    }
+}
+
+impl<T: Float> AdvancedLearningRateSchedule<T> for OneCycle<T> {
+    fn peek_rate(&self, epoch: usize) -> T {
+        let progress = T::from(epoch).unwrap() / T::from(self.total_epochs).unwrap();
+
+        if progress <= self.pct_start {
+            let phase_progress = progress / self.pct_start;
+            self.min_rate + (self.max_rate - self.min_rate) * phase_progress
+        } else {
+            let phase_progress = (progress - self.pct_start) / (T::one() - self.pct_start);
+            let cosine = (T::from(std::f64::consts::PI).unwrap() * phase_progress).cos();
+
+            let rate_range = self.max_rate - self.min_rate;
+            self.min_rate + rate_range * (T::one() + cosine) / (T::one() + T::one())
+        }
+    }
+
+    fn reset(&mut self) {
+        // No internal state to reset
+    }
+
+    fn metrics(&self) -> HashMap<String, T> {
+        let mut metrics = HashMap::new();
+        metrics.insert("max_rate".to_string(), self.max_rate);
+        metrics.insert("min_rate".to_string(), self.min_rate);
+        metrics.insert(
+            "total_epochs".to_string(),
+            T::from(self.total_epochs).unwrap(),
+        );
+        metrics.insert("pct_start".to_string(), self.pct_start);
+        metrics
     }
 }
 
@@ -283,12 +544,72 @@ pub trait TrainingAlgorithm<T: Float>: Send {
     /// Call the callback if set
     fn call_callback(&mut self, epoch: usize, network: &Network<T>, data: &TrainingData<T>)
         -> bool;
+
+    /// Get algorithm name for logging
+    fn name(&self) -> &str {
+        "Unknown"
+    }
+
+    /// Get algorithm-specific metrics
+    fn metrics(&self) -> HashMap<String, T> {
+        HashMap::new()
+    }
+}
+
+/// Enhanced training algorithm with additional capabilities
+pub trait AdvancedTrainingAlgorithm<T: Float>: TrainingAlgorithm<T> {
+    /// Train with early stopping
+    fn train_with_early_stopping(
+        &mut self,
+        network: &mut Network<T>,
+        training_data: &TrainingData<T>,
+        validation_data: &TrainingData<T>,
+        max_epochs: usize,
+        patience: usize,
+    ) -> Result<TrainingResult<T>, TrainingError>;
+
+    /// Train with learning rate scheduling
+    fn train_with_lr_schedule(
+        &mut self,
+        network: &mut Network<T>,
+        data: &TrainingData<T>,
+        lr_schedule: &mut dyn LearningRateSchedule<T>,
+    ) -> Result<TrainingResult<T>, TrainingError>;
+
+    /// Get training statistics
+    fn statistics(&self) -> TrainingStatistics<T>;
+}
+
+/// Training result with comprehensive metrics
+#[derive(Debug, Clone)]
+pub struct TrainingResult<T: Float> {
+    pub final_error: T,
+    pub epochs_trained: usize,
+    pub total_time: std::time::Duration,
+    pub learning_curve: Vec<T>,
+    pub best_epoch: usize,
+    pub early_stopped: bool,
+}
+
+/// Training statistics for monitoring
+#[derive(Debug, Clone)]
+pub struct TrainingStatistics<T: Float> {
+    pub epochs_completed: usize,
+    pub total_samples_processed: usize,
+    pub average_epoch_time: std::time::Duration,
+    pub peak_memory_usage: usize,
+    pub gradient_norm_history: Vec<T>,
 }
 
 // Module declarations for specific algorithms
+mod adagrad;
 mod adam;
 mod backprop;
+mod gradient_clipping;
+mod momentum_sgd;
+mod parallel;
 mod quickprop;
+mod rmsprop;
 mod rprop;
 
 // GPU training module (when GPU features are enabled)
@@ -300,9 +621,19 @@ mod gpu_batch_training;
 mod gpu_training;
 
 // Re-export main types
+pub use adagrad::AdaGrad;
 pub use adam::{Adam, AdamW};
 pub use backprop::{BatchBackprop, IncrementalBackprop};
+pub use gradient_clipping::{
+    clip_bias_gradients, clip_weight_gradients, AdaptiveGradientClipping, GradientClipping,
+    GradientStats,
+};
+pub use momentum_sgd::MomentumSGD;
+pub use parallel::{
+    DataParallelTrainer, ParallelTrainingConfig, TrainingThreadPool, WorkStealingScheduler,
+};
 pub use quickprop::Quickprop;
+pub use rmsprop::RMSProp;
 pub use rprop::Rprop;
 
 // Re-export GPU training types when available

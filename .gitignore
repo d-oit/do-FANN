@@ -25,3 +25,5 @@ polyglot-benchmarks/
 
 # Ignore merge script
 merge_script.sh
+crosstool-ng.tar.xz
+musl-cross.tgz
