@@ -1,9 +1,9 @@
 ---
 description: >-
-  Validation Orchestrator Agent - Master coordinator for comprehensive validation workflows.
-  Use this agent to orchestrate multiple validation agents in a systematic process that prevents
-  false positive success messages by ensuring LLM outputs are validated against actual implementation.
-  Coordinates implementation-verifier, output-validator, and other validation agents for complete coverage.
+  VALIDATION COORDINATION SUB-ORCHESTRATOR - Specialized agent for coordinating comprehensive validation workflows.
+  Use this agent to orchestrate multiple validation agents in a systematic process that prevents false positive
+  success messages by ensuring LLM outputs are validated against actual implementation. Coordinates implementation-verifier,
+  output-validator, and other validation agents for complete coverage. Called by main orchestrator for validation tasks.
 
   <example>
     Context: The user needs a comprehensive validation system to prevent false positive success messages.

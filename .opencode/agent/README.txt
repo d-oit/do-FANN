@@ -1,190 +1,223 @@
-# OpenCode Agents for ruv-FANN
+# Agent Ecosystem Documentation
 
-This directory contains specialized OpenCode agents designed to support the development, maintenance, and operation of the ruv-FANN neural network ecosystem. All agents follow the proper OpenCode agent format with YAML frontmatter.
+## Overview
 
-## Available Agents
+The ruv-FANN project uses a hierarchical agent orchestration system with one **Main Orchestrator** that coordinates multiple **Sub-Orchestrators** and **Specialized Agents**. This structure ensures efficient task distribution, prevents overlap, and maintains clear separation of concerns.
 
-### Core Development Agents
-- **[git-commit-merge.md](./git-commit-merge.md)** - Git operations, commits, merges, and conflict resolution
-- **[github-operations.md](./github-operations.md)** - GitHub repository management, issues, PRs, releases
-- **[ci-cd-operations.md](./ci-cd-operations.md)** - Continuous integration and deployment pipelines
-- **[rust-core.md](./rust-core.md)** - Rust development and neural network implementation
-- **[wasm-engineer.md](./wasm-engineer.md)** - WebAssembly compilation and optimization
+## Agent Hierarchy
 
-### Quality and Reliability Agents
-- **[test-engineer.md](./test-engineer.md)** - Comprehensive testing and validation
-- **[performance-optimizer.md](./performance-optimizer.md)** - Performance analysis and optimization
-- **[memory-management.md](./memory-management.md)** - Memory management and leak detection
-- **[error-handling.md](./error-handling.md)** - Error handling and recovery strategies
-- **[security-audit.md](./security-audit.md)** - Security auditing and vulnerability assessment
+### 🎯 Main Orchestrator
+**File**: `orchestrator.md` (mode: main)
+- **Role**: Primary coordinator for all multi-project tasks
+- **Responsibilities**:
+  - Strategic coordination across all projects (Rust, WASM, swarm systems, CV)
+  - Delegate tactical tasks to appropriate sub-orchestrators
+  - Manage cross-project dependencies and build order
+  - Resource allocation and priority management
+  - Final result synthesis and optimization
 
-### Operations and Monitoring Agents
-- **[logging.md](./logging.md)** - Logging infrastructure and management
-- **[monitoring-observability.md](./monitoring-observability.md)** - System monitoring and observability
-- **[command-verifier.md](./command-verifier.md)** - Command verification and documentation
+### 🎛️ Sub-Orchestrators
+These handle specific domains of orchestration and are called by the Main Orchestrator:
 
-### Architecture and Design Agents
-- **[orchestrator.md](./orchestrator.md)** - Multi-project coordination and orchestration
-- **[swarm-architect.md](./swarm-architect.md)** - Multi-agent swarm system design
-- **[agent-controller.md](./agent-controller.md)** - Multi-agent coordination and management
+#### Agent Coordination Sub-Orchestrator
+**File**: `agent-controller.md` (mode: subagent)
+- **Role**: Coordinates multiple specialized agents for complex tasks
+- **Use Cases**:
+  - Code generation + review + optimization workflows
+  - Parallel execution of independent tasks
+  - Sequential task dependencies
+  - Result integration and conflict resolution
 
-### Maintenance and Evolution Agents
-- **[codebase-cleaner.md](./codebase-cleaner.md)** - Repository cleanup and maintenance
-- **[codebase-modernizer.md](./codebase-modernizer.md)** - Codebase analysis and modernization
-- **[docs-specialist.md](./docs-specialist.md)** - Technical documentation creation
+#### Validation Coordination Sub-Orchestrator
+**File**: `validation-orchestrator.md` (mode: subagent)
+- **Role**: Orchestrates comprehensive validation workflows
+- **Use Cases**:
+  - Preventing false positive success messages
+  - LLM output validation against implementation
+  - Multi-agent validation coordination
+  - Quality assurance workflows
 
-### Specialized Domain Agents
-- **[ml-researcher.md](./ml-researcher.md)** - Machine learning research and implementation
-- **[cv-engineer.md](./cv-engineer.md)** - Computer vision and OpenCV integration
-- **[opencode-agent-creator.md](./opencode-agent-creator.md)** - OpenCode agent creation
+#### Performance Optimization Sub-Orchestrator
+**File**: `performance-optimizer.md` (mode: subagent)
+- **Role**: Coordinates performance optimization across the ecosystem
+- **Use Cases**:
+  - Performance bottleneck identification
+  - Distributed benchmarking
+  - Memory optimization
+  - Resource utilization improvement
 
-### SPARC Methodology Agents
-- **[sparc-specification.md](./sparc-specification.md)** - Requirements analysis and success criteria definition
-- **[sparc-pseudocode.md](./sparc-pseudocode.md)** - Detailed algorithm design and event-driven logic planning
-- **[sparc-architecture.md](./sparc-architecture.md)** - System design and event-driven architecture planning
-- **[sparc-refinement.md](./sparc-refinement.md)** - Design optimization and validation
-- **[sparc-code.md](./sparc-code.md)** - Production-ready code implementation
+#### Architecture Planning Sub-Orchestrator
+**File**: `sparc-architecture.md` (mode: subagent)
+- **Role**: System design and event-driven architecture planning
+- **Use Cases**:
+  - Event-driven system architecture
+  - Component interaction design
+  - Scalability planning
+  - Deployment architecture
 
-### Event-Driven Architecture Agents
-- **[event-handler.md](./event-handler.md)** - Event processing and deduplication
-- **[message-verification.md](./message-verification.md)** - LLM response validation and data integrity
-- **[memory-management.md](./memory-management.md)** - Memory optimization and resource management
-- **[event-driven-development.md](./event-driven-development.md)** - Complete SPARC workflow with event-driven patterns
+### 🔧 Specialized Agents
+These are domain-specific agents called by sub-orchestrators or the main orchestrator:
 
-### Project Management Agents
-- **[issue-tracking.md](./issue-tracking.md)** - Project management and issue lifecycle management
-- **[pull-request-management.md](./pull-request-management.md)** - Code review and merge processes
-- **[merge-strategy.md](./merge-strategy.md)** - Version control and merge management
-- **[code-linting.md](./code-linting.md)** - Code quality and style enforcement
+#### Development & Implementation
+- `rust-core.md` - Rust neural network development
+- `wasm-engineer.md` - WebAssembly implementation
+- `cv-engineer.md` - Computer vision integration
+- `ml-researcher.md` - Machine learning algorithms
 
-## Agent Format
+#### Quality & Testing
+- `test-engineer.md` - Comprehensive testing
+- `code-linting.md` - Code quality enforcement
+- `implementation-verifier.md` - Implementation validation
+- `output-validator.md` - Output validation
 
-All agents follow the proper OpenCode agent format:
+#### Operations & Management
+- `ci-cd-operations.md` - CI/CD pipeline management
+- `github-operations.md` - GitHub workflow management
+- `pull-request-management.md` - PR process management
+- `issue-tracking.md` - Project management
 
-```yaml
----
-description: >-
-  Brief description of the agent's purpose and capabilities.
-mode: all
----
-Agent instructions and content...
+#### Documentation & Communication
+- `docs-specialist.md` - Technical documentation
+- `logging.md` - Logging strategy implementation
+- `error-handling.md` - Error handling patterns
+
+#### Security & Compliance
+- `security-audit.md` - Security assessment
+- `command-verifier.md` - Command validation
+- `memory-management.md` - Memory safety
+
+#### Specialized Domains
+- `neural-dev.md` - Neural network development
+- `swarm-architect.md` - Swarm system design
+- `event-driven-development.md` - Event-driven systems
+- `merge-strategy.md` - Version control strategy
+
+## Agent Communication Flow
+
+### Standard Workflow
+1. **User Request** → Main Orchestrator
+2. **Task Analysis** → Main Orchestrator determines required sub-orchestrators
+3. **Delegation** → Main Orchestrator calls appropriate sub-orchestrators
+4. **Specialization** → Sub-orchestrators call specialized agents
+5. **Execution** → Specialized agents perform domain-specific tasks
+6. **Integration** → Sub-orchestrators integrate results
+7. **Synthesis** → Main Orchestrator synthesizes final output
+
+### Example: Complex Feature Implementation
+```
+User Request: "Implement new neural network feature with validation"
+    ↓
+Main Orchestrator (orchestrator.md)
+    ↓
+├── Agent Controller (agent-controller.md)
+│   ├── Rust Core (rust-core.md) - Implementation
+│   ├── Test Engineer (test-engineer.md) - Testing
+│   └── Code Linting (code-linting.md) - Quality
+│
+├── Validation Orchestrator (validation-orchestrator.md)
+│   ├── Implementation Verifier (implementation-verifier.md)
+│   └── Output Validator (output-validator.md)
+│
+└── Performance Optimizer (performance-optimizer.md)
+    └── Benchmarking coordination
 ```
 
-## How to Use These Agents
+## Agent Mode Classification
 
-### Direct Usage
-```bash
-# Use specific agents for targeted tasks
-npx opencode agent --type github-operations --task "Manage open issues"
-npx opencode agent --type memory-leak-prevention --task "Analyze memory usage in training"
+### Mode: main
+- **Only**: `orchestrator.md`
+- **Purpose**: Top-level coordination, called directly by users
 
-# Use agent-controller for complex multi-step operations
-npx opencode agent --type agent-controller --task "Prepare v1.0.8 release" \
-  --agents "github-operations,ci-cd-operations,security-audit"
-```
+### Mode: subagent
+- **Sub-Orchestrators**: Handle specific domains of orchestration
+- **Purpose**: Called by main orchestrator for tactical coordination
 
-### Integration with Development Workflow
-```bash
-# Pre-commit hooks
-npx opencode agent --type security-audit --task "Security scan before commit"
-
-# CI/CD integration
-npx opencode agent --type ci-cd-operations --task "Optimize build pipeline"
-
-# Code review
-npx opencode agent --type test-engineer --task "Review test coverage for new features"
-```
-
-## Agent Categories
-
-### 🔧 Development Operations
-- `git-commit-merge` - Version control operations
-- `github-operations` - Repository management
-- `ci-cd-operations` - Build and deployment automation
-
-### 🛡️ Quality Assurance
-- `test-engineer` - Testing and validation
-- `performance-optimizer` - Performance optimization
-- `memory-management` - Memory safety
-- `error-handling` - Error management
-- `security-audit` - Security assessment
-
-### 📊 Observability
-- `logging` - Logging infrastructure
-- `monitoring-observability` - System monitoring
-- `command-verifier` - Command validation
-
-### 🏗️ Architecture
-- `orchestrator` - Project coordination
-- `swarm-architect` - Swarm system design
-- `agent-controller` - Multi-agent management
-
-### 📚 Maintenance
-- `codebase-cleaner` - Code cleanup
-- `codebase-modernizer` - Code modernization
-- `docs-specialist` - Documentation
-
-### 🎯 Domain Specialists
-- `rust-core` - Rust development
-- `wasm-engineer` - WebAssembly
-- `ml-researcher` - Machine learning
-- `cv-engineer` - Computer vision
-
-### 📋 SPARC Methodology
-- `sparc-specification` - Requirements and specifications
-- `sparc-pseudocode` - Algorithm design and planning
-- `sparc-architecture` - System architecture design
-- `sparc-refinement` - Design optimization and validation
-- `sparc-code` - Production code implementation
-
-### ⚡ Event-Driven Systems
-- `event-handler` - Event processing and handling
-- `message-verification` - Data integrity and validation
-- `memory-management` - Resource optimization
-- `event-driven-development` - Complete event-driven workflow
-
-### 📊 Project Management
-- `issue-tracking` - Issue lifecycle management
-- `pull-request-management` - Code review processes
-- `merge-strategy` - Version control management
-- `code-linting` - Code quality enforcement
+### Mode: all (Legacy)
+- **Specialized Agents**: Domain-specific implementation agents
+- **Purpose**: Called by sub-orchestrators or main orchestrator for specific tasks
 
 ## Best Practices
 
-### Agent Selection
-1. **Choose the most specific agent** for your task
-2. **Use general agent** for complex, multi-disciplinary tasks
-3. **Combine agents** using agent-controller for complex workflows
+### For Main Orchestrator
+- Always analyze requests to determine appropriate sub-orchestrators
+- Delegate tactical coordination to specialized sub-orchestrators
+- Maintain clear communication channels between all agents
+- Synthesize results from multiple sub-orchestrators
+- Handle cross-project dependencies and resource allocation
 
-### Task Definition
-- Be specific about the desired outcome
-- Include relevant context and constraints
-- Specify any integration requirements
-- Define success criteria
+### For Sub-Orchestrators
+- Focus on specific domains of expertise
+- Coordinate multiple specialized agents within your domain
+- Handle result integration and conflict resolution
+- Provide clear status updates to main orchestrator
+- Optimize for your specific domain (validation, agent coordination, etc.)
 
-### Integration
-- Integrate agents into your development workflow
-- Use agents for code reviews and quality gates
-- Automate routine tasks with appropriate agents
-- Monitor agent performance and adjust usage
+### For Specialized Agents
+- Focus on narrow, well-defined tasks
+- Provide clear, actionable outputs
+- Handle errors gracefully and provide meaningful feedback
+- Follow established patterns and best practices
+- Document capabilities and limitations clearly
 
-## Contributing
+## Adding New Agents
 
-To add new agents or improve existing ones:
+### Process
+1. **Identify Need**: Determine if new functionality is required
+2. **Check Existing**: Verify no existing agent covers the functionality
+3. **Determine Level**: Decide if it's a sub-orchestrator or specialized agent
+4. **Define Interface**: Specify how it will be called and what it returns
+5. **Update Documentation**: Add to this README and update relevant agents
 
-1. Follow the established YAML frontmatter format
-2. Include comprehensive instructions and examples
-3. Define clear integration points with other agents
-4. Add appropriate categories and tags
-5. Test the agent configuration thoroughly
+### Guidelines
+- **Sub-Orchestrators**: Only create if managing multiple agents in a specific domain
+- **Specialized Agents**: Create for specific technical capabilities
+- **Clear Descriptions**: Include detailed examples and use cases
+- **Proper Mode**: Set correct mode (main/subagent/all)
+- **Integration**: Ensure integration with existing orchestration flow
 
-## Support
+## Maintenance
 
-For questions about specific agents or general OpenCode usage:
-- Check the [OpenCode Documentation](https://opencode.ai/docs/agents/)
-- Review existing agent configurations for patterns
-- Consult the ruv-FANN development team for project-specific guidance
+### Regular Tasks
+- Review agent overlap and consolidate where appropriate
+- Update agent descriptions to reflect current capabilities
+- Monitor performance and optimize orchestration patterns
+- Update documentation when agents are modified
+- Test agent integration and communication flows
 
----
+### Performance Monitoring
+- Track agent utilization and performance
+- Monitor orchestration efficiency
+- Identify bottlenecks in agent communication
+- Optimize task distribution patterns
+- Scale sub-orchestrators based on load
 
-*These agents are designed to enhance the development experience and maintain the high quality standards of the ruv-FANN neural network ecosystem.*
+## Troubleshooting
+
+### Common Issues
+- **Agent Conflicts**: Multiple agents trying to modify same resources
+- **Communication Breakdown**: Sub-orchestrators not receiving clear instructions
+- **Result Integration**: Difficulty combining outputs from multiple agents
+- **Performance Bottlenecks**: Slow response times due to agent overload
+
+### Solutions
+- **Clear Task Definition**: Ensure main orchestrator provides clear, specific instructions
+- **Resource Coordination**: Implement resource locking and coordination mechanisms
+- **Result Schema**: Define clear output schemas for all agents
+- **Load Balancing**: Distribute tasks across multiple instances when possible
+- **Monitoring**: Implement comprehensive monitoring and alerting
+
+## Future Evolution
+
+### Planned Improvements
+- **Dynamic Agent Discovery**: Automatically discover and integrate new agents
+- **Machine Learning Optimization**: Use ML to optimize agent selection and orchestration
+- **Performance Prediction**: Predict agent performance and optimize selection
+- **Automated Scaling**: Automatically scale agent instances based on load
+- **Self-Healing**: Implement self-healing capabilities for failed orchestrations
+
+### Research Areas
+- **Agent Communication Protocols**: Improve inter-agent communication efficiency
+- **Orchestration Algorithms**: Develop more sophisticated orchestration algorithms
+- **Resource Optimization**: Optimize resource allocation across agents
+- **Quality Metrics**: Develop comprehensive quality metrics for orchestration
+- **User Experience**: Improve user experience with better progress tracking and feedback
