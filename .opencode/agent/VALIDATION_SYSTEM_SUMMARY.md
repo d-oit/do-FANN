@@ -1,3 +1,19 @@
+---
+description: >-
+  Comprehensive documentation of the LLM success validation system designed to prevent false positive success messages.
+  This document outlines the complete validation framework, methodologies, and implementation details for ensuring
+  all success claims are backed by verified implementation evidence.
+
+  <example>
+    Context: The user needs to understand the validation system architecture.
+    user: "Can you explain how the validation system prevents false positive success messages?"
+    assistant: "This document provides comprehensive details about the validation system architecture and methodologies."
+    <commentary>
+    This is a documentation file that explains the validation system, not an executable agent.
+    </commentary>
+  </example>
+mode: documentation
+---
 # LLM Success Validation System
 
 ## Overview

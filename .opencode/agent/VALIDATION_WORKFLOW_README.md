@@ -1,3 +1,19 @@
+---
+description: >-
+  Detailed workflow documentation for the LLM success validation system.
+  This document outlines the step-by-step validation processes, agent coordination patterns,
+  and implementation workflows for comprehensive validation coverage.
+
+  <example>
+    Context: The user needs to understand the validation workflow process.
+    user: "How does the validation workflow work step by step?"
+    assistant: "This document provides detailed workflow documentation for the validation system."
+    <commentary>
+    This is a documentation file that explains the validation workflow, not an executable agent.
+    </commentary>
+  </example>
+mode: documentation
+---
 # LLM Success Validation Workflow
 
 This document outlines the comprehensive validation system designed to prevent false positive success messages from LLMs and ensure that all success claims are backed by verified implementation evidence.
