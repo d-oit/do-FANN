@@ -14,7 +14,7 @@ This directory contains specialized OpenCode agents designed to support the deve
 ### Quality and Reliability Agents
 - **[test-engineer.md](./test-engineer.md)** - Comprehensive testing and validation
 - **[performance-optimizer.md](./performance-optimizer.md)** - Performance analysis and optimization
-- **[memory-leak-prevention.md](./memory-leak-prevention.md)** - Memory management and leak detection
+- **[memory-management.md](./memory-management.md)** - Memory management and leak detection
 - **[error-handling.md](./error-handling.md)** - Error handling and recovery strategies
 - **[security-audit.md](./security-audit.md)** - Security auditing and vulnerability assessment
 
@@ -37,6 +37,25 @@ This directory contains specialized OpenCode agents designed to support the deve
 - **[ml-researcher.md](./ml-researcher.md)** - Machine learning research and implementation
 - **[cv-engineer.md](./cv-engineer.md)** - Computer vision and OpenCV integration
 - **[opencode-agent-creator.md](./opencode-agent-creator.md)** - OpenCode agent creation
+
+### SPARC Methodology Agents
+- **[sparc-specification.md](./sparc-specification.md)** - Requirements analysis and success criteria definition
+- **[sparc-pseudocode.md](./sparc-pseudocode.md)** - Detailed algorithm design and event-driven logic planning
+- **[sparc-architecture.md](./sparc-architecture.md)** - System design and event-driven architecture planning
+- **[sparc-refinement.md](./sparc-refinement.md)** - Design optimization and validation
+- **[sparc-code.md](./sparc-code.md)** - Production-ready code implementation
+
+### Event-Driven Architecture Agents
+- **[event-handler.md](./event-handler.md)** - Event processing and deduplication
+- **[message-verification.md](./message-verification.md)** - LLM response validation and data integrity
+- **[memory-management.md](./memory-management.md)** - Memory optimization and resource management
+- **[event-driven-development.md](./event-driven-development.md)** - Complete SPARC workflow with event-driven patterns
+
+### Project Management Agents
+- **[issue-tracking.md](./issue-tracking.md)** - Project management and issue lifecycle management
+- **[pull-request-management.md](./pull-request-management.md)** - Code review and merge processes
+- **[merge-strategy.md](./merge-strategy.md)** - Version control and merge management
+- **[code-linting.md](./code-linting.md)** - Code quality and style enforcement
 
 ## Agent Format
 
@@ -86,7 +105,7 @@ npx opencode agent --type test-engineer --task "Review test coverage for new fea
 ### 🛡️ Quality Assurance
 - `test-engineer` - Testing and validation
 - `performance-optimizer` - Performance optimization
-- `memory-leak-prevention` - Memory safety
+- `memory-management` - Memory safety
 - `error-handling` - Error management
 - `security-audit` - Security assessment
 
@@ -110,6 +129,25 @@ npx opencode agent --type test-engineer --task "Review test coverage for new fea
 - `wasm-engineer` - WebAssembly
 - `ml-researcher` - Machine learning
 - `cv-engineer` - Computer vision
+
+### 📋 SPARC Methodology
+- `sparc-specification` - Requirements and specifications
+- `sparc-pseudocode` - Algorithm design and planning
+- `sparc-architecture` - System architecture design
+- `sparc-refinement` - Design optimization and validation
+- `sparc-code` - Production code implementation
+
+### ⚡ Event-Driven Systems
+- `event-handler` - Event processing and handling
+- `message-verification` - Data integrity and validation
+- `memory-management` - Resource optimization
+- `event-driven-development` - Complete event-driven workflow
+
+### 📊 Project Management
+- `issue-tracking` - Issue lifecycle management
+- `pull-request-management` - Code review processes
+- `merge-strategy` - Version control management
+- `code-linting` - Code quality enforcement
 
 ## Best Practices
 
