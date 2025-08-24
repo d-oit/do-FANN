@@ -48,6 +48,9 @@ Temporary, composable, and surgically precise.
 - [📊 Performance & Benchmarks](#-performance--benchmarks)
 - [🌟 Advanced Features](#-advanced-features)
 - [🔗 API Reference](#-api-reference)
+- [🛠️ Development](#️-development)
+- [🧪 Testing](#-testing)
+- [🤝 Contributing](#-contributing)
 - [💼 Enterprise Features](#-enterprise-features)
 - [🛠️ Development](#️-development)
 - [📚 Examples & Use Cases](#-examples--use-cases)
@@ -1487,6 +1490,152 @@ You may choose to use this project under either:
 - [Apache License 2.0](LICENSE-APACHE)
 
 This dual licensing provides maximum flexibility for both open source and commercial use.
+
+---
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Node.js >= 18.20.8
+- npm >= 10.0.0
+- Rust (for WASM compilation)
+- C compiler (gcc or clang)
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/ruvnet/ruv-FANN.git
+cd ruv-swarm/npm
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Run tests
+npm run test:all
+
+# Run linting
+npm run lint:check
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+```
+
+### Building
+
+```bash
+# Build for development
+npm run build
+
+# Build with optimizations
+npm run build:all
+
+# Build WASM modules
+npm run build:wasm
+
+# Build with SIMD support
+npm run build:wasm-simd
+```
+
+### Testing
+
+```bash
+# Run all tests
+npm run test:all
+
+# Run unit tests
+npm run test:unit
+
+# Run integration tests
+npm run test:integration
+
+# Run performance tests
+npm run test:performance
+
+# Run security tests
+npm run test:security
+
+# Run with coverage
+npm run test:coverage
+```
+
+### Performance Benchmarking
+
+```bash
+# Run comprehensive benchmarks
+npm run test:performance
+
+# Benchmark specific components
+node test/performance-benchmark.js
+
+# Memory profiling
+node test/memory-profiling.js
+```
+
+### Development Workflow
+
+1. **Code Changes**: Make your changes following the existing patterns
+2. **Quality Checks**: Run `npm run quality:check` to ensure code quality
+3. **Testing**: Add tests for new functionality and run the full test suite
+4. **Documentation**: Update documentation for any API changes
+5. **Performance**: Run benchmarks to ensure no performance regressions
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev              # Watch mode development
+npm run start            # Start production server
+
+# Building
+npm run build            # Build for production
+npm run build:all        # Build all components
+npm run build:wasm       # Build WASM modules
+npm run build:wasm-simd  # Build with SIMD optimization
+
+# Testing
+npm run test:all         # Run all tests
+npm run test:unit        # Unit tests only
+npm run test:integration # Integration tests
+npm run test:performance # Performance benchmarks
+npm run test:security    # Security tests
+
+# Quality
+npm run lint:check       # Check code quality
+npm run lint:fix         # Fix linting issues
+npm run format           # Format code
+npm run quality:check    # Full quality check
+
+# Dependencies
+npm run audit            # Security audit
+npm run deps:check       # Check for updates
+npm run clean            # Clean install
+```
+
+### Code Quality
+
+The project uses several tools to maintain code quality:
+
+- **ESLint**: JavaScript/TypeScript linting with comprehensive rules
+- **Prettier**: Code formatting for consistent style
+- **Jest**: Testing framework with coverage reporting
+- **Security Audit**: Regular dependency vulnerability scanning
+
+### Performance Monitoring
+
+Built-in performance monitoring and benchmarking:
+
+- Real-time performance metrics
+- Memory usage tracking
+- WASM execution profiling
+- Comparative benchmarking against baselines
 
 ---
 
