@@ -1,7 +1,7 @@
 ---
 description: Show all available OpenCode commands for this workspace
 ---
-Display all available OpenCode commands for the ruv-FANN workspace. Only output the commands. Do not build or implement anything.
+Display all available OpenCode commands for the workspace. Only output the commands. Do not build or implement anything.
 
 Available Commands:
 

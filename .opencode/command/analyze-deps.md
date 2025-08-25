@@ -4,7 +4,7 @@ agent: orchestrator
 
 ---
 
-Analyze dependencies across all projects in the ruv-FANN workspace and identify optimization opportunities.
+Analyze dependencies across all projects in the workspace and identify optimization opportunities.
 
 Dependency Analysis:
 

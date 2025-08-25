@@ -2,44 +2,40 @@
 description: Set up development environment for ruv-FANN
 agent: orchestrator
 ---
+
 Set up a complete development environment for the ruv-FANN workspace.
 
-Development Environment Setup:
+Current environment status:
+`!which rustc && rustc --version`
+`!which node && node --version`
+`!which npm && npm --version`
 
-1. **Rust Development**:
-   - Install required targets: `!rustup target add wasm32-unknown-emscripten wasm32-wasi`
+Required setup steps:
+
+1. **Rust Development Setup**:
+   - Install WASM targets: `!rustup target add wasm32-unknown-unknown wasm32-wasi`
    - Install development tools: `!cargo install cargo-watch cargo-audit cargo-outdated`
    - Set up rust-analyzer: `!rustup component add rust-analyzer`
 
 2. **WebAssembly Development**:
    - Install wasm-pack: `!curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh`
-   - Install emscripten: `!git clone https://github.com/emscripten-core/emsdk.git && cd emsdk && ./emsdk install latest && ./emsdk activate latest`
-   - Set up WASM testing: `!npm install -g @webassemblyjs/cli`
+   - Install WASM test tools: `!cargo install wasm-pack`
 
-3. **Node.js/JavaScript Development**:
-   - Install dependencies: `!npm install --workspace=**`
-   - Set up TypeScript: `!npx tsc --init --target es2020 --moduleResolution node`
+3. **Node.js/JavaScript Setup**:
+   - Install workspace dependencies: `!npm install`
    - Install development tools: `!npm install -g typescript eslint prettier`
 
-4. **Testing Framework**:
-   - Set up test runners: `!cargo install cargo-nextest`
-   - Install WASM test runner: `!npm install -g wasm-pack`
-   - Configure test coverage: `!cargo install cargo-tarpaulin`
+4. **Testing Framework Setup**:
+   - Install test tools: `!cargo install cargo-nextest cargo-tarpaulin`
+   - Set up test coverage tools
 
 5. **Development Tools**:
    - Install performance tools: `!cargo install flamegraph`
-   - Set up benchmarking: `!cargo install criterion`
    - Install documentation tools: `!cargo install mdbook`
 
-6. **IDE Configuration**:
-   - Generate VS Code settings: Create `.vscode/settings.json` with Rust and WASM support
-   - Set up launch configurations for debugging
-   - Configure workspace-specific settings
-
-Verify setup by running:
-
+Verify the setup by checking:
 - `!cargo check --workspace`
-- `!npm run build --workspace=**`
 - `!cargo test --workspace --lib`
+- `!npm run build`
 
-Provide troubleshooting for common setup issues.
+Provide specific troubleshooting for any setup issues found.

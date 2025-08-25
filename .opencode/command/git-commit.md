@@ -4,7 +4,7 @@ agent: git-commit-merge
 
 ---
 
-Perform a comprehensive git commit operation following best practices for the ruv-FANN workspace.
+Perform a comprehensive git commit operation following best practices for the workspace.
 
 ## Commit Process
 
