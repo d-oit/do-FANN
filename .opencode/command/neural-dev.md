@@ -1,6 +1,6 @@
 ---
 description: Neural network development and optimization assistant
-agent: build
+agent: orchestrator
 ---
 
 Assist with neural network development, optimization, and debugging.

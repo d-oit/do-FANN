@@ -1,6 +1,6 @@
 ---
 description: Set up development environment for ruv-FANN
-agent: build
+agent: orchestrator
 ---
 Set up a complete development environment for the ruv-FANN workspace.
 

@@ -1,6 +1,6 @@
 ---
 description: Build all projects in the workspace with dependency order
-agent: build
+agent: orchestrator
 
 ---
 

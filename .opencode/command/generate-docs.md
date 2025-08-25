@@ -1,6 +1,6 @@
 ---
 description: Generate comprehensive documentation for all projects
-agent: build
+agent: orchestrator
 
 ---
 

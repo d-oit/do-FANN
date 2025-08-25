@@ -1,6 +1,6 @@
 ---
 description: Build and optimize WebAssembly components
-agent: build
+agent: orchestrator
 
 ---
 

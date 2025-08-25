@@ -1,6 +1,6 @@
 ---
 description: Run comprehensive tests across all projects
-agent: build
+agent: orchestrator
 ---
 
 Run the complete test suite across all projects in the ruv-FANN workspace.

@@ -1,6 +1,6 @@
 ---
 description: Publish all packages to their respective registries
-agent: build
+agent: orchestrator
 
 ---
 

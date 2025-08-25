@@ -1,6 +1,6 @@
 ---
 description: Run performance benchmarks and analyze results
-agent: build
+agent: orchestrator
 
 ---
 

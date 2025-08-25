@@ -1,6 +1,6 @@
 ---
 description: Analyze and optimize project dependencies
-agent: build
+agent: orchestrator
 
 ---
 

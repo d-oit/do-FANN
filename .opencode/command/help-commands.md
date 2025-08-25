@@ -32,6 +32,7 @@ Available Commands:
 
 ## 🔧 Utility Commands
 
+- **/git-commit**: Perform git commit with proper analysis and validation
 - **/git-operations**: Comprehensive git operations for workspace
 - **/help-commands**: Show this command reference
 

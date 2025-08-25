@@ -1,6 +1,6 @@
 ---
 description: AI/ML focused code review for neural network implementations
-agent: build
+agent: orchestrator
 
 ---
 
