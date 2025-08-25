@@ -1,0 +1,293 @@
+name: Production Deployment
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '18.20.8'
+  RUST_VERSION: '1.85'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ruv-swarm/npm/package-lock.json
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+
+      - name: Navigate to npm directory
+        run: cd ruv-swarm/npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint:check
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run security audit
+        run: npm audit --audit-level moderate
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: ruv-swarm/npm/test-results/
+
+  build:
+    name: Build Production Artifacts
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ruv-swarm/npm/package-lock.json
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+
+      - name: Navigate to npm directory
+        run: cd ruv-swarm/npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build WASM modules
+        run: npm run build:wasm
+
+      - name: Build SIMD WASM modules
+        run: npm run build:wasm-simd
+
+      - name: Build optimized WASM modules
+        run: npm run build:wasm-opt
+
+      - name: Build JavaScript bundle
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            ruv-swarm/npm/wasm/
+            ruv-swarm/npm/wasm-simd/
+            ruv-swarm/npm/wasm-opt/
+            ruv-swarm/npm/dist/
+
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ruv-swarm/npm/package-lock.json
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: ruv-swarm/npm/
+
+      - name: Navigate to npm directory
+        run: cd ruv-swarm/npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run performance tests
+        run: npm run test:performance
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results
+          path: ruv-swarm/npm/performance-results/
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ruv-swarm/npm/package-lock.json
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: ruv-swarm/npm/
+
+      - name: Navigate to npm directory
+        run: cd ruv-swarm/npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: npm audit --audit-level high
+
+      - name: Run dependency check
+        run: npm run deps:check
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: ruv-swarm/npm/security-report/
+
+  docker-build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [performance-test, security-scan]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: ruv-swarm/npm/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/ruv-swarm
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ruv-swarm/npm
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.event.inputs.environment == 'staging' || github.ref == 'refs/heads/main'
+    environment: staging
+    steps:
+      - name: Deploy to staging environment
+        run: |
+          echo "Deploying to staging environment..."
+          # Add your staging deployment commands here
+          # Example: kubectl apply -f k8s/staging/
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/v')
+    environment: production
+    steps:
+      - name: Deploy to production environment
+        run: |
+          echo "Deploying to production environment..."
+          # Add your production deployment commands here
+          # Example: kubectl apply -f k8s/production/
+
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    steps:
+      - name: Notify on success
+        if: needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success'
+        run: |
+          echo "✅ Deployment successful!"
+          # Add notification logic here (Slack, Discord, etc.)
+
+      - name: Notify on failure
+        if: needs.deploy-staging.result == 'failure' || needs.deploy-production.result == 'failure'
+        run: |
+          echo "❌ Deployment failed!"
+          # Add failure notification logic here

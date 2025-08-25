@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  ruv-swarm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+      - "3001:3001"  # Health check port
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HEALTH_CHECK_PORT=3001
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ruv-swarm-network
+
+  # Optional: Add a reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/ssl/certs
+    depends_on:
+      - ruv-swarm
+    restart: unless-stopped
+    networks:
+      - ruv-swarm-network
+    profiles:
+      - with-proxy
+
+  # Optional: Add monitoring
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - ruv-swarm
+    networks:
+      - ruv-swarm-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3002:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - ruv-swarm-network
+    profiles:
+      - monitoring
+
+  # Optional: Add logging
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    networks:
+      - ruv-swarm-network
+    profiles:
+      - logging
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./logs:/var/log/ruv-swarm:ro
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
+    depends_on:
+      - loki
+    networks:
+      - ruv-swarm-network
+    profiles:
+      - logging
+
+volumes:
+  grafana_data:
+  loki_data:
+
+networks:
+  ruv-swarm-network:
+    driver: bridge

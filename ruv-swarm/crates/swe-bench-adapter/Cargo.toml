@@ -37,7 +37,7 @@ similar = { version = "2.3", features = ["text", "inline"] }
 patch = "0.7"
 
 # Time and metrics
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true }
 metrics = "0.21"
 metrics-exporter-prometheus = "0.12"
 

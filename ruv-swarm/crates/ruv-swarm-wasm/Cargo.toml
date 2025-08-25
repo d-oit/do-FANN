@@ -43,6 +43,8 @@ no-simd = []
 full = ["ruv-swarm-core", "ruv-swarm-ml"]
 core = ["ruv-swarm-core"]
 ml = ["ruv-swarm-ml"]
+# Minimal feature for smallest possible bundle
+minimal-bundle = []
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false

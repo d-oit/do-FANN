@@ -39,7 +39,7 @@ crossbeam = { version = "0.8", optional = true }
 # CLI dependencies for binary
 clap = { version = "4.0", features = ["derive"] }
 env_logger = "0.10"
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true }
 
 # WASM-specific dependencies
 wasm-bindgen-futures = { version = "0.4", optional = true }

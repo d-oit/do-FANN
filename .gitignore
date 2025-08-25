@@ -27,3 +27,4 @@ polyglot-benchmarks/
 merge_script.sh
 crosstool-ng.tar.xz
 musl-cross.tgz
+ruv-swarm/npm/test/
