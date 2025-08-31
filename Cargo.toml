@@ -1,11 +1,11 @@
 [package]
-name = "ruv-fann"
+name = "do-fann"
 version = "0.1.6"
 edition = "2021"
 rust-version = "1.81"
-authors = ["rUv Contributors"]
+authors = ["do-FANN Contributors"]
 description = "A pure Rust implementation of the Fast Artificial Neural Network (FANN) library"
-repository = "https://github.com/ruvnet/ruv-FANN"
+repository = "https://github.com/d-oit/do-FANN"
 license = "MIT OR Apache-2.0"
 keywords = ["neural-network", "machine-learning", "fann", "ai", "deep-learning"]
 categories = ["science", "algorithms", "mathematics"]

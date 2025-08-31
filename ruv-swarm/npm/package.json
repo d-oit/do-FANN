@@ -1,5 +1,5 @@
 {
-  "name": "ruv-swarm",
+  "name": "do-swarm",
   "version": "1.0.18",
   "description": "High-performance neural network swarm orchestration in WebAssembly",
   "main": "src/index.js",
@@ -97,7 +97,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ruvnet/ruv-FANN.git",
+    "url": "git+https://github.com/d-oit/do-FANN.git",
     "directory": "ruv-swarm/npm"
   },
   "keywords": [
@@ -118,9 +118,9 @@
   "author": "rUv Contributors",
   "license": "MIT OR Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ruvnet/ruv-FANN/issues"
+    "url": "https://github.com/d-oit/do-FANN/issues"
   },
-  "homepage": "https://github.com/ruvnet/ruv-FANN#readme",
+  "homepage": "https://github.com/d-oit/do-FANN#readme",
   "dependencies": {
     "better-sqlite3": "^11.6.0",
     "uuid": "^9.0.1",

@@ -19,7 +19,7 @@ export class BaseAgent implements Agent {
   state: AgentState;
   connections: string[] = [];
   
-  private messageHandlers: Map<MessageType, (message: Message) => Promise<void>> = new Map();
+  private messageHandlers: Map<MessageType, (_message: Message) => Promise<void>> = new Map();
   private wasmAgentId?: number;
 
   constructor(config: AgentConfig) {

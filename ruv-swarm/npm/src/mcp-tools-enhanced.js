@@ -33,16 +33,14 @@ class EnhancedMCPTools {
     this.toolMetrics = new Map();
     // Initialize pooled persistence with production-optimized settings
     const poolOptions = {
-      maxReaders: process.env.POOL_MAX_READERS ? parseInt(process.env.POOL_MAX_READERS) : 6,
-      maxWorkers: process.env.POOL_MAX_WORKERS ? parseInt(process.env.POOL_MAX_WORKERS) : 3,
-      mmapSize: process.env.POOL_MMAP_SIZE ? parseInt(process.env.POOL_MMAP_SIZE) : 268435456, // 256MB
-      cacheSize: process.env.POOL_CACHE_SIZE ? parseInt(process.env.POOL_CACHE_SIZE) : -64000, // 64MB
+      maxReaders: process.env.POOL_MAX_READERS ? parseInt(process.env.POOL_MAX_READERS, 10) : 6,
+      maxWorkers: process.env.POOL_MAX_WORKERS ? parseInt(process.env.POOL_MAX_WORKERS, 10) : 3,
+      mmapSize: process.env.POOL_MMAP_SIZE ? parseInt(process.env.POOL_MMAP_SIZE, 10) : 268435456, // 256MB
+      cacheSize: process.env.POOL_CACHE_SIZE ? parseInt(process.env.POOL_CACHE_SIZE, 10) : -64000, // 64MB
       enableBackup: process.env.POOL_ENABLE_BACKUP === 'true',
       healthCheckInterval: 60000, // 1 minute
     };
-    this.persistence = new SwarmPersistencePooled(undefined, poolOptions);
-    this.persistenceReady = false;
-    
+
     // Initialize persistence asynchronously
     this.initializePersistence();
     this.errorContext = new ErrorContext();
@@ -128,7 +126,7 @@ class EnhancedMCPTools {
         await new Promise(resolve => setTimeout(resolve, checkInterval));
         waited += checkInterval;
       }
-      
+
       if (!this.persistenceReady) {
         throw new PersistenceError('Persistence layer not ready after timeout', 'PERSISTENCE_NOT_READY');
       }

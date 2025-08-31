@@ -75,7 +75,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ruvnet/ruv-FANN.git",
+    "url": "git+https://github.com/d-oit/do-FANN.git",
     "directory": "cuda-wasm"
   },
   "keywords": [
@@ -102,7 +102,7 @@
   ],
   "author": {
     "name": "CUDA-WASM Team",
-    "url": "https://github.com/ruvnet/ruv-FANN"
+    "url": "https://github.com/d-oit/do-FANN"
   },
   "contributors": [
     {
@@ -112,9 +112,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ruvnet/ruv-FANN/issues"
+    "url": "https://github.com/d-oit/do-FANN/issues"
   },
-  "homepage": "https://github.com/ruvnet/ruv-FANN/tree/main/cuda-wasm#readme",
+  "homepage": "https://github.com/d-oit/do-FANN/tree/main/cuda-wasm#readme",
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/ruvnet"

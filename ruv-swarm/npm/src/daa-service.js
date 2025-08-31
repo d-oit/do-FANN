@@ -168,9 +168,9 @@ class WorkflowCoordinator {
     // Validate workflow steps before creation
     for (const step of steps) {
       if (!step.id) {
-        throw new Error(`Workflow step missing required 'id' property`);
+        throw new Error('Workflow step missing required \'id\' property');
       }
-      
+
       const task = step.task || step.action;
       if (!task) {
         console.warn(`⚠️ Step ${step.id} has no task or action defined - this may cause runtime errors`);
@@ -248,7 +248,7 @@ class WorkflowCoordinator {
       }
 
       const task = step.task || step.action;
-      
+
       // ADD NULL CHECK FOR TASK
       if (!task) {
         console.warn(`⚠️ Step ${step.id} has no task or action defined`);

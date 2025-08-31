@@ -1,13 +1,13 @@
-# ruv-FANN: The Neural Intelligence Framework 🧠
+# do-FANN: The Neural Intelligence Framework 🧠
 
-[![Crates.io](https://img.shields.io/crates/v/ruv-fann.svg)](https://crates.io/crates/ruv-fann)
-[![Documentation](https://docs.rs/ruv-fann/badge.svg)](https://docs.rs/ruv-fann)
-[![License](https://img.shields.io/crates/l/ruv-fann.svg)](https://github.com/ruvnet/ruv-fann/blob/main/LICENSE)
-[![CI](https://github.com/ruvnet/ruv-FANN/workflows/CI/badge.svg)](https://github.com/ruvnet/ruv-FANN/actions)
+[![Crates.io](https://img.shields.io/crates/v/do-fann.svg)](https://crates.io/crates/do-fann)
+[![Documentation](https://docs.rs/do-fann/badge.svg)](https://docs.rs/do-fann)
+[![License](https://img.shields.io/crates/l/do-fann.svg)](https://github.com/d-oit/do-FANN/blob/main/LICENSE)
+[![CI](https://github.com/d-oit/do-FANN/workflows/CI/badge.svg)](https://github.com/d-oit/do-FANN/actions)
 
 **What if intelligence could be ephemeral, composable, and surgically precise?**
 
-Welcome to ruv-FANN, a comprehensive neural intelligence framework that reimagines how we build, deploy, and orchestrate artificial intelligence. This repository contains three groundbreaking projects that work together to deliver unprecedented performance in neural computing, forecasting, and multi-agent orchestration.
+Welcome to do-FANN, a comprehensive neural intelligence framework that reimagines how we build, deploy, and orchestrate artificial intelligence. This repository contains three groundbreaking projects that work together to deliver unprecedented performance in neural computing, forecasting, and multi-agent orchestration.
 
 ## 🌟 The Vision
 
@@ -21,26 +21,26 @@ This isn't about calling a model API. This is about **instantiating intelligence
 
 ## 🎯 What's in This Repository?
 
-### 1. **ruv-FANN Core** - The Foundation
+### 1. **do-FANN Core** - The Foundation
 A complete Rust rewrite of the legendary FANN (Fast Artificial Neural Network) library. Zero unsafe code, blazing performance, and full compatibility with decades of proven neural network algorithms.
 
 ### 2. **Neuro-Divergent** - Advanced Neural Forecasting  
 27+ state-of-the-art forecasting models (LSTM, N-BEATS, Transformers) with 100% Python NeuralForecast compatibility. 2-4x faster, 25-35% less memory.
 
-### 3. **ruv-swarm** - Ephemeral Swarm Intelligence
+### 3. **do-swarm** - Ephemeral Swarm Intelligence
 The crown jewel. Achieves **84.8% SWE-Bench solve rate**, outperforming Claude 3.7 by 14.5 points. Spin up lightweight neural networks that exist just long enough to solve problems.
 
 ## 🚀 Quick Install ruv-swarm
 
 ```bash
 # NPX - No installation required!
-npx ruv-swarm@latest init --claude
+npx do-swarm@latest init --claude
 
 # NPM - Global installation
-npm install -g ruv-swarm
+npm install -g do-swarm
 
 # Cargo - For Rust developers
-cargo install ruv-swarm-cli
+cargo install do-swarm-cli
 ```
 
 That's it. You're now running distributed neural intelligence.
@@ -60,12 +60,12 @@ That's it. You're now running distributed neural intelligence.
 ┌─────────────────────────────────────────────┐
 │          Claude Code / Your App             │
 ├─────────────────────────────────────────────┤
-│            ruv-swarm (MCP/CLI)              │
+│            do-swarm (MCP/CLI)               │
 ├─────────────────────────────────────────────┤
 │         Neuro-Divergent Models              │
 │    (LSTM, TCN, N-BEATS, Transformers)      │
 ├─────────────────────────────────────────────┤
-│           ruv-FANN Core Engine              │
+│           do-FANN Core Engine               │
 │        (Rust Neural Networks)               │
 ├─────────────────────────────────────────────┤
 │            WASM Runtime                     │
@@ -105,9 +105,9 @@ That's it. You're now running distributed neural intelligence.
 ## 🌐 Ecosystem Projects
 
 ### Core Projects
-- **[ruv-FANN](./ruv-fann/)** - Neural network foundation library
+- **[do-FANN](./do-fann/)** - Neural network foundation library
 - **[Neuro-Divergent](./neuro-divergent/)** - Advanced forecasting models
-- **[ruv-swarm](./ruv-swarm/)** - Distributed swarm intelligence
+- **[do-swarm](./ruv-swarm/)** - Distributed swarm intelligence
 
 ### Tools & Extensions
 - **[MCP Server](./ruv-swarm/docs/MCP_USAGE.md)** - Claude Code integration
@@ -160,6 +160,9 @@ We use an innovative swarm-based contribution system powered by ruv-swarm itself
 - **Jed(@jedarden)** - Platform integration and scope management
 - **Shep(@elsheppo)** - Testing framework and quality assurance
 
+#### Project Founders
+- **d-oit** - Repository owner and maintainer
+
 #### Projects We Built Upon
 - **[FANN](http://leenissen.dk/fann/)** - Steffen Nissen's original Fast Artificial Neural Network library
 - **[NeuralForecast](https://github.com/Nixtla/neuralforecast)** - Inspiration for forecasting model APIs
@@ -188,10 +191,10 @@ Choose whichever license works best for your use case.
 
 <div align="center">
 
-**Built with ❤️ and 🦀 by the rUv team**
+**Built with ❤️ and 🦀 by the do-FANN team**
 
 *Making intelligence ephemeral, accessible, and precise*
 
-[Website](https://ruv.ai) • [Documentation](https://docs.ruv.ai) • [Discord](https://discord.gg/ruv) • [Twitter](https://twitter.com/ruvnet)
+[Website](https://do-fann.org) • [Documentation](https://docs.do-fann.org) • [Discord](https://discord.gg/do-fann) • [Twitter](https://twitter.com/d-oit)
 
 </div>

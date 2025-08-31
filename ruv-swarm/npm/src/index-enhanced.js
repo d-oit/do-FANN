@@ -108,14 +108,14 @@ class RuvSwarm {
         try {
           // Configure pool settings based on environment or defaults
           const poolOptions = {
-            maxReaders: parseInt(process.env.POOL_MAX_READERS) || 6,
-            maxWorkers: parseInt(process.env.POOL_MAX_WORKERS) || 3,
-            mmapSize: parseInt(process.env.POOL_MMAP_SIZE) || 268435456, // 256MB
-            cacheSize: parseInt(process.env.POOL_CACHE_SIZE) || -64000, // 64MB
+            maxReaders: parseInt(process.env.POOL_MAX_READERS, 10) || 6,
+            maxWorkers: parseInt(process.env.POOL_MAX_WORKERS, 10) || 3,
+            mmapSize: parseInt(process.env.POOL_MMAP_SIZE, 10) || 268435456, // 256MB
+            cacheSize: parseInt(process.env.POOL_CACHE_SIZE, 10) || -64000, // 64MB
             enableBackup: process.env.POOL_ENABLE_BACKUP === 'true',
             healthCheckInterval: 60000, // 1 minute
           };
-          
+
           instance.persistence = new SwarmPersistencePooled(undefined, poolOptions);
           await instance.persistence.initialize();
           console.log('💾 High-availability pooled persistence layer initialized');
