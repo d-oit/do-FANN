@@ -20,7 +20,7 @@ class ResNetModel extends NeuralModel {
       batchNorm: config.batchNorm !== false, // Default true
       dropoutRate: config.dropoutRate || 0.2,
       initialChannels: config.initialChannels || 64,
-      ...config,
+      ...config
     };
 
     // Initialize layers
@@ -38,7 +38,7 @@ class ResNetModel extends NeuralModel {
     // Initial projection layer
     this.inputProjection = {
       weight: this.createWeight([currentDimensions, this.config.initialChannels]),
-      bias: new Float32Array(this.config.initialChannels).fill(0.0),
+      bias: new Float32Array(this.config.initialChannels).fill(0.0)
     };
     currentDimensions = this.config.initialChannels;
 
@@ -48,10 +48,7 @@ class ResNetModel extends NeuralModel {
       const blockBatchNorm = [];
 
       // Determine block dimensions
-      const outputDim = Math.min(
-        currentDimensions * 2,
-        this.config.hiddenDimensions,
-      );
+      const outputDim = Math.min(currentDimensions * 2, this.config.hiddenDimensions);
 
       // Create layers within block
       for (let layerIdx = 0; layerIdx < this.config.blockDepth; layerIdx++) {
@@ -59,7 +56,7 @@ class ResNetModel extends NeuralModel {
 
         block.push({
           weight: this.createWeight([inputDim, outputDim]),
-          bias: new Float32Array(outputDim).fill(0.0),
+          bias: new Float32Array(outputDim).fill(0.0)
         });
 
         if (this.config.batchNorm) {
@@ -68,7 +65,7 @@ class ResNetModel extends NeuralModel {
             beta: new Float32Array(outputDim).fill(0.0),
             runningMean: new Float32Array(outputDim).fill(0.0),
             runningVar: new Float32Array(outputDim).fill(1.0),
-            momentum: 0.9,
+            momentum: 0.9
           });
         }
       }
@@ -77,7 +74,7 @@ class ResNetModel extends NeuralModel {
       if (currentDimensions !== outputDim) {
         this.skipConnections.push({
           weight: this.createWeight([currentDimensions, outputDim]),
-          bias: new Float32Array(outputDim).fill(0.0),
+          bias: new Float32Array(outputDim).fill(0.0)
         });
       } else {
         this.skipConnections.push(null); // Identity skip connection
@@ -91,7 +88,7 @@ class ResNetModel extends NeuralModel {
     // Output layer
     this.outputLayer = {
       weight: this.createWeight([currentDimensions, this.config.outputDimensions]),
-      bias: new Float32Array(this.config.outputDimensions).fill(0.0),
+      bias: new Float32Array(this.config.outputDimensions).fill(0.0)
     };
   }
 
@@ -230,10 +227,10 @@ class ResNetModel extends NeuralModel {
 
       // Update running statistics
       for (let f = 0; f < features; f++) {
-        params.runningMean[f] = params.momentum * params.runningMean[f] +
-                               (1 - params.momentum) * mean[f];
-        params.runningVar[f] = params.momentum * params.runningVar[f] +
-                              (1 - params.momentum) * variance[f];
+        params.runningMean[f] =
+          params.momentum * params.runningMean[f] + (1 - params.momentum) * mean[f];
+        params.runningVar[f] =
+          params.momentum * params.runningVar[f] + (1 - params.momentum) * variance[f];
       }
 
       // Normalize using batch statistics
@@ -249,8 +246,8 @@ class ResNetModel extends NeuralModel {
       for (let b = 0; b < batchSize; b++) {
         for (let f = 0; f < features; f++) {
           const idx = b * features + f;
-          const norm = (input[idx] - params.runningMean[f]) /
-                      Math.sqrt(params.runningVar[f] + 1e-5);
+          const norm =
+            (input[idx] - params.runningMean[f]) / Math.sqrt(params.runningVar[f] + 1e-5);
           normalized[idx] = params.gamma[f] * norm + params.beta[f];
         }
       }
@@ -262,16 +259,16 @@ class ResNetModel extends NeuralModel {
 
   applyActivation(input) {
     switch (this.config.activation) {
-    case 'relu':
-      return this.relu(input);
-    case 'leaky_relu':
-      return this.leakyRelu(input);
-    case 'elu':
-      return this.elu(input);
-    case 'swish':
-      return this.swish(input);
-    default:
-      return this.relu(input);
+      case 'relu':
+        return this.relu(input);
+      case 'leaky_relu':
+        return this.leakyRelu(input);
+      case 'elu':
+        return this.elu(input);
+      case 'swish':
+        return this.swish(input);
+      default:
+        return this.relu(input);
     }
   }
 
@@ -331,7 +328,7 @@ class ResNetModel extends NeuralModel {
       batchSize = 32,
       learningRate = 0.001,
       weightDecay = 0.0001,
-      validationSplit = 0.1,
+      validationSplit = 0.1
     } = options;
 
     const trainingHistory = [];
@@ -342,7 +339,7 @@ class ResNetModel extends NeuralModel {
     const valData = trainingData.slice(splitIndex);
 
     // Learning rate schedule
-    const lrSchedule = (epoch) => {
+    const lrSchedule = epoch => {
       if (epoch < 10) {
         return learningRate;
       }
@@ -402,13 +399,13 @@ class ResNetModel extends NeuralModel {
         trainAccuracy,
         valLoss: valMetrics.loss,
         valAccuracy: valMetrics.accuracy,
-        learningRate: currentLR,
+        learningRate: currentLR
       });
 
       console.log(
         `Epoch ${epoch + 1}/${epochs} - ` +
-        `Train Loss: ${avgTrainLoss.toFixed(4)}, Train Acc: ${(trainAccuracy * 100).toFixed(2)}% - ` +
-        `Val Loss: ${valMetrics.loss.toFixed(4)}, Val Acc: ${(valMetrics.accuracy * 100).toFixed(2)}%`,
+          `Train Loss: ${avgTrainLoss.toFixed(4)}, Train Acc: ${(trainAccuracy * 100).toFixed(2)}% - ` +
+          `Val Loss: ${valMetrics.loss.toFixed(4)}, Val Acc: ${(valMetrics.accuracy * 100).toFixed(2)}%`
       );
     }
 
@@ -416,7 +413,7 @@ class ResNetModel extends NeuralModel {
       history: trainingHistory,
       finalLoss: trainingHistory[trainingHistory.length - 1].trainLoss,
       modelType: 'resnet',
-      accuracy: trainingHistory[trainingHistory.length - 1].valAccuracy,
+      accuracy: trainingHistory[trainingHistory.length - 1].valAccuracy
     };
   }
 
@@ -482,7 +479,7 @@ class ResNetModel extends NeuralModel {
 
     return {
       loss: totalLoss / validationData.length,
-      accuracy: correctPredictions / totalSamples,
+      accuracy: correctPredictions / totalSamples
     };
   }
 
@@ -491,7 +488,7 @@ class ResNetModel extends NeuralModel {
       type: 'resnet',
       ...this.config,
       parameters: this.countParameters(),
-      depth: this.config.numBlocks * this.config.blockDepth + 2, // +2 for input and output layers
+      depth: this.config.numBlocks * this.config.blockDepth + 2 // +2 for input and output layers
     };
   }
 

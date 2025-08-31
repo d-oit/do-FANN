@@ -23,13 +23,13 @@ class RuvSwarm {
       totalAgents: 0,
       totalTasks: 0,
       memoryUsage: 0,
-      performance: {},
+      performance: {}
     };
     this.features = {
       neural_networks: false,
       forecasting: false,
       cognitive_diversity: false,
-      simd_support: false,
+      simd_support: false
     };
   }
 
@@ -69,7 +69,7 @@ class RuvSwarm {
     if (!container.has('RuvSwarm')) {
       container.register('RuvSwarm', () => new RuvSwarm(), {
         singleton: true,
-        lazy: false,
+        lazy: false
       });
     }
 
@@ -83,7 +83,7 @@ class RuvSwarm {
       enableNeuralNetworks = true,
       enableForecasting = false,
       useSIMD = true,
-      debug = false,
+      debug = false
     } = options;
 
     // Check if already initialized through container
@@ -113,13 +113,15 @@ class RuvSwarm {
             mmapSize: parseInt(process.env.POOL_MMAP_SIZE, 10) || 268435456, // 256MB
             cacheSize: parseInt(process.env.POOL_CACHE_SIZE, 10) || -64000, // 64MB
             enableBackup: process.env.POOL_ENABLE_BACKUP === 'true',
-            healthCheckInterval: 60000, // 1 minute
+            healthCheckInterval: 60000 // 1 minute
           };
 
           instance.persistence = new SwarmPersistencePooled(undefined, poolOptions);
           await instance.persistence.initialize();
           console.log('💾 High-availability pooled persistence layer initialized');
-          console.log(`📊 Pool configuration: ${poolOptions.maxReaders} readers, ${poolOptions.maxWorkers} workers`);
+          console.log(
+            `📊 Pool configuration: ${poolOptions.maxReaders} readers, ${poolOptions.maxWorkers} workers`
+          );
         } catch (error) {
           console.warn('⚠️ Pooled persistence not available:', error.message);
           instance.persistence = null;
@@ -195,7 +197,7 @@ class RuvSwarm {
       topology = 'mesh',
       strategy = 'balanced',
       maxAgents = 10,
-      enableCognitiveDiversity = true,
+      enableCognitiveDiversity = true
       // enableNeuralAgents = true,
     } = config;
 
@@ -207,7 +209,7 @@ class RuvSwarm {
       name,
       topology_type: topology,
       max_agents: maxAgents,
-      enable_cognitive_diversity: enableCognitiveDiversity && this.features.cognitive_diversity,
+      enable_cognitive_diversity: enableCognitiveDiversity && this.features.cognitive_diversity
     };
 
     // Use the core module exports to create swarm
@@ -227,7 +229,7 @@ class RuvSwarm {
           name,
           config: swarmConfig,
           agents: new Map(),
-          tasks: new Map(),
+          tasks: new Map()
         };
       }
     } else {
@@ -237,7 +239,7 @@ class RuvSwarm {
         name,
         config: swarmConfig,
         agents: new Map(),
-        tasks: new Map(),
+        tasks: new Map()
       };
     }
 
@@ -253,7 +255,7 @@ class RuvSwarm {
           topology,
           strategy,
           maxAgents,
-          created: new Date().toISOString(),
+          created: new Date().toISOString()
         });
       } catch (error) {
         if (!error.message.includes('UNIQUE constraint failed')) {
@@ -283,7 +285,7 @@ class RuvSwarm {
     for (const [id, swarm] of this.activeSwarms) {
       swarms.push({
         id,
-        status: await swarm.getStatus(false),
+        status: await swarm.getStatus(false)
       });
     }
     return swarms;
@@ -310,7 +312,7 @@ class RuvSwarm {
       ...this.metrics,
       features: this.features,
       wasm_modules: this.wasmLoader.getModuleStatus(),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
   }
 
@@ -320,10 +322,21 @@ class RuvSwarm {
       // Check for WebAssembly SIMD support using v128 type validation
       // This is more compatible across Node.js versions
       const simdTestModule = new Uint8Array([
-        0x00, 0x61, 0x73, 0x6d, // WASM magic
-        0x01, 0x00, 0x00, 0x00, // Version 1
-        0x01, 0x05, 0x01, // Type section: 1 type
-        0x60, 0x00, 0x01, 0x7b, // Function type: () -> v128 (SIMD type)
+        0x00,
+        0x61,
+        0x73,
+        0x6d, // WASM magic
+        0x01,
+        0x00,
+        0x00,
+        0x00, // Version 1
+        0x01,
+        0x05,
+        0x01, // Type section: 1 type
+        0x60,
+        0x00,
+        0x01,
+        0x7b // Function type: () -> v128 (SIMD type)
       ]);
 
       // If v128 type is supported, SIMD is available
@@ -342,7 +355,7 @@ class RuvSwarm {
       return {
         used: performance.memory.usedJSHeapSize,
         total: performance.memory.totalJSHeapSize,
-        limit: performance.memory.jsHeapSizeLimit,
+        limit: performance.memory.jsHeapSizeLimit
       };
     }
     return null;
@@ -354,7 +367,7 @@ class RuvSwarm {
       simd: RuvSwarm.detectSIMDSupport(),
       workers: typeof Worker !== 'undefined',
       shared_array_buffer: typeof SharedArrayBuffer !== 'undefined',
-      bigint: typeof BigInt !== 'undefined',
+      bigint: typeof BigInt !== 'undefined'
     };
   }
 
@@ -380,7 +393,7 @@ class Swarm {
       type = 'researcher',
       name = null,
       capabilities = null,
-      enableNeuralNetwork = true,
+      enableNeuralNetwork = true
     } = config;
 
     // Ensure neural networks are loaded if requested
@@ -392,7 +405,7 @@ class Swarm {
       agent_type: type,
       name: name || `${type}-${Date.now()}`,
       capabilities: capabilities || [],
-      max_agents: 100, // Default limit
+      max_agents: 100 // Default limit
     };
 
     let result;
@@ -406,7 +419,7 @@ class Swarm {
         type: agentConfig.agent_type,
         capabilities: agentConfig.capabilities,
         cognitive_pattern: 'adaptive',
-        neural_network_id: enableNeuralNetwork ? `nn-${Date.now()}` : null,
+        neural_network_id: enableNeuralNetwork ? `nn-${Date.now()}` : null
       };
     }
 
@@ -426,7 +439,7 @@ class Swarm {
           type,
           capabilities: result.capabilities,
           cognitive_pattern: result.cognitive_pattern,
-          created: new Date().toISOString(),
+          created: new Date().toISOString()
         });
       } catch (error) {
         if (!error.message.includes('UNIQUE constraint failed')) {
@@ -446,7 +459,7 @@ class Swarm {
       dependencies = [],
       maxAgents = null,
       estimatedDuration = null,
-      requiredCapabilities = [],
+      requiredCapabilities = []
     } = taskConfig;
 
     const config = {
@@ -454,7 +467,7 @@ class Swarm {
       priority,
       dependencies,
       max_agents: maxAgents,
-      estimated_duration_ms: estimatedDuration,
+      estimated_duration_ms: estimatedDuration
     };
 
     let result;
@@ -484,7 +497,7 @@ class Swarm {
         assigned_agents: assignedAgentIds,
         priority,
         estimated_duration_ms: estimatedDuration,
-        agent_selection_strategy: 'capability_and_load_based',
+        agent_selection_strategy: 'capability_and_load_based'
       };
     }
 
@@ -502,11 +515,13 @@ class Swarm {
         description,
         priority,
         assigned_agents: result.assigned_agents,
-        created: new Date().toISOString(),
+        created: new Date().toISOString()
       });
     }
 
-    console.log(`📋 Orchestrated task: ${description} (${taskId}) - Assigned to ${result.assigned_agents.length} agents`);
+    console.log(
+      `📋 Orchestrated task: ${description} (${taskId}) - Assigned to ${result.assigned_agents.length} agents`
+    );
     return task;
   }
 
@@ -521,7 +536,7 @@ class Swarm {
       // Check if agent has required capabilities
       if (requiredCapabilities.length > 0) {
         const hasCapabilities = requiredCapabilities.some(capability =>
-          agent.capabilities.includes(capability),
+          agent.capabilities.includes(capability)
         );
         if (!hasCapabilities) {
           return false;
@@ -550,14 +565,14 @@ class Swarm {
       agents: {
         total: this.agents.size,
         active: Array.from(this.agents.values()).filter(a => a.status === 'active').length,
-        idle: Array.from(this.agents.values()).filter(a => a.status === 'idle').length,
+        idle: Array.from(this.agents.values()).filter(a => a.status === 'idle').length
       },
       tasks: {
         total: this.tasks.size,
         pending: Array.from(this.tasks.values()).filter(t => t.status === 'pending').length,
         in_progress: Array.from(this.tasks.values()).filter(t => t.status === 'in_progress').length,
-        completed: Array.from(this.tasks.values()).filter(t => t.status === 'completed').length,
-      },
+        completed: Array.from(this.tasks.values()).filter(t => t.status === 'completed').length
+      }
     };
   }
 
@@ -571,7 +586,7 @@ class Swarm {
     return {
       duration,
       interval,
-      snapshots: [],
+      snapshots: []
     };
   }
 
@@ -602,7 +617,7 @@ class Agent {
     const result = {
       status: 'completed',
       result: 'Task execution placeholder',
-      executionTime: 500,
+      executionTime: 500
     };
 
     this.status = 'idle';
@@ -614,7 +629,7 @@ class Agent {
       tasksCompleted: 0,
       averageExecutionTime: 0,
       successRate: 1.0,
-      memoryUsage: 5.0,
+      memoryUsage: 5.0
     };
   }
 
@@ -661,10 +676,10 @@ class Task {
           agentResults.push({
             agentId,
             agentType: agent.type,
-            result: agentResult,
+            result: agentResult
           });
         }
-        this.progress = Math.min(0.9, this.progress + (0.8 / this.assignedAgents.length));
+        this.progress = Math.min(0.9, this.progress + 0.8 / this.assignedAgents.length);
       }
 
       // Aggregate results
@@ -676,8 +691,10 @@ class Task {
           total_agents: this.assignedAgents.length,
           successful_executions: agentResults.filter(r => r.result.status === 'completed').length,
           execution_time_ms: Date.now() - this.startTime,
-          average_agent_time_ms: agentResults.reduce((sum, r) => sum + (r.result.executionTime || 0), 0) / agentResults.length,
-        },
+          average_agent_time_ms:
+            agentResults.reduce((sum, r) => sum + (r.result.executionTime || 0), 0) /
+            agentResults.length
+        }
       };
 
       this.status = 'completed';
@@ -693,12 +710,11 @@ class Task {
       }
 
       console.log(`✅ Task completed: ${this.description} (${this.endTime - this.startTime}ms)`);
-
     } catch (error) {
       this.status = 'failed';
       this.result = {
         error: error.message,
-        execution_time_ms: Date.now() - this.startTime,
+        execution_time_ms: Date.now() - this.startTime
       };
 
       // Mark agents as idle on failure too
@@ -719,7 +735,7 @@ class Task {
       status: this.status,
       assignedAgents: this.assignedAgents,
       progress: this.progress,
-      execution_time_ms: this.startTime ? (this.endTime || Date.now()) - this.startTime : 0,
+      execution_time_ms: this.startTime ? (this.endTime || Date.now()) - this.startTime : 0
     };
   }
 

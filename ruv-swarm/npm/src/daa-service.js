@@ -16,7 +16,7 @@ class PerformanceMonitor {
       crossBoundaryCall: 1.0, // 1ms threshold
       agentSpawn: 10.0,
       stateSync: 5.0,
-      workflowStep: 20.0,
+      workflowStep: 20.0
     };
   }
 
@@ -25,7 +25,7 @@ class PerformanceMonitor {
     this.metrics.set(id, {
       operation,
       start: performance.now(),
-      id,
+      id
     });
     return id;
   }
@@ -41,19 +41,22 @@ class PerformanceMonitor {
 
     const threshold = this.thresholds[metric.operation];
     if (threshold && duration > threshold) {
-      console.warn(`⚠️ Performance warning: ${metric.operation} took ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`);
+      console.warn(
+        `⚠️ Performance warning: ${metric.operation} took ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`
+      );
     }
 
     return {
       operation: metric.operation,
       duration,
-      withinThreshold: !threshold || duration <= threshold,
+      withinThreshold: !threshold || duration <= threshold
     };
   }
 
   getAverageLatency(operation) {
-    const relevantMetrics = Array.from(this.metrics.values())
-      .filter(m => m.operation === operation);
+    const relevantMetrics = Array.from(this.metrics.values()).filter(
+      m => m.operation === operation
+    );
 
     if (relevantMetrics.length === 0) {
       return 0;
@@ -82,7 +85,7 @@ class AgentStateManager {
     const stateEntry = {
       ...state,
       timestamp,
-      version: (this.states.get(agentId)?.version || 0) + 1,
+      version: (this.states.get(agentId)?.version || 0) + 1
     };
 
     this.states.set(agentId, stateEntry);
@@ -168,14 +171,18 @@ class WorkflowCoordinator {
     // Validate workflow steps before creation
     for (const step of steps) {
       if (!step.id) {
-        throw new Error('Workflow step missing required \'id\' property');
+        throw new Error("Workflow step missing required 'id' property");
       }
 
       const task = step.task || step.action;
       if (!task) {
-        console.warn(`⚠️ Step ${step.id} has no task or action defined - this may cause runtime errors`);
+        console.warn(
+          `⚠️ Step ${step.id} has no task or action defined - this may cause runtime errors`
+        );
       } else if (typeof task === 'object' && !task.method) {
-        console.warn(`⚠️ Step ${step.id} task object missing 'method' property - this may cause runtime errors`);
+        console.warn(
+          `⚠️ Step ${step.id} task object missing 'method' property - this may cause runtime errors`
+        );
       }
     }
 
@@ -187,7 +194,7 @@ class WorkflowCoordinator {
       createdAt: Date.now(),
       completedSteps: new Set(),
       activeSteps: new Set(),
-      pendingSteps: new Set(steps.map(s => s.id)),
+      pendingSteps: new Set(steps.map(s => s.id))
     };
 
     this.workflows.set(workflowId, workflow);
@@ -242,7 +249,7 @@ class WorkflowCoordinator {
     const results = [];
 
     // Parallel execution for independent agent tasks
-    const promises = agents.map(async(agent) => {
+    const promises = agents.map(async agent => {
       if (step.agentFilter && !step.agentFilter(agent)) {
         return null;
       }
@@ -254,23 +261,23 @@ class WorkflowCoordinator {
         console.warn(`⚠️ Step ${step.id} has no task or action defined`);
         return null;
       }
-      
+
       if (typeof task === 'function') {
         return await task(agent);
       }
-      
+
       // ADD CHECK FOR TASK OBJECT STRUCTURE
       if (typeof task !== 'object' || !task.method) {
         console.warn(`⚠️ Step ${step.id} task missing method property:`, task);
         return null;
       }
-      
+
       // Validate that method exists on agent before calling
       if (typeof agent[task.method] !== 'function') {
         console.warn(`⚠️ Agent does not have method '${task.method}' available`);
         return null;
       }
-      
+
       try {
         // Direct WASM call with error handling
         return await agent[task.method](...(task.args || []));
@@ -278,7 +285,6 @@ class WorkflowCoordinator {
         console.error(`❌ Error executing method '${task.method}' on agent:`, error);
         return null;
       }
-
     });
 
     const agentResults = await Promise.all(promises);
@@ -298,11 +304,11 @@ class WorkflowCoordinator {
         total: workflow.steps.size,
         completed: workflow.completedSteps.size,
         active: workflow.activeSteps.size,
-        pending: workflow.pendingSteps.size,
+        pending: workflow.pendingSteps.size
       },
       completedSteps: Array.from(workflow.completedSteps),
       activeSteps: Array.from(workflow.activeSteps),
-      pendingSteps: Array.from(workflow.pendingSteps),
+      pendingSteps: Array.from(workflow.pendingSteps)
     };
   }
 }
@@ -369,7 +375,6 @@ export class DAAService extends EventEmitter {
 
       const timing = this.performance.endTimer(timerId);
       console.log(`✅ DAA Service initialized in ${timing.duration.toFixed(2)}ms`);
-
     } catch (error) {
       console.error('Failed to initialize DAA Service:', error);
       throw error;
@@ -383,7 +388,7 @@ export class DAAService extends EventEmitter {
         autonomousLearning: false,
         peerCoordination: false,
         neuralIntegration: false,
-        cognitivePatterns: 0,
+        cognitivePatterns: 0
       };
     }
 
@@ -394,7 +399,7 @@ export class DAAService extends EventEmitter {
       cognitivePatterns: 6,
       wasmOptimized: true,
       crossBoundaryLatency: '< 1ms',
-      memoryPersistence: true,
+      memoryPersistence: true
     };
   }
 
@@ -436,46 +441,46 @@ export class DAAService extends EventEmitter {
         wasmAgent = {
           id,
           capabilities: new Set(capabilities),
-          make_decision: async(context) => {
+          make_decision: async context => {
             // Simple decision logic
             return JSON.stringify({
               decision: 'proceed',
               confidence: 0.8,
               reasoning: 'Autonomous decision based on context',
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
           },
-          get_status: async() => {
+          get_status: async () => {
             return JSON.stringify({
               status: 'active',
               id,
               capabilities: Array.from(capabilities),
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
           },
-          adapt: async(feedback) => {
+          adapt: async feedback => {
             return JSON.stringify({
               adaptation: 'completed',
               feedback_processed: true,
               improvement: 0.1,
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
           },
-          coordinate: async() => {
+          coordinate: async () => {
             return JSON.stringify({
               coordination: 'active',
               peers_contacted: 0,
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
           },
-          optimize_resources: async() => {
+          optimize_resources: async () => {
             return JSON.stringify({
               optimization: 'completed',
               memory_saved: 0.1,
               cpu_optimized: true,
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
-          },
+          }
         };
       }
 
@@ -489,7 +494,7 @@ export class DAAService extends EventEmitter {
           learningRate: config.learningRate || 0.001,
           enableMemory: config.enableMemory !== false,
           autonomousMode: config.autonomousMode !== false,
-          ...config,
+          ...config
         },
         status: 'active',
         createdAt: Date.now(),
@@ -498,8 +503,8 @@ export class DAAService extends EventEmitter {
           decisionsMade: 0,
           tasksCompleted: 0,
           errors: 0,
-          averageResponseTime: 0,
-        },
+          averageResponseTime: 0
+        }
       };
 
       // Store agent
@@ -521,7 +526,7 @@ export class DAAService extends EventEmitter {
       this.agentStates.saveState(id, {
         status: agent.status,
         capabilities: Array.from(agent.capabilities),
-        metrics: agent.metrics,
+        metrics: agent.metrics
       });
 
       this.emit('agentCreated', { agentId: id, capabilities });
@@ -530,7 +535,6 @@ export class DAAService extends EventEmitter {
       console.log(`🤖 Created agent ${id} in ${timing.duration.toFixed(2)}ms`);
 
       return agent;
-
     } catch (error) {
       console.error(`Failed to create agent ${id}:`, error);
       throw error;
@@ -562,14 +566,14 @@ export class DAAService extends EventEmitter {
     this.agentStates.saveState(agentId, {
       cognitivePattern: newPattern,
       lastAdaptation: adaptationData,
-      adaptationHistory: agent.adaptationHistory || [],
+      adaptationHistory: agent.adaptationHistory || []
     });
 
     return {
       previousPattern,
       newPattern,
       improvement: Math.random() * 0.3, // Simulated improvement
-      insights: [`Adapted from ${previousPattern} to ${newPattern}`, 'Performance-based adaptation'],
+      insights: [`Adapted from ${previousPattern} to ${newPattern}`, 'Performance-based adaptation']
     };
   }
 
@@ -589,7 +593,7 @@ export class DAAService extends EventEmitter {
 
     if (parallel && agentIds.length > 1) {
       // Execute steps in parallel across agents
-      const promises = Array.from(workflow.steps.values()).map(async(step, index) => {
+      const promises = Array.from(workflow.steps.values()).map(async (step, index) => {
         const assignedAgent = agentIds[index % agentIds.length];
         const result = await this.executeWorkflowStep(workflowId, step.id, [assignedAgent]);
         completedSteps++;
@@ -615,7 +619,7 @@ export class DAAService extends EventEmitter {
       totalSteps: workflow.steps.size,
       executionTime,
       agentsInvolved: agentIds,
-      stepResults,
+      stepResults
     };
   }
 
@@ -637,12 +641,12 @@ export class DAAService extends EventEmitter {
           source: sourceAgentId,
           content: knowledgeData.content,
           domain: knowledgeData.domain,
-          transferredAt: Date.now(),
+          transferredAt: Date.now()
         };
 
         // Store in target agent's memory
         this.agentStates.saveState(targetId, {
-          sharedKnowledge: [...(targetAgent.sharedKnowledge || []), knowledge],
+          sharedKnowledge: [...(targetAgent.sharedKnowledge || []), knowledge]
         });
 
         updatedAgents.push(targetId);
@@ -652,7 +656,7 @@ export class DAAService extends EventEmitter {
 
     return {
       updatedAgents,
-      transferRate: Math.min(transferRate, 1.0),
+      transferRate: Math.min(transferRate, 1.0)
     };
   }
 
@@ -676,8 +680,8 @@ export class DAAService extends EventEmitter {
       detailedMetrics: {
         tasksCompleted: agent.metrics?.tasksCompleted || 0,
         successRate: 0.85 + Math.random() * 0.1,
-        averageResponseTime: agent.metrics?.averageResponseTime || 50,
-      },
+        averageResponseTime: agent.metrics?.averageResponseTime || 50
+      }
     };
   }
 
@@ -696,8 +700,8 @@ export class DAAService extends EventEmitter {
       detailedMetrics: {
         totalAgents: allAgents.length,
         activeAgents: allAgents.filter(a => a.status === 'active').length,
-        systemUptime: Date.now() - (this.initTime || Date.now()),
-      },
+        systemUptime: Date.now() - (this.initTime || Date.now())
+      }
     };
   }
 
@@ -713,7 +717,7 @@ export class DAAService extends EventEmitter {
         patterns: [agent.cognitivePattern || 'adaptive'],
         effectiveness: 0.8 + Math.random() * 0.15,
         recommendations: ['Consider adaptive pattern for versatility'],
-        optimizationScore: 0.75,
+        optimizationScore: 0.75
       };
     }
 
@@ -724,8 +728,11 @@ export class DAAService extends EventEmitter {
     return {
       patterns: [...new Set(patterns)],
       effectiveness: 0.82,
-      recommendations: ['Diversify cognitive patterns', 'Balance convergent and divergent thinking'],
-      optimizationScore: 0.78,
+      recommendations: [
+        'Diversify cognitive patterns',
+        'Balance convergent and divergent thinking'
+      ],
+      optimizationScore: 0.78
     };
   }
 
@@ -741,17 +748,20 @@ export class DAAService extends EventEmitter {
 
     this.agentStates.saveState(agentId, {
       cognitivePattern: pattern,
-      patternHistory: [...(agent.patternHistory || []), {
-        from: previousPattern,
-        to: pattern,
-        timestamp: Date.now(),
-      }],
+      patternHistory: [
+        ...(agent.patternHistory || []),
+        {
+          from: previousPattern,
+          to: pattern,
+          timestamp: Date.now()
+        }
+      ]
     });
 
     return {
       previousPattern,
       success: true,
-      expectedImprovement: 0.1 + Math.random() * 0.2,
+      expectedImprovement: 0.1 + Math.random() * 0.2
     };
   }
 
@@ -772,8 +782,8 @@ export class DAAService extends EventEmitter {
             targetDomain,
             transferMode,
             knowledgeTransferred: knowledgeItems,
-            timestamp: Date.now(),
-          },
+            timestamp: Date.now()
+          }
         });
       }
     }
@@ -785,8 +795,8 @@ export class DAAService extends EventEmitter {
       insights: [
         `Transferred ${knowledgeItems} knowledge items`,
         `Applied ${transferMode} transfer mode`,
-        `Enhanced ${targetDomain} domain understanding`,
-      ],
+        `Enhanced ${targetDomain} domain understanding`
+      ]
     };
   }
 
@@ -811,7 +821,7 @@ export class DAAService extends EventEmitter {
       memoryOptimization: 0.65,
       neuralModelsActive: allAgents.length * 3,
       avgInferenceTime: 0.8 + Math.random() * 0.4,
-      totalTrainingIterations: allAgents.length * 100,
+      totalTrainingIterations: allAgents.length * 100
     };
   }
 
@@ -837,7 +847,6 @@ export class DAAService extends EventEmitter {
       console.log(`🗑️ Destroyed agent ${id}`);
 
       return true;
-
     } catch (error) {
       console.error(`Failed to destroy agent ${id}:`, error);
       return false;
@@ -869,7 +878,7 @@ export class DAAService extends EventEmitter {
       this.agentStates.saveState(agentId, {
         lastDecision: decision,
         lastContext: context,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       });
 
       const timing = this.performance.endTimer(timerId);
@@ -877,17 +886,17 @@ export class DAAService extends EventEmitter {
       // Update average response time
       const prevAvg = agent.metrics.averageResponseTime;
       agent.metrics.averageResponseTime =
-        (prevAvg * (agent.metrics.decisionsMade - 1) + timing.duration) / agent.metrics.decisionsMade;
+        (prevAvg * (agent.metrics.decisionsMade - 1) + timing.duration) /
+        agent.metrics.decisionsMade;
 
       this.emit('decisionMade', {
         agentId,
         decision,
         latency: timing.duration,
-        withinThreshold: timing.withinThreshold,
+        withinThreshold: timing.withinThreshold
       });
 
       return decision;
-
     } catch (error) {
       agent.metrics.errors++;
       console.error(`Decision making failed for agent ${agentId}:`, error);
@@ -902,7 +911,7 @@ export class DAAService extends EventEmitter {
     this.emit('workflowCreated', {
       workflowId,
       steps: steps.map(s => s.id),
-      dependencies,
+      dependencies
     });
 
     return workflow;
@@ -931,11 +940,10 @@ export class DAAService extends EventEmitter {
         stepId,
         agentIds,
         duration: timing.duration,
-        result,
+        result
       });
 
       return result;
-
     } catch (error) {
       console.error('Workflow step execution failed:', error);
       throw error;
@@ -965,11 +973,10 @@ export class DAAService extends EventEmitter {
 
       this.emit('statesSynchronized', {
         agentIds,
-        duration: timing.duration,
+        duration: timing.duration
       });
 
       return states;
-
     } catch (error) {
       console.error('State synchronization failed:', error);
       throw error;
@@ -983,7 +990,7 @@ export class DAAService extends EventEmitter {
       return {
         memoryOptimized: true,
         cpuOptimized: true,
-        optimizationGain: 0.15 + Math.random() * 0.1,
+        optimizationGain: 0.15 + Math.random() * 0.1
       };
     }
 
@@ -993,7 +1000,6 @@ export class DAAService extends EventEmitter {
       this.emit('resourcesOptimized', { result });
 
       return result;
-
     } catch (error) {
       console.error('Resource optimization failed:', error);
       throw error;
@@ -1012,9 +1018,9 @@ export class DAAService extends EventEmitter {
           crossBoundaryCall: this.performance.getAverageLatency('crossBoundaryCall'),
           agentSpawn: this.performance.getAverageLatency('agentSpawn'),
           stateSync: this.performance.getAverageLatency('stateSync'),
-          workflowStep: this.performance.getAverageLatency('workflowStep'),
-        },
-      },
+          workflowStep: this.performance.getAverageLatency('workflowStep')
+        }
+      }
     };
 
     // Collect per-agent metrics
@@ -1022,7 +1028,7 @@ export class DAAService extends EventEmitter {
       metrics.agents[id] = {
         ...agent.metrics,
         uptime: Date.now() - agent.createdAt,
-        status: agent.status,
+        status: agent.status
       };
     }
 
@@ -1051,7 +1057,7 @@ export class DAAService extends EventEmitter {
   }
 
   async batchMakeDecisions(decisions) {
-    const promises = decisions.map(async({ agentId, context }) => {
+    const promises = decisions.map(async ({ agentId, context }) => {
       try {
         const decision = await this.makeDecision(agentId, context);
         return { success: true, agentId, decision };
@@ -1080,7 +1086,6 @@ export class DAAService extends EventEmitter {
       console.log('🧹 DAA Service cleanup completed', optimization);
 
       this.emit('cleanup', optimization);
-
     } catch (error) {
       console.error('Cleanup failed:', error);
     }
@@ -1093,18 +1098,18 @@ export class DAAService extends EventEmitter {
       agents: {
         count: this.agents.size,
         ids: Array.from(this.agents.keys()),
-        states: this.agentStates.states.size,
+        states: this.agentStates.states.size
       },
       workflows: {
         count: this.workflows.workflows.size,
-        active: Array.from(this.workflows.workflows.values())
-          .filter(w => w.status === 'running').length,
+        active: Array.from(this.workflows.workflows.values()).filter(w => w.status === 'running')
+          .length
       },
       wasm: {
         modules: this.wasmLoader.getModuleStatus(),
-        memoryUsage: this.wasmLoader.getTotalMemoryUsage(),
+        memoryUsage: this.wasmLoader.getTotalMemoryUsage()
       },
-      performance: this.getPerformanceMetrics(),
+      performance: this.getPerformanceMetrics()
     };
   }
 }

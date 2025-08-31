@@ -1322,6 +1322,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "do-fann"
+version = "0.1.6"
+dependencies = [
+ "async-trait",
+ "bincode",
+ "bytemuck",
+ "flate2",
+ "futures",
+ "getrandom 0.2.16",
+ "lazy_static",
+ "log",
+ "num-traits",
+ "num_cpus",
+ "pollster",
+ "rand 0.8.5",
+ "rand_distr 0.4.3",
+ "rayon",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "wgpu",
+]
+
+[[package]]
 name = "doc-comment"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4594,31 +4619,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ruv-fann"
-version = "0.1.6"
-dependencies = [
- "async-trait",
- "bincode",
- "bytemuck",
- "flate2",
- "futures",
- "getrandom 0.2.16",
- "lazy_static",
- "log",
- "num-traits",
- "num_cpus",
- "pollster",
- "rand 0.8.5",
- "rand_distr 0.4.3",
- "rayon",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "wgpu",
-]
-
-[[package]]
 name = "ruv-swarm-agents"
 version = "1.0.5"
 dependencies = [
@@ -4788,10 +4788,10 @@ dependencies = [
 name = "ruv-swarm-ml"
 version = "1.0.5"
 dependencies = [
+ "do-fann",
  "fastrand",
  "getrandom 0.2.16",
  "js-sys",
- "ruv-fann",
  "ruv-swarm-core",
  "serde",
  "serde-wasm-bindgen",
@@ -4892,10 +4892,10 @@ version = "1.0.5"
 dependencies = [
  "bincode",
  "console_error_panic_hook",
+ "do-fann",
  "getrandom 0.2.16",
  "js-sys",
  "num-traits",
- "ruv-fann",
  "ruv-swarm-core",
  "ruv-swarm-ml",
  "serde",

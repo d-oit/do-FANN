@@ -16,7 +16,7 @@ describe('CLAUDE.md CLI Protection Integration', () => {
   let testDir;
   let binPath;
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     // Create temporary test directory
     testDir = path.join(__dirname, 'temp', `cli-test-${Date.now()}`);
     await fs.mkdir(testDir, { recursive: true });
@@ -25,7 +25,7 @@ describe('CLAUDE.md CLI Protection Integration', () => {
     binPath = path.join(__dirname, '..', 'bin', 'ruv-swarm-clean.js');
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     // Clean up test directory
     try {
       await fs.rm(testDir, { recursive: true, force: true });
@@ -35,38 +35,38 @@ describe('CLAUDE.md CLI Protection Integration', () => {
   });
 
   /**
-     * Helper function to run CLI command
-     */
+   * Helper function to run CLI command
+   */
   function runCLI(args, options = {}) {
     return new Promise((resolve, reject) => {
       const child = spawn('node', [binPath, ...args], {
         cwd: testDir,
         stdio: ['pipe', 'pipe', 'pipe'],
         timeout: 10000, // 10 second timeout
-        ...options,
+        ...options
       });
 
       let stdout = '';
       let stderr = '';
 
-      child.stdout.on('data', (data) => {
+      child.stdout.on('data', data => {
         stdout += data.toString();
       });
 
-      child.stderr.on('data', (data) => {
+      child.stderr.on('data', data => {
         stderr += data.toString();
       });
 
-      child.on('close', (code) => {
+      child.on('close', code => {
         resolve({
           code,
           stdout,
           stderr,
-          success: code === 0,
+          success: code === 0
         });
       });
 
-      child.on('error', (error) => {
+      child.on('error', error => {
         reject(error);
       });
 
@@ -79,7 +79,7 @@ describe('CLAUDE.md CLI Protection Integration', () => {
   }
 
   describe('Basic Protection Behavior', () => {
-    test('should create CLAUDE.md when it does not exist', async() => {
+    test('should create CLAUDE.md when it does not exist', async () => {
       const result = await runCLI(['init', 'mesh', '5', '--claude', '--no-interactive']);
 
       expect(result.success).toBe(true);
@@ -88,14 +88,17 @@ describe('CLAUDE.md CLI Protection Integration', () => {
 
       // Check file was created
       const claudePath = path.join(testDir, 'CLAUDE.md');
-      const exists = await fs.access(claudePath).then(() => true).catch(() => false);
+      const exists = await fs
+        .access(claudePath)
+        .then(() => true)
+        .catch(() => false);
       expect(exists).toBe(true);
 
       const content = await fs.readFile(claudePath, 'utf8');
       expect(content).toContain('Claude Code Configuration for ruv-swarm');
     });
 
-    test('should fail when CLAUDE.md exists without force or merge', async() => {
+    test('should fail when CLAUDE.md exists without force or merge', async () => {
       // Create existing CLAUDE.md
       const claudePath = path.join(testDir, 'CLAUDE.md');
       await fs.writeFile(claudePath, 'existing content');
@@ -107,7 +110,7 @@ describe('CLAUDE.md CLI Protection Integration', () => {
       expect(result.stderr).toContain('Use --force to overwrite or --merge to combine');
     });
 
-    test('should overwrite with --force flag', async() => {
+    test('should overwrite with --force flag', async () => {
       // Create existing CLAUDE.md
       const claudePath = path.join(testDir, 'CLAUDE.md');
       const originalContent = 'original content that should be replaced';
@@ -133,7 +136,7 @@ describe('CLAUDE.md CLI Protection Integration', () => {
       expect(backupContent).toBe(originalContent);
     });
 
-    test('should merge with --merge flag', async() => {
+    test('should merge with --merge flag', async () => {
       // Create existing CLAUDE.md
       const claudePath = path.join(testDir, 'CLAUDE.md');
       const originalContent = `# My Project Configuration
@@ -168,7 +171,7 @@ This is important project information that should be preserved.
   });
 
   describe('Help Documentation', () => {
-    test('should show updated help with new options', async() => {
+    test('should show updated help with new options', async () => {
       const result = await runCLI(['help']);
 
       expect(result.success).toBe(true);
@@ -180,7 +183,7 @@ This is important project information that should be preserved.
       expect(result.stdout).toContain('Skip interactive prompts (fail on conflicts)');
     });
 
-    test('should show examples with different flags', async() => {
+    test('should show examples with different flags', async () => {
       const result = await runCLI(['help']);
 
       expect(result.success).toBe(true);
@@ -192,7 +195,7 @@ This is important project information that should be preserved.
   });
 
   describe('Error Handling', () => {
-    test('should handle permission errors gracefully', async() => {
+    test('should handle permission errors gracefully', async () => {
       // Create directory without write permissions
       const readOnlyDir = path.join(testDir, 'readonly');
       await fs.mkdir(readOnlyDir);
@@ -200,7 +203,7 @@ This is important project information that should be preserved.
 
       try {
         const result = await runCLI(['init', 'mesh', '5', '--claude', '--no-interactive'], {
-          cwd: readOnlyDir,
+          cwd: readOnlyDir
         });
 
         expect(result.success).toBe(false);
@@ -211,8 +214,16 @@ This is important project information that should be preserved.
       }
     });
 
-    test('should handle invalid command combinations', async() => {
-      const result = await runCLI(['init', 'mesh', '5', '--claude', '--force', '--merge', '--no-interactive']);
+    test('should handle invalid command combinations', async () => {
+      const result = await runCLI([
+        'init',
+        'mesh',
+        '5',
+        '--claude',
+        '--force',
+        '--merge',
+        '--no-interactive'
+      ]);
 
       // Should prioritize --force over --merge
       expect(result.success).toBe(true);
@@ -221,7 +232,7 @@ This is important project information that should be preserved.
   });
 
   describe('Backup System Integration', () => {
-    test('should create multiple backups and clean up old ones', async() => {
+    test('should create multiple backups and clean up old ones', async () => {
       const claudePath = path.join(testDir, 'CLAUDE.md');
 
       // Create initial file
@@ -244,7 +255,7 @@ This is important project information that should be preserved.
   });
 
   describe('Real-world Scenarios', () => {
-    test('should handle Lion system integration project', async() => {
+    test('should handle Lion system integration project', async () => {
       // Simulate existing Lion system CLAUDE.md
       const claudePath = path.join(testDir, 'CLAUDE.md');
       const lionContent = `# Claude Code Configuration
@@ -280,7 +291,7 @@ This project uses lion for multi-agent coordination.`;
       expect(mergedContent).toContain('ruv-swarm coordinates, Claude Code creates');
     });
 
-    test('should handle complex existing project structure', async() => {
+    test('should handle complex existing project structure', async () => {
       // Create complex project structure
       await fs.mkdir(path.join(testDir, '.claude'), { recursive: true });
       await fs.mkdir(path.join(testDir, '.claude', 'commands'), { recursive: true });

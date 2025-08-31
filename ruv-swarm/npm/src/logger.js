@@ -147,7 +147,7 @@ export class Logger {
     };
   }
 
-    // Static methods for backward compatibility
+  // Static methods for backward compatibility
   static info(message, ...args) {
     const logger = new Logger();
     logger.info(message, ...args);

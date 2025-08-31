@@ -18,7 +18,7 @@ class ClaudeIntegrationOrchestrator {
       interactive: options.interactive !== false, // Default to true
       workingDir: options.workingDir || process.cwd(),
       packageName: options.packageName || 'ruv-swarm',
-      ...options,
+      ...options
     };
 
     // Initialize modules
@@ -28,8 +28,8 @@ class ClaudeIntegrationOrchestrator {
   }
 
   /**
-     * Setup complete Claude Code integration
-     */
+   * Setup complete Claude Code integration
+   */
   async setupIntegration() {
     console.log('🚀 Setting up modular Claude Code integration...');
     console.log('   Working directory:', this.options.workingDir);
@@ -43,7 +43,7 @@ class ClaudeIntegrationOrchestrator {
         timestamp: new Date().toISOString(),
         workingDir: this.options.workingDir,
         success: true,
-        modules: {},
+        modules: {}
       };
 
       // Step 1: Generate documentation
@@ -53,7 +53,7 @@ class ClaudeIntegrationOrchestrator {
         merge: this.options.mergeSetup,
         backup: this.options.backupSetup,
         noBackup: this.options.noBackup,
-        interactive: this.options.interactive,
+        interactive: this.options.interactive
       });
 
       // Step 2: Setup remote capabilities
@@ -71,7 +71,7 @@ class ClaudeIntegrationOrchestrator {
           results.modules.core = {
             success: false,
             error: error.message,
-            manualSetup: true,
+            manualSetup: true
           };
         }
       } else {
@@ -81,8 +81,8 @@ class ClaudeIntegrationOrchestrator {
           manualSetup: true,
           instructions: [
             'Run: claude mcp add ruv-swarm npx ruv-swarm mcp start',
-            'Test with: mcp__ruv-swarm__agent_spawn',
-          ],
+            'Test with: mcp__ruv-swarm__agent_spawn'
+          ]
         };
       }
 
@@ -106,7 +106,6 @@ class ClaudeIntegrationOrchestrator {
       console.log('   4. Use wrapper scripts for remote execution');
 
       return results;
-
     } catch (error) {
       console.error('❌ Integration setup failed:', error.message);
       throw error;
@@ -114,15 +113,15 @@ class ClaudeIntegrationOrchestrator {
   }
 
   /**
-     * Invoke Claude with a prompt using the core module
-     */
+   * Invoke Claude with a prompt using the core module
+   */
   async invokeClaudeWithPrompt(prompt) {
     return await this.core.invokeClaudeWithPrompt(prompt);
   }
 
   /**
-     * Check integration status
-     */
+   * Check integration status
+   */
   async checkStatus() {
     console.log('🔍 Checking Claude Code integration status...');
 
@@ -131,7 +130,7 @@ class ClaudeIntegrationOrchestrator {
         claudeAvailable: await this.core.isClaudeAvailable(),
         filesExist: await this.core.checkExistingFiles(),
         workingDir: this.options.workingDir,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       };
 
       console.log('Claude CLI available:', status.claudeAvailable ? '✅' : '❌');
@@ -145,8 +144,8 @@ class ClaudeIntegrationOrchestrator {
   }
 
   /**
-     * Clean up integration files
-     */
+   * Clean up integration files
+   */
   async cleanup() {
     console.log('🧹 Cleaning up Claude Code integration files...');
 
@@ -158,10 +157,10 @@ class ClaudeIntegrationOrchestrator {
         'claude.md',
         '.claude',
         this.options.packageName,
-        `${this.options.packageName }.bat`,
-        `${this.options.packageName }.ps1`,
+        `${this.options.packageName}.bat`,
+        `${this.options.packageName}.ps1`,
         'claude-swarm.sh',
-        'claude-swarm.bat',
+        'claude-swarm.bat'
       ];
 
       const removedFiles = [];
@@ -178,7 +177,6 @@ class ClaudeIntegrationOrchestrator {
 
       console.log('✅ Cleanup complete. Removed:', removedFiles.join(', '));
       return { success: true, removedFiles };
-
     } catch (error) {
       console.error('❌ Cleanup failed:', error.message);
       throw error;
@@ -205,5 +203,5 @@ export {
   // Export individual modules for advanced usage
   ClaudeIntegrationCore,
   ClaudeDocsGenerator,
-  RemoteWrapperGenerator,
+  RemoteWrapperGenerator
 };

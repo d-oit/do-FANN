@@ -15,14 +15,14 @@ describe('JS-WASM Communication Integration Tests', () => {
   let neuralManager;
   let persistenceManager;
 
-  beforeAll(async() => {
+  beforeAll(async () => {
     // Initialize all components
     ruvSwarm = await RuvSwarm.initialize({
       loadingStrategy: 'progressive',
       enablePersistence: true,
       enableNeuralNetworks: true,
       useSIMD: true,
-      debug: false,
+      debug: false
     });
 
     wasmLoader = ruvSwarm.wasmLoader;
@@ -30,23 +30,23 @@ describe('JS-WASM Communication Integration Tests', () => {
     persistenceManager = ruvSwarm.persistenceManager;
   });
 
-  afterAll(async() => {
+  afterAll(async () => {
     if (ruvSwarm) {
       await ruvSwarm.cleanup();
     }
   });
 
   describe('Data Type Marshalling', () => {
-    it('should correctly marshal primitive types', async() => {
+    it('should correctly marshal primitive types', async () => {
       const swarm = await ruvSwarm.createSwarm({
         name: 'test-swarm',
-        maxAgents: 5,
+        maxAgents: 5
       });
 
       // Test number marshalling
       const agent = await swarm.spawn({
         type: 'researcher',
-        priority: 0.75,
+        priority: 0.75
       });
       expect(agent.priority).toBe(0.75);
 
@@ -60,11 +60,11 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(agent.isActive).toBe(true);
     });
 
-    it('should correctly marshal arrays', async() => {
+    it('should correctly marshal arrays', async () => {
       const data = {
         floatArray: new Float32Array([1.1, 2.2, 3.3, 4.4]),
         intArray: new Int32Array([10, 20, 30, 40]),
-        uint8Array: new Uint8Array([255, 128, 64, 0]),
+        uint8Array: new Uint8Array([255, 128, 64, 0])
       };
 
       // Test array passing to WASM
@@ -75,27 +75,27 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(result.uint8Sum).toBe(447);
     });
 
-    it('should correctly marshal complex objects', async() => {
+    it('should correctly marshal complex objects', async () => {
       const config = {
         network: {
           type: 'lstm',
           layers: [
             { units: 128, activation: 'tanh' },
             { units: 64, activation: 'relu' },
-            { units: 32, activation: 'sigmoid' },
+            { units: 32, activation: 'sigmoid' }
           ],
           optimizer: {
             type: 'adam',
             learningRate: 0.001,
             beta1: 0.9,
-            beta2: 0.999,
-          },
+            beta2: 0.999
+          }
         },
         training: {
           epochs: 100,
           batchSize: 32,
-          validationSplit: 0.2,
-        },
+          validationSplit: 0.2
+        }
       };
 
       const network = await neuralManager.createNetwork(config.network);
@@ -107,7 +107,7 @@ describe('JS-WASM Communication Integration Tests', () => {
   });
 
   describe('Callback Mechanisms', () => {
-    it('should handle synchronous callbacks from WASM', async() => {
+    it('should handle synchronous callbacks from WASM', async () => {
       let callbackExecuted = false;
       let callbackData = null;
 
@@ -116,7 +116,7 @@ describe('JS-WASM Communication Integration Tests', () => {
         onAgentUpdate: (agentId, status) => {
           callbackExecuted = true;
           callbackData = { agentId, status };
-        },
+        }
       });
 
       const agent = await swarm.spawn({ type: 'coder' });
@@ -127,20 +127,20 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(callbackData.agentId).toBe(agent.id);
     });
 
-    it('should handle asynchronous callbacks from WASM', async() => {
+    it('should handle asynchronous callbacks from WASM', async () => {
       const events = [];
 
       const swarm = await ruvSwarm.createSwarm({
         name: 'async-callback-test',
-        onTaskProgress: async(taskId, progress) => {
+        onTaskProgress: async (taskId, progress) => {
           events.push({ taskId, progress, timestamp: Date.now() });
           await new Promise(resolve => setTimeout(resolve, 10)); // Simulate async work
-        },
+        }
       });
 
       const taskId = await swarm.orchestrate({
         task: 'Complex multi-step task',
-        steps: 5,
+        steps: 5
       });
 
       // Wait for task completion
@@ -150,16 +150,16 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(events[events.length - 1].progress).toBe(100);
     });
 
-    it('should handle error callbacks from WASM', async() => {
+    it('should handle error callbacks from WASM', async () => {
       let errorCaught = false;
       let errorMessage = '';
 
       const swarm = await ruvSwarm.createSwarm({
         name: 'error-callback-test',
-        onError: (error) => {
+        onError: error => {
           errorCaught = true;
           errorMessage = error.message;
-        },
+        }
       });
 
       // Trigger an error by exceeding max agents
@@ -177,7 +177,7 @@ describe('JS-WASM Communication Integration Tests', () => {
   });
 
   describe('Memory Sharing', () => {
-    it('should share memory efficiently between JS and WASM', async() => {
+    it('should share memory efficiently between JS and WASM', async () => {
       const size = 1024 * 1024; // 1MB
       const sharedBuffer = new SharedArrayBuffer(size);
       const jsView = new Float32Array(sharedBuffer);
@@ -195,7 +195,7 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(result.processed).toBe(jsView.length);
     });
 
-    it('should handle concurrent memory access safely', async() => {
+    it('should handle concurrent memory access safely', async () => {
       const buffer = new SharedArrayBuffer(1024);
       const view = new Int32Array(buffer);
       Atomics.store(view, 0, 0);
@@ -214,7 +214,7 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(finalValue).toBe(numWorkers * incrementsPerWorker);
     });
 
-    it('should manage memory lifecycle correctly', async() => {
+    it('should manage memory lifecycle correctly', async () => {
       const initialMemory = await wasmLoader.getMemoryStats();
 
       // Allocate and process large data
@@ -239,7 +239,7 @@ describe('JS-WASM Communication Integration Tests', () => {
   });
 
   describe('Stream Processing', () => {
-    it('should handle streaming data from JS to WASM', async() => {
+    it('should handle streaming data from JS to WASM', async () => {
       const stream = wasmLoader.createDataStream();
       const chunks = [];
 
@@ -254,17 +254,17 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(result.totalElements).toBe(100000);
     });
 
-    it('should handle streaming results from WASM to JS', async() => {
+    it('should handle streaming results from WASM to JS', async () => {
       const results = [];
       const resultStream = wasmLoader.createResultStream({
-        onData: (data) => results.push(data),
-        bufferSize: 1024,
+        onData: data => results.push(data),
+        bufferSize: 1024
       });
 
       // Start computation that produces streaming results
       await wasmLoader.computeStreamingResults(resultStream.id, {
         iterations: 50,
-        dataPerIteration: 1000,
+        dataPerIteration: 1000
       });
 
       await resultStream.waitForCompletion();
@@ -273,7 +273,7 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(results[0].length).toBe(1000);
     });
 
-    it('should handle backpressure in streaming', async() => {
+    it('should handle backpressure in streaming', async () => {
       let processingDelay = 50; // ms
       let bufferedCount = 0;
 
@@ -282,7 +282,7 @@ describe('JS-WASM Communication Integration Tests', () => {
         onBackpressure: () => {
           bufferedCount = stream.getBufferedCount();
           processingDelay = 10; // Speed up processing
-        },
+        }
       });
 
       // Write data faster than it can be processed
@@ -299,20 +299,20 @@ describe('JS-WASM Communication Integration Tests', () => {
   });
 
   describe('Complex Workflow Integration', () => {
-    it('should handle neural network training workflow', async() => {
+    it('should handle neural network training workflow', async () => {
       // Create network
       const network = await neuralManager.createNetwork({
         type: 'mlp',
         layers: [
           { units: 10, activation: 'relu' },
-          { units: 5, activation: 'softmax' },
-        ],
+          { units: 5, activation: 'softmax' }
+        ]
       });
 
       // Generate training data
       const trainingData = {
         inputs: [],
-        targets: [],
+        targets: []
       };
 
       for (let i = 0; i < 100; i++) {
@@ -329,7 +329,7 @@ describe('JS-WASM Communication Integration Tests', () => {
         batchSize: 10,
         onProgress: (epoch, loss) => {
           progressHistory.push({ epoch, loss });
-        },
+        }
       });
 
       expect(progressHistory).toHaveLength(10);
@@ -337,11 +337,11 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(trainResult.finalLoss).toBeDefined();
     });
 
-    it('should handle swarm orchestration workflow', async() => {
+    it('should handle swarm orchestration workflow', async () => {
       const swarm = await ruvSwarm.createSwarm({
         name: 'orchestration-test',
         topology: 'hierarchical',
-        maxAgents: 10,
+        maxAgents: 10
       });
 
       // Spawn different types of agents
@@ -349,7 +349,7 @@ describe('JS-WASM Communication Integration Tests', () => {
         swarm.spawn({ type: 'coordinator', role: 'lead' }),
         swarm.spawn({ type: 'researcher', specialization: 'data' }),
         swarm.spawn({ type: 'coder', language: 'javascript' }),
-        swarm.spawn({ type: 'tester', framework: 'jest' }),
+        swarm.spawn({ type: 'tester', framework: 'jest' })
       ]);
 
       // Create complex task
@@ -359,13 +359,13 @@ describe('JS-WASM Communication Integration Tests', () => {
           { type: 'research', description: 'Analyze requirements' },
           { type: 'design', description: 'Create architecture' },
           { type: 'implement', description: 'Write code' },
-          { type: 'test', description: 'Validate implementation' },
+          { type: 'test', description: 'Validate implementation' }
         ],
         dependencies: {
           design: ['research'],
           implement: ['design'],
-          test: ['implement'],
-        },
+          test: ['implement']
+        }
       };
 
       const orchestrationResult = await swarm.orchestrate(task);
@@ -375,18 +375,22 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(orchestrationResult.agentsUsed).toHaveLength(4);
     });
 
-    it('should handle persistence workflow', async() => {
+    it('should handle persistence workflow', async () => {
       // Create and train a network
       const network = await neuralManager.createNetwork({
         type: 'lstm',
         inputSize: 20,
         hiddenSize: 50,
-        outputSize: 10,
+        outputSize: 10
       });
 
       await network.train({
-        inputs: Array(50).fill(null).map(() => new Float32Array(20).map(() => Math.random())),
-        targets: Array(50).fill(null).map(() => new Float32Array(10).map(() => Math.random())),
+        inputs: Array(50)
+          .fill(null)
+          .map(() => new Float32Array(20).map(() => Math.random())),
+        targets: Array(50)
+          .fill(null)
+          .map(() => new Float32Array(10).map(() => Math.random()))
       });
 
       // Save to persistence
@@ -394,8 +398,8 @@ describe('JS-WASM Communication Integration Tests', () => {
         metadata: {
           name: 'test-lstm',
           version: '1.0.0',
-          trainedAt: new Date().toISOString(),
-        },
+          trainedAt: new Date().toISOString()
+        }
       });
 
       expect(saveResult.success).toBe(true);
@@ -413,11 +417,11 @@ describe('JS-WASM Communication Integration Tests', () => {
   });
 
   describe('Error Propagation', () => {
-    it('should propagate WASM errors to JS with context', async() => {
+    it('should propagate WASM errors to JS with context', async () => {
       try {
         await wasmLoader.executeInvalidOperation({
           operation: 'divide_by_zero',
-          context: { value: 42 },
+          context: { value: 42 }
         });
         expect.fail('Should have thrown an error');
       } catch (error) {
@@ -427,7 +431,7 @@ describe('JS-WASM Communication Integration Tests', () => {
       }
     });
 
-    it('should handle memory allocation errors gracefully', async() => {
+    it('should handle memory allocation errors gracefully', async () => {
       try {
         // Try to allocate impossibly large amount
         await wasmLoader.allocate(Number.MAX_SAFE_INTEGER);
@@ -438,7 +442,7 @@ describe('JS-WASM Communication Integration Tests', () => {
       }
     });
 
-    it('should recover from WASM panics', async() => {
+    it('should recover from WASM panics', async () => {
       const beforePanic = await wasmLoader.getState();
 
       try {
@@ -455,7 +459,7 @@ describe('JS-WASM Communication Integration Tests', () => {
   });
 
   describe('Performance Monitoring', () => {
-    it('should track JS-WASM call overhead', async() => {
+    it('should track JS-WASM call overhead', async () => {
       const metrics = await wasmLoader.enableMetrics();
 
       // Make various calls
@@ -469,7 +473,7 @@ describe('JS-WASM Communication Integration Tests', () => {
       expect(stats.maxOverhead).toBeLessThan(5); // Max 5ms overhead
     });
 
-    it('should measure data transfer performance', async() => {
+    it('should measure data transfer performance', async () => {
       const sizes = [1024, 10240, 102400, 1024000]; // 1KB to 1MB
       const results = [];
 
@@ -480,7 +484,7 @@ describe('JS-WASM Communication Integration Tests', () => {
         const result = await wasmLoader.processData(data);
 
         const time = performance.now() - start;
-        const throughput = (size / 1024) / (time / 1000); // KB/s
+        const throughput = size / 1024 / (time / 1000); // KB/s
 
         results.push({ size, time, throughput });
       }

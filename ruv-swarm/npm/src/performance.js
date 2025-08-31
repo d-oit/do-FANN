@@ -17,7 +17,7 @@ class PerformanceCLI {
       this.ruvSwarm = await RuvSwarm.initialize({
         enableNeuralNetworks: true,
         enableForecasting: true,
-        loadingStrategy: 'progressive',
+        loadingStrategy: 'progressive'
       });
     }
     return this.ruvSwarm;
@@ -40,11 +40,11 @@ class PerformanceCLI {
         metadata: {
           timestamp: new Date().toISOString(),
           taskId,
-          mode: detailed ? 'detailed' : 'standard',
+          mode: detailed ? 'detailed' : 'standard'
         },
         performance: {},
         bottlenecks: [],
-        recommendations: [],
+        recommendations: []
       };
 
       // 1. System Performance Analysis
@@ -56,23 +56,27 @@ class PerformanceCLI {
         memory: {
           used: memUsage.heapUsed,
           total: memUsage.heapTotal,
-          utilization: ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(1),
+          utilization: ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(1)
         },
         cpu: {
           user: cpuUsage.user,
-          system: cpuUsage.system,
-        },
+          system: cpuUsage.system
+        }
       };
 
-      console.log(`   Memory: ${(memUsage.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(memUsage.heapTotal / 1024 / 1024).toFixed(1)}MB (${analysis.performance.system.memory.utilization}%)`);
-      console.log(`   CPU: User ${(cpuUsage.user / 1000).toFixed(1)}ms, System ${(cpuUsage.system / 1000).toFixed(1)}ms`);
+      console.log(
+        `   Memory: ${(memUsage.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(memUsage.heapTotal / 1024 / 1024).toFixed(1)}MB (${analysis.performance.system.memory.utilization}%)`
+      );
+      console.log(
+        `   CPU: User ${(cpuUsage.user / 1000).toFixed(1)}ms, System ${(cpuUsage.system / 1000).toFixed(1)}ms`
+      );
 
       // 2. WASM Performance Analysis
       console.log('\n📦 WASM Performance:');
       const wasmMetrics = {
         loadTime: Math.random() * 50 + 20,
         executionTime: Math.random() * 10 + 5,
-        memoryFootprint: Math.random() * 100 + 50,
+        memoryFootprint: Math.random() * 100 + 50
       };
 
       analysis.performance.wasm = wasmMetrics;
@@ -86,13 +90,15 @@ class PerformanceCLI {
         agentCount: Math.floor(Math.random() * 8) + 2,
         coordinationLatency: Math.random() * 20 + 5,
         taskDistributionEfficiency: 70 + Math.random() * 25,
-        communicationOverhead: Math.random() * 15 + 5,
+        communicationOverhead: Math.random() * 15 + 5
       };
 
       analysis.performance.swarm = swarmMetrics;
       console.log(`   Active Agents: ${swarmMetrics.agentCount}`);
       console.log(`   Coordination Latency: ${swarmMetrics.coordinationLatency.toFixed(1)}ms`);
-      console.log(`   Distribution Efficiency: ${swarmMetrics.taskDistributionEfficiency.toFixed(1)}%`);
+      console.log(
+        `   Distribution Efficiency: ${swarmMetrics.taskDistributionEfficiency.toFixed(1)}%`
+      );
       console.log(`   Communication Overhead: ${swarmMetrics.communicationOverhead.toFixed(1)}%`);
 
       // 4. Neural Network Performance
@@ -102,7 +108,7 @@ class PerformanceCLI {
           inferenceSpeed: Math.random() * 100 + 200,
           trainingSpeed: Math.random() * 50 + 25,
           accuracy: 85 + Math.random() * 10,
-          convergenceRate: Math.random() * 0.05 + 0.01,
+          convergenceRate: Math.random() * 0.05 + 0.01
         };
 
         analysis.performance.neural = neuralMetrics;
@@ -122,7 +128,7 @@ class PerformanceCLI {
           severity: 'high',
           description: 'High memory utilization detected',
           impact: 'Performance degradation, potential OOM',
-          recommendation: 'Optimize memory usage or increase heap size',
+          recommendation: 'Optimize memory usage or increase heap size'
         });
       }
 
@@ -133,7 +139,7 @@ class PerformanceCLI {
           severity: 'medium',
           description: 'High coordination latency',
           impact: 'Slower task execution',
-          recommendation: 'Optimize agent communication or reduce swarm size',
+          recommendation: 'Optimize agent communication or reduce swarm size'
         });
       }
 
@@ -144,7 +150,7 @@ class PerformanceCLI {
           severity: 'medium',
           description: 'Slow WASM module loading',
           impact: 'Increased initialization time',
-          recommendation: 'Enable WASM caching or optimize module size',
+          recommendation: 'Enable WASM caching or optimize module size'
         });
       }
 
@@ -169,7 +175,7 @@ class PerformanceCLI {
           category: 'coordination',
           priority: 'high',
           suggestion: 'Improve task distribution algorithm',
-          expectedImprovement: '15-25% faster execution',
+          expectedImprovement: '15-25% faster execution'
         });
       }
 
@@ -178,7 +184,7 @@ class PerformanceCLI {
           category: 'resource_utilization',
           priority: 'medium',
           suggestion: 'Increase parallelism to better utilize available memory',
-          expectedImprovement: '10-20% throughput increase',
+          expectedImprovement: '10-20% throughput increase'
         });
       }
 
@@ -187,7 +193,7 @@ class PerformanceCLI {
           category: 'neural_optimization',
           priority: 'medium',
           suggestion: 'Retrain neural models with more data',
-          expectedImprovement: '5-10% accuracy increase',
+          expectedImprovement: '5-10% accuracy increase'
         });
       }
 
@@ -227,7 +233,6 @@ class PerformanceCLI {
         await fs.writeFile(outputFile, JSON.stringify(analysis, null, 2));
         console.log(`\n💾 Analysis saved to: ${outputFile}`);
       }
-
     } catch (error) {
       console.error('❌ Analysis failed:', error.message);
       process.exit(1);
@@ -252,8 +257,8 @@ class PerformanceCLI {
           'Enable SIMD acceleration',
           'Increase parallel agent limit to 8',
           'Use aggressive caching strategy',
-          'Optimize WASM loading with precompilation',
-        ],
+          'Optimize WASM loading with precompilation'
+        ]
       },
       memory: {
         name: 'Memory Optimization',
@@ -261,8 +266,8 @@ class PerformanceCLI {
           'Reduce neural network model size',
           'Enable memory pooling',
           'Implement lazy loading for modules',
-          'Optimize garbage collection settings',
-        ],
+          'Optimize garbage collection settings'
+        ]
       },
       tokens: {
         name: 'Token Efficiency',
@@ -270,8 +275,8 @@ class PerformanceCLI {
           'Enable intelligent result caching',
           'Optimize agent communication protocols',
           'Implement request deduplication',
-          'Use compressed data formats',
-        ],
+          'Use compressed data formats'
+        ]
       },
       balanced: {
         name: 'Balanced Optimization',
@@ -279,9 +284,9 @@ class PerformanceCLI {
           'Enable moderate SIMD acceleration',
           'Set optimal agent limit to 5',
           'Use balanced caching strategy',
-          'Optimize coordination overhead',
-        ],
-      },
+          'Optimize coordination overhead'
+        ]
+      }
     };
 
     const selectedOpt = optimizations[target] || optimizations.balanced;
@@ -309,26 +314,26 @@ class PerformanceCLI {
           execution: '+25-40%',
           initialization: '+15-25%',
           memory: '-5-10%',
-          tokens: '+10-15%',
+          tokens: '+10-15%'
         },
         memory: {
           execution: '-5-10%',
           initialization: '+5-10%',
           memory: '+30-50%',
-          tokens: '+15-20%',
+          tokens: '+15-20%'
         },
         tokens: {
           execution: '+15-25%',
           initialization: '+10-15%',
           memory: '+5-10%',
-          tokens: '+35-50%',
+          tokens: '+35-50%'
         },
         balanced: {
           execution: '+15-25%',
           initialization: '+10-20%',
           memory: '+10-20%',
-          tokens: '+20-30%',
-        },
+          tokens: '+20-30%'
+        }
       };
 
       const expected = improvements[target] || improvements.balanced;
@@ -343,7 +348,6 @@ class PerformanceCLI {
         console.log('\n✅ Optimization Complete!');
         console.log('💡 Run benchmarks to measure actual improvements');
       }
-
     } catch (error) {
       console.error('❌ Optimization failed:', error.message);
       process.exit(1);
@@ -366,7 +370,7 @@ class PerformanceCLI {
           priority: 'HIGH',
           issue: 'High memory utilization',
           suggestion: 'Reduce agent count or enable memory optimization',
-          command: 'ruv-swarm performance optimize --target memory',
+          command: 'ruv-swarm performance optimize --target memory'
         });
       } else if (memUtilization < 30) {
         suggestions.push({
@@ -374,7 +378,7 @@ class PerformanceCLI {
           priority: 'MEDIUM',
           issue: 'Low memory utilization',
           suggestion: 'Increase parallelism for better resource usage',
-          command: 'ruv-swarm performance optimize --target speed',
+          command: 'ruv-swarm performance optimize --target speed'
         });
       }
 
@@ -384,7 +388,7 @@ class PerformanceCLI {
         priority: 'MEDIUM',
         issue: 'Cognitive patterns could be improved',
         suggestion: 'Train neural networks with recent patterns',
-        command: 'ruv-swarm neural train --model attention --iterations 50',
+        command: 'ruv-swarm neural train --model attention --iterations 50'
       });
 
       suggestions.push({
@@ -392,7 +396,7 @@ class PerformanceCLI {
         priority: 'LOW',
         issue: 'Performance baseline not established',
         suggestion: 'Run comprehensive benchmarks for baseline',
-        command: 'ruv-swarm benchmark run --test comprehensive --iterations 20',
+        command: 'ruv-swarm benchmark run --test comprehensive --iterations 20'
       });
 
       suggestions.push({
@@ -400,7 +404,7 @@ class PerformanceCLI {
         priority: 'MEDIUM',
         issue: 'Agent coordination could be optimized',
         suggestion: 'Analyze and optimize swarm topology',
-        command: 'ruv-swarm performance analyze --detailed',
+        command: 'ruv-swarm performance analyze --detailed'
       });
 
       // Display suggestions
@@ -440,7 +444,6 @@ class PerformanceCLI {
       console.log('   ruv-swarm performance optimize --target memory   # Optimize for memory');
       console.log('   ruv-swarm performance optimize --target tokens   # Optimize for efficiency');
       console.log('   ruv-swarm benchmark run --iterations 10          # Run performance tests');
-
     } catch (error) {
       console.error('❌ Failed to generate suggestions:', error.message);
       process.exit(1);

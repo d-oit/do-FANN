@@ -16,7 +16,7 @@ describe('Complete Agent Workflow Integration', () => {
     communicator = new AgentCommunicator();
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     if (swarm) {
       await swarm.shutdown();
     }
@@ -24,13 +24,13 @@ describe('Complete Agent Workflow Integration', () => {
   });
 
   describe('Full Lifecycle Tests', () => {
-    it('should handle complete workflow from spawn to completion', async() => {
+    it('should handle complete workflow from spawn to completion', async () => {
       // Initialize swarm with mesh topology
       swarm = new RuvSwarm();
       await swarm.init({
         topology: 'mesh',
         maxAgents: 6,
-        strategy: 'balanced',
+        strategy: 'balanced'
       });
 
       // Verify initialization
@@ -44,7 +44,7 @@ describe('Complete Agent Workflow Integration', () => {
         swarm.spawnAgent({ type: 'researcher', name: 'Data Researcher' }),
         swarm.spawnAgent({ type: 'coder', name: 'API Developer' }),
         swarm.spawnAgent({ type: 'analyst', name: 'Performance Analyst' }),
-        swarm.spawnAgent({ type: 'tester', name: 'QA Engineer' }),
+        swarm.spawnAgent({ type: 'tester', name: 'QA Engineer' })
       ];
 
       const agents = await Promise.all(agentPromises);
@@ -62,7 +62,7 @@ describe('Complete Agent Workflow Integration', () => {
         task: 'Build and optimize REST API with authentication',
         priority: 'high',
         strategy: 'parallel',
-        maxAgents: 4,
+        maxAgents: 4
       });
 
       // Verify task orchestration
@@ -108,31 +108,31 @@ describe('Complete Agent Workflow Integration', () => {
       expect(shutdownStatus.agents).to.have.lengthOf(0);
     });
 
-    it('should handle agent communication throughout lifecycle', async() => {
+    it('should handle agent communication throughout lifecycle', async () => {
       swarm = new RuvSwarm();
       await swarm.init({ topology: 'star' });
 
       // Spawn coordinator and worker agents
       const coordinator = await swarm.spawnAgent({
         type: 'coordinator',
-        name: 'Central Coordinator',
+        name: 'Central Coordinator'
       });
 
       const workers = await Promise.all([
         swarm.spawnAgent({ type: 'coder', name: 'Worker 1' }),
         swarm.spawnAgent({ type: 'coder', name: 'Worker 2' }),
-        swarm.spawnAgent({ type: 'coder', name: 'Worker 3' }),
+        swarm.spawnAgent({ type: 'coder', name: 'Worker 3' })
       ]);
 
       // Set up message tracking
       const messages = [];
-      communicator.on('message', (msg) => messages.push(msg));
+      communicator.on('message', msg => messages.push(msg));
 
       // Orchestrate collaborative task
       const taskResult = await swarm.orchestrateTask({
         task: 'Implement microservices architecture',
         strategy: 'sequential',
-        coordinatorId: coordinator.id,
+        coordinatorId: coordinator.id
       });
 
       // Wait for some communication
@@ -153,24 +153,24 @@ describe('Complete Agent Workflow Integration', () => {
       });
     });
 
-    it('should persist and restore swarm state', async() => {
+    it('should persist and restore swarm state', async () => {
       // Create initial swarm
       swarm = new RuvSwarm();
       await swarm.init({
         topology: 'hierarchical',
-        persistState: true,
+        persistState: true
       });
 
       // Spawn agents and create state
       const agents = await Promise.all([
         swarm.spawnAgent({ type: 'architect' }),
         swarm.spawnAgent({ type: 'coder' }),
-        swarm.spawnAgent({ type: 'analyst' }),
+        swarm.spawnAgent({ type: 'analyst' })
       ]);
 
       const task = await swarm.orchestrateTask({
         task: 'Design system architecture',
-        priority: 'high',
+        priority: 'high'
       });
 
       // Save current state
@@ -201,11 +201,11 @@ describe('Complete Agent Workflow Integration', () => {
   });
 
   describe('Neural Integration Lifecycle', () => {
-    it('should integrate neural agents with standard workflow', async() => {
+    it('should integrate neural agents with standard workflow', async () => {
       swarm = new RuvSwarm();
       await swarm.init({
         topology: 'mesh',
-        enableNeural: true,
+        enableNeural: true
       });
 
       // Create neural agent manager
@@ -217,7 +217,7 @@ describe('Complete Agent Workflow Integration', () => {
         swarm.spawnAgent({ type: 'neural', model: 'adaptive' }),
         swarm.spawnAgent({ type: 'researcher' }),
         swarm.spawnAgent({ type: 'neural', model: 'pattern-recognition' }),
-        swarm.spawnAgent({ type: 'coder' }),
+        swarm.spawnAgent({ type: 'coder' })
       ]);
 
       // Verify neural agents initialized
@@ -235,7 +235,7 @@ describe('Complete Agent Workflow Integration', () => {
       const taskResult = await swarm.orchestrateTask({
         task: 'Analyze codebase patterns and suggest optimizations',
         requiresNeural: true,
-        strategy: 'adaptive',
+        strategy: 'adaptive'
       });
 
       // Wait for neural processing
@@ -249,12 +249,12 @@ describe('Complete Agent Workflow Integration', () => {
       expect(taskStatus.neuralContribution.confidence).to.be.greaterThan(0.7);
     });
 
-    it('should train neural patterns throughout lifecycle', async() => {
+    it('should train neural patterns throughout lifecycle', async () => {
       swarm = new RuvSwarm();
       await swarm.init({
         topology: 'mesh',
         enableNeural: true,
-        autoTrain: true,
+        autoTrain: true
       });
 
       const neuralManager = new NeuralAgentManager();
@@ -264,7 +264,7 @@ describe('Complete Agent Workflow Integration', () => {
       const neuralAgent = await swarm.spawnAgent({
         type: 'neural',
         model: 'learning',
-        trainable: true,
+        trainable: true
       });
 
       // Get initial performance
@@ -274,11 +274,13 @@ describe('Complete Agent Workflow Integration', () => {
       // Execute multiple training tasks
       const trainingTasks = [];
       for (let i = 0; i < 5; i++) {
-        trainingTasks.push(swarm.orchestrateTask({
-          task: `Training task ${i}: Pattern recognition`,
-          agentId: neuralAgent.id,
-          training: true,
-        }));
+        trainingTasks.push(
+          swarm.orchestrateTask({
+            task: `Training task ${i}: Pattern recognition`,
+            agentId: neuralAgent.id,
+            training: true
+          })
+        );
       }
 
       await Promise.all(trainingTasks);
@@ -294,29 +296,29 @@ describe('Complete Agent Workflow Integration', () => {
   });
 
   describe('Memory and State Management', () => {
-    it('should maintain memory across agent lifecycle', async() => {
+    it('should maintain memory across agent lifecycle', async () => {
       swarm = new RuvSwarm();
       await swarm.init({
         topology: 'mesh',
-        enableMemory: true,
+        enableMemory: true
       });
 
       // Create agents with memory
       const agent1 = await swarm.spawnAgent({
         type: 'researcher',
-        memory: { capacity: 1000 },
+        memory: { capacity: 1000 }
       });
 
       const agent2 = await swarm.spawnAgent({
         type: 'analyst',
-        memory: { capacity: 1000 },
+        memory: { capacity: 1000 }
       });
 
       // Store memories during task execution
       await swarm.orchestrateTask({
         task: 'Research and analyze market trends',
         agents: [agent1.id, agent2.id],
-        storeMemory: true,
+        storeMemory: true
       });
 
       // Retrieve agent memories
@@ -335,26 +337,26 @@ describe('Complete Agent Workflow Integration', () => {
       expect(swarmMemory.collective).to.have.property('patterns');
     });
 
-    it('should share memory between agents effectively', async() => {
+    it('should share memory between agents effectively', async () => {
       swarm = new RuvSwarm();
       await swarm.init({
         topology: 'mesh',
         enableMemory: true,
-        sharedMemory: true,
+        sharedMemory: true
       });
 
       // Create collaborative agents
       const agents = await Promise.all([
         swarm.spawnAgent({ type: 'researcher', sharedMemory: true }),
         swarm.spawnAgent({ type: 'coder', sharedMemory: true }),
-        swarm.spawnAgent({ type: 'analyst', sharedMemory: true }),
+        swarm.spawnAgent({ type: 'analyst', sharedMemory: true })
       ]);
 
       // Execute collaborative task
       const task = await swarm.orchestrateTask({
         task: 'Collaborative code review and optimization',
         strategy: 'parallel',
-        shareFindings: true,
+        shareFindings: true
       });
 
       // Wait for collaboration

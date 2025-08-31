@@ -29,8 +29,8 @@ const results = {
   summary: {
     total: 0,
     passed: 0,
-    failed: 0,
-  },
+    failed: 0
+  }
 };
 
 let mcpProcess = null;
@@ -64,17 +64,17 @@ async function startMCPServer() {
 
   return new Promise((resolve, reject) => {
     mcpProcess = spawn('node', ['bin/ruv-swarm-clean.js', 'mcp', 'start'], {
-      env: { ...process.env, MCP_TEST_MODE: 'true' },
+      env: { ...process.env, MCP_TEST_MODE: 'true' }
     });
 
     let serverReady = false;
 
-    mcpProcess.stdout.on('data', (data) => {
+    mcpProcess.stdout.on('data', data => {
       const output = data.toString();
       console.log('  Server stdout:', output.trim());
     });
 
-    mcpProcess.stderr.on('data', (data) => {
+    mcpProcess.stderr.on('data', data => {
       const output = data.toString();
       console.log('  Server stderr:', output.trim());
 
@@ -85,8 +85,7 @@ async function startMCPServer() {
       }
     });
 
-
-    mcpProcess.on('error', (error) => {
+    mcpProcess.on('error', error => {
       addTestResult('MCP Server Start', 'failed', 'Failed to start server', error.message);
       reject(error);
     });
@@ -114,7 +113,7 @@ async function testWebSocketConnection() {
       resolve();
     });
 
-    ws.on('error', (error) => {
+    ws.on('error', error => {
       addTestResult('WebSocket Connection', 'failed', 'Connection failed', error.message);
       reject(error);
     });
@@ -136,28 +135,28 @@ async function testMCPMethods() {
   const methods = [
     {
       name: 'swarm_init',
-      params: { topology: 'mesh', maxAgents: 4 },
+      params: { topology: 'mesh', maxAgents: 4 }
     },
     {
       name: 'agent_spawn',
-      params: { type: 'researcher', name: 'Test Agent' },
+      params: { type: 'researcher', name: 'Test Agent' }
     },
     {
       name: 'swarm_status',
-      params: {},
+      params: {}
     },
     {
       name: 'agent_list',
-      params: {},
+      params: {}
     },
     {
       name: 'memory_usage',
-      params: { action: 'status' },
+      params: { action: 'status' }
     },
     {
       name: 'neural_status',
-      params: {},
-    },
+      params: {}
+    }
   ];
 
   for (const method of methods) {
@@ -167,12 +166,12 @@ async function testMCPMethods() {
 }
 
 async function testMethod(method, params) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const request = {
       jsonrpc: '2.0',
       id: Date.now(),
       method: `ruv-swarm/${method}`,
-      params,
+      params
     };
 
     const timeout = setTimeout(() => {
@@ -180,7 +179,7 @@ async function testMethod(method, params) {
       resolve();
     }, 5000);
 
-    ws.once('message', (data) => {
+    ws.once('message', data => {
       clearTimeout(timeout);
       try {
         const response = JSON.parse(data.toString());
@@ -217,7 +216,7 @@ async function testTaskOrchestration() {
   // Orchestrate a task
   await testMethod('task_orchestrate', {
     task: 'Test orchestration task',
-    strategy: 'adaptive',
+    strategy: 'adaptive'
   });
 
   // Check task status
@@ -234,26 +233,26 @@ async function testMemoryPersistence() {
     value: {
       data: 'test-value',
       timestamp: Date.now(),
-      array: [1, 2, 3, 4, 5],
-    },
+      array: [1, 2, 3, 4, 5]
+    }
   };
 
   // Store memory
   await testMethod('memory_usage', {
     action: 'store',
     key: testData.key,
-    value: testData.value,
+    value: testData.value
   });
 
   // Retrieve memory
   await testMethod('memory_usage', {
     action: 'retrieve',
-    key: testData.key,
+    key: testData.key
   });
 
   // List memory
   await testMethod('memory_usage', {
-    action: 'list',
+    action: 'list'
   });
 }
 
@@ -294,7 +293,7 @@ async function cleanup() {
 
 // Generate report
 async function generateReport() {
-  results.summary.passRate = (results.summary.passed / results.summary.total * 100).toFixed(2);
+  results.summary.passRate = ((results.summary.passed / results.summary.total) * 100).toFixed(2);
 
   const resultsPath = path.join(__dirname, '..', 'test-results', 'mcp-validation.json');
   await fs.mkdir(path.dirname(resultsPath), { recursive: true });
@@ -333,7 +332,7 @@ async function runTests() {
 }
 
 // Handle interrupts
-process.on('SIGINT', async() => {
+process.on('SIGINT', async () => {
   console.log('\nInterrupted, cleaning up...');
   await cleanup();
   process.exit(1);

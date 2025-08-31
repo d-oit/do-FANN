@@ -16,7 +16,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
     'async-operations-edge-cases.test.js',
     'memory-resource-edge-cases.test.js',
     'neural-network-edge-cases.test.js',
-    'error-recovery-edge-cases.test.js',
+    'error-recovery-edge-cases.test.js'
   ];
 
   it('should have all edge case test files present', () => {
@@ -40,7 +40,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Memory pressure during swarm creation',
         'Input sanitization against malicious inputs',
         'Network timeouts',
-        'State consistency during rapid changes',
+        'State consistency during rapid changes'
       ];
 
       expect(mcpValidationCoverage.length).toBe(9);
@@ -60,7 +60,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Promise.any with all rejections',
         'Async queue overflow',
         'Resource cleanup on async failure',
-        'Async event emitter error handling',
+        'Async event emitter error handling'
       ];
 
       expect(asyncCoverage.length).toBe(12);
@@ -80,7 +80,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Buffer overflow scenarios',
         'Resource pool exhaustion',
         'Concurrent resource access',
-        'Different allocation patterns',
+        'Different allocation patterns'
       ];
 
       expect(memoryCoverage.length).toBe(12);
@@ -108,7 +108,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Single sample batches',
         'Very large batches',
         'Mixed quality batches',
-        'Memory cleanup during training',
+        'Memory cleanup during training'
       ];
 
       expect(neuralCoverage.length).toBe(20);
@@ -129,7 +129,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Error context serialization',
         'Operation cancellation during execution',
         'Timeout with resource cleanup',
-        'Multiple retry strategies',
+        'Multiple retry strategies'
       ];
 
       expect(errorCoverage.length).toBe(13);
@@ -143,7 +143,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         asyncOperations: 12,
         memoryManagement: 12,
         neuralNetworks: 20,
-        errorHandling: 13,
+        errorHandling: 13
       };
 
       const totalCoverage = Object.values(totalEdgeCases).reduce((sum, count) => sum + count, 0);
@@ -169,7 +169,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Input validation boundaries',
         'Resource limit boundaries',
         'Error propagation boundaries',
-        'State transition boundaries',
+        'State transition boundaries'
       ];
 
       expect(boundaryTypes.length).toBe(8);
@@ -186,7 +186,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Concurrent operation conflicts',
         'Cascade failure handling',
         'Partial operation failures',
-        'Cleanup operation failures',
+        'Cleanup operation failures'
       ];
 
       expect(failureScenarios.length).toBe(10);
@@ -204,7 +204,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Verify error messages and types',
         'Check resource cleanup',
         'Test concurrent scenarios',
-        'Validate numerical stability',
+        'Validate numerical stability'
       ];
 
       expect(testQualityChecks.length).toBe(8);
@@ -218,7 +218,7 @@ describe('Edge Case Test Suite - Complete Coverage', () => {
         'Time-independent (mocked timers)',
         'Resource-cleanup guaranteed',
         'State-reset between tests',
-        'Platform-agnostic where possible',
+        'Platform-agnostic where possible'
       ];
 
       expect(deterministicFeatures.length).toBe(6);
@@ -239,8 +239,8 @@ export async function runAllEdgeCaseTests() {
       asyncOperations: 0,
       memoryManagement: 0,
       neuralNetworks: 0,
-      errorHandling: 0,
-    },
+      errorHandling: 0
+    }
   };
 
   try {

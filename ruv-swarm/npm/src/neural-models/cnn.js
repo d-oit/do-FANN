@@ -15,13 +15,13 @@ class CNNModel extends NeuralModel {
       convLayers: config.convLayers || [
         { filters: 32, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
         { filters: 64, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
-        { filters: 128, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
+        { filters: 128, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' }
       ],
       poolingSize: config.poolingSize || 2,
       denseLayers: config.denseLayers || [128, 64],
       outputSize: config.outputSize || 10,
       dropoutRate: config.dropoutRate || 0.5,
-      ...config,
+      ...config
     };
 
     // Initialize layers
@@ -42,16 +42,11 @@ class CNNModel extends NeuralModel {
       const inputChannels = currentShape[2];
 
       // Initialize kernel weights [kernelSize, kernelSize, inputChannels, filters]
-      const kernelWeights = this.createWeight([
-        kernelSize,
-        kernelSize,
-        inputChannels,
-        filters,
-      ]);
+      const kernelWeights = this.createWeight([kernelSize, kernelSize, inputChannels, filters]);
 
       this.convWeights.push({
         kernel: kernelWeights,
-        shape: [kernelSize, kernelSize, inputChannels, filters],
+        shape: [kernelSize, kernelSize, inputChannels, filters]
       });
 
       // Initialize biases for each filter
@@ -65,7 +60,7 @@ class CNNModel extends NeuralModel {
         currentShape = [
           Math.floor(currentShape[0] / this.config.poolingSize),
           Math.floor(currentShape[1] / this.config.poolingSize),
-          currentShape[2],
+          currentShape[2]
         ];
       }
     }
@@ -197,13 +192,17 @@ class CNNModel extends NeuralModel {
 
                   // Check bounds
                   if (ih >= 0 && ih < height && iw >= 0 && iw < width) {
-                    const inputIdx = b * height * width * inputChannels +
-                                   ih * width * inputChannels +
-                                   iw * inputChannels + ic;
+                    const inputIdx =
+                      b * height * width * inputChannels +
+                      ih * width * inputChannels +
+                      iw * inputChannels +
+                      ic;
 
-                    const weightIdx = kh * kernelSize * inputChannels * filters +
-                                    kw * inputChannels * filters +
-                                    ic * filters + oc;
+                    const weightIdx =
+                      kh * kernelSize * inputChannels * filters +
+                      kw * inputChannels * filters +
+                      ic * filters +
+                      oc;
 
                     sum += input[inputIdx] * weights.kernel[weightIdx];
                   }
@@ -211,9 +210,11 @@ class CNNModel extends NeuralModel {
               }
             }
 
-            const outputIdx = b * outputHeight * outputWidth * outputChannels +
-                            oh * outputWidth * outputChannels +
-                            ow * outputChannels + oc;
+            const outputIdx =
+              b * outputHeight * outputWidth * outputChannels +
+              oh * outputWidth * outputChannels +
+              ow * outputChannels +
+              oc;
 
             output[outputIdx] = sum;
           }
@@ -245,18 +246,19 @@ class CNNModel extends NeuralModel {
                 const iw = ow * poolSize + pw;
 
                 if (ih < height && iw < width) {
-                  const inputIdx = b * height * width * channels +
-                                 ih * width * channels +
-                                 iw * channels + c;
+                  const inputIdx =
+                    b * height * width * channels + ih * width * channels + iw * channels + c;
 
                   maxVal = Math.max(maxVal, input[inputIdx]);
                 }
               }
             }
 
-            const outputIdx = b * outputHeight * outputWidth * channels +
-                            oh * outputWidth * channels +
-                            ow * channels + c;
+            const outputIdx =
+              b * outputHeight * outputWidth * channels +
+              oh * outputWidth * channels +
+              ow * channels +
+              c;
 
             output[outputIdx] = maxVal;
           }
@@ -336,12 +338,7 @@ class CNNModel extends NeuralModel {
   }
 
   async train(trainingData, options = {}) {
-    const {
-      epochs = 10,
-      batchSize = 32,
-      learningRate = 0.001,
-      validationSplit = 0.1,
-    } = options;
+    const { epochs = 10, batchSize = 32, learningRate = 0.001, validationSplit = 0.1 } = options;
 
     const trainingHistory = [];
 
@@ -389,15 +386,15 @@ class CNNModel extends NeuralModel {
         trainLoss: avgTrainLoss,
         trainAccuracy: avgTrainAccuracy,
         valLoss: valMetrics.loss,
-        valAccuracy: valMetrics.accuracy,
+        valAccuracy: valMetrics.accuracy
       });
 
       console.log(
         `Epoch ${epoch + 1}/${epochs} - ` +
-        `Train Loss: ${avgTrainLoss.toFixed(4)}, ` +
-        `Train Acc: ${(avgTrainAccuracy * 100).toFixed(2)}%, ` +
-        `Val Loss: ${valMetrics.loss.toFixed(4)}, ` +
-        `Val Acc: ${(valMetrics.accuracy * 100).toFixed(2)}%`,
+          `Train Loss: ${avgTrainLoss.toFixed(4)}, ` +
+          `Train Acc: ${(avgTrainAccuracy * 100).toFixed(2)}%, ` +
+          `Val Loss: ${valMetrics.loss.toFixed(4)}, ` +
+          `Val Acc: ${(valMetrics.accuracy * 100).toFixed(2)}%`
       );
 
       this.updateMetrics(avgTrainLoss, avgTrainAccuracy);
@@ -407,7 +404,7 @@ class CNNModel extends NeuralModel {
       history: trainingHistory,
       finalLoss: trainingHistory[trainingHistory.length - 1].trainLoss,
       finalAccuracy: trainingHistory[trainingHistory.length - 1].trainAccuracy,
-      modelType: 'cnn',
+      modelType: 'cnn'
     };
   }
 
@@ -428,7 +425,7 @@ class CNNModel extends NeuralModel {
 
     return {
       loss: totalLoss / batchCount,
-      accuracy: totalAccuracy / batchCount,
+      accuracy: totalAccuracy / batchCount
     };
   }
 
@@ -471,7 +468,7 @@ class CNNModel extends NeuralModel {
     return {
       type: 'cnn',
       ...this.config,
-      parameters: this.countParameters(),
+      parameters: this.countParameters()
     };
   }
 

@@ -21,7 +21,7 @@ class AutoencoderModel extends NeuralModel {
       sparseRegularization: config.sparseRegularization || 0.01,
       denoisingNoise: config.denoisingNoise || 0, // For denoising autoencoder
       variational: config.variational || false, // For VAE
-      ...config,
+      ...config
     };
 
     // Set decoder layers as mirror of encoder if not specified
@@ -59,11 +59,11 @@ class AutoencoderModel extends NeuralModel {
       // For VAE: separate layers for mean and log variance
       this.muLayer = {
         weight: this.createWeight([lastSize, this.config.bottleneckSize]),
-        bias: new Float32Array(this.config.bottleneckSize).fill(0),
+        bias: new Float32Array(this.config.bottleneckSize).fill(0)
       };
       this.logVarLayer = {
         weight: this.createWeight([lastSize, this.config.bottleneckSize]),
-        bias: new Float32Array(this.config.bottleneckSize).fill(0),
+        bias: new Float32Array(this.config.bottleneckSize).fill(0)
       };
       lastSize = this.config.bottleneckSize;
     } else {
@@ -117,7 +117,7 @@ class AutoencoderModel extends NeuralModel {
       reconstruction,
       latent: encodingResult.latent,
       mu: encodingResult.mu,
-      logVar: encodingResult.logVar,
+      logVar: encodingResult.logVar
     };
   }
 
@@ -248,7 +248,8 @@ class AutoencoderModel extends NeuralModel {
 
   sampleGaussian() {
     // Box-Muller transform for sampling from standard normal distribution
-    let u = 0, v = 0;
+    let u = 0,
+      v = 0;
     while (u === 0) {
       u = Math.random();
     }
@@ -302,7 +303,7 @@ class AutoencoderModel extends NeuralModel {
       total: reconstructionLoss + klLoss + sparsityLoss,
       reconstruction: reconstructionLoss,
       kl: klLoss,
-      sparsity: sparsityLoss,
+      sparsity: sparsityLoss
     };
   }
 
@@ -312,7 +313,7 @@ class AutoencoderModel extends NeuralModel {
       batchSize = 32,
       learningRate = 0.001,
       validationSplit = 0.1,
-      beta = 1.0, // Beta-VAE parameter
+      beta = 1.0 // Beta-VAE parameter
     } = options;
 
     const trainingHistory = [];
@@ -338,7 +339,7 @@ class AutoencoderModel extends NeuralModel {
         // Prepare batch input
         const batchInput = {
           data: batch.inputs,
-          shape: [batch.inputs.length, this.config.inputSize],
+          shape: [batch.inputs.length, this.config.inputSize]
         };
         batchInput.data.shape = batchInput.shape;
 
@@ -346,12 +347,7 @@ class AutoencoderModel extends NeuralModel {
         const output = await this.forward(batchInput.data, true);
 
         // Calculate losses
-        const losses = this.calculateLoss(
-          batchInput.data,
-          output,
-          output.mu,
-          output.logVar,
-        );
+        const losses = this.calculateLoss(batchInput.data, output, output.mu, output.logVar);
 
         // Apply beta weighting for VAE
         const totalLoss = losses.reconstruction + beta * losses.kl + losses.sparsity;
@@ -379,17 +375,17 @@ class AutoencoderModel extends NeuralModel {
         reconstructionLoss: avgReconLoss,
         klLoss: avgKLLoss,
         valLoss: valLosses.total,
-        valReconstructionLoss: valLosses.reconstruction,
+        valReconstructionLoss: valLosses.reconstruction
       };
 
       trainingHistory.push(historyEntry);
 
       console.log(
         `Epoch ${epoch + 1}/${epochs} - ` +
-        `Loss: ${avgTrainLoss.toFixed(4)} ` +
-        `(Recon: ${avgReconLoss.toFixed(4)}, ` +
-        `KL: ${avgKLLoss.toFixed(4)}) - ` +
-        `Val Loss: ${valLosses.total.toFixed(4)}`,
+          `Loss: ${avgTrainLoss.toFixed(4)} ` +
+          `(Recon: ${avgReconLoss.toFixed(4)}, ` +
+          `KL: ${avgKLLoss.toFixed(4)}) - ` +
+          `Val Loss: ${valLosses.total.toFixed(4)}`
       );
 
       this.updateMetrics(avgTrainLoss);
@@ -398,7 +394,7 @@ class AutoencoderModel extends NeuralModel {
     return {
       history: trainingHistory,
       finalLoss: trainingHistory[trainingHistory.length - 1].trainLoss,
-      modelType: 'autoencoder',
+      modelType: 'autoencoder'
     };
   }
 
@@ -411,7 +407,7 @@ class AutoencoderModel extends NeuralModel {
     for (const batch of data) {
       const batchInput = {
         data: batch.inputs,
-        shape: [batch.inputs.length, this.config.inputSize],
+        shape: [batch.inputs.length, this.config.inputSize]
       };
       batchInput.data.shape = batchInput.shape;
 
@@ -427,36 +423,36 @@ class AutoencoderModel extends NeuralModel {
     return {
       total: totalLoss / batchCount,
       reconstruction: reconLoss / batchCount,
-      kl: klLoss / batchCount,
+      kl: klLoss / batchCount
     };
   }
 
   // Get only the encoder part for feature extraction
   async getEncoder() {
     return {
-      encode: async(input) => {
+      encode: async input => {
         const result = await this.encode(input, false);
         return result.latent;
       },
       config: {
         inputSize: this.config.inputSize,
         bottleneckSize: this.config.bottleneckSize,
-        layers: this.config.encoderLayers,
-      },
+        layers: this.config.encoderLayers
+      }
     };
   }
 
   // Get only the decoder part for generation
   async getDecoder() {
     return {
-      decode: async(latent) => {
+      decode: async latent => {
         return await this.decode(latent, false);
       },
       config: {
         bottleneckSize: this.config.bottleneckSize,
         outputSize: this.config.inputSize,
-        layers: this.config.decoderLayers,
-      },
+        layers: this.config.decoderLayers
+      }
     };
   }
 
@@ -511,7 +507,7 @@ class AutoencoderModel extends NeuralModel {
       type: 'autoencoder',
       variant: this.config.variational ? 'variational' : 'standard',
       ...this.config,
-      parameters: this.countParameters(),
+      parameters: this.countParameters()
     };
   }
 

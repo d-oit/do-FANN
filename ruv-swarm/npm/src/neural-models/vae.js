@@ -20,19 +20,19 @@ class VAEModel extends NeuralModel {
       dropoutRate: config.dropoutRate || 0.1,
       betaKL: config.betaKL || 1.0, // KL divergence weight
       useConvolutional: config.useConvolutional || false,
-      ...config,
+      ...config
     };
 
     // Initialize encoder and decoder
     this.encoder = {
       layers: [],
       muLayer: null,
-      logVarLayer: null,
+      logVarLayer: null
     };
 
     this.decoder = {
       layers: [],
-      outputLayer: null,
+      outputLayer: null
     };
 
     this.initializeWeights();
@@ -45,7 +45,7 @@ class VAEModel extends NeuralModel {
     for (const hiddenDim of this.config.encoderLayers) {
       this.encoder.layers.push({
         weight: this.createWeight([currentDim, hiddenDim]),
-        bias: new Float32Array(hiddenDim).fill(0.0),
+        bias: new Float32Array(hiddenDim).fill(0.0)
       });
       currentDim = hiddenDim;
     }
@@ -53,12 +53,12 @@ class VAEModel extends NeuralModel {
     // Latent space projection layers
     this.encoder.muLayer = {
       weight: this.createWeight([currentDim, this.config.latentDimensions]),
-      bias: new Float32Array(this.config.latentDimensions).fill(0.0),
+      bias: new Float32Array(this.config.latentDimensions).fill(0.0)
     };
 
     this.encoder.logVarLayer = {
       weight: this.createWeight([currentDim, this.config.latentDimensions]),
-      bias: new Float32Array(this.config.latentDimensions).fill(0.0),
+      bias: new Float32Array(this.config.latentDimensions).fill(0.0)
     };
 
     // Initialize decoder layers
@@ -68,7 +68,7 @@ class VAEModel extends NeuralModel {
     for (const hiddenDim of decoderDims) {
       this.decoder.layers.push({
         weight: this.createWeight([currentDim, hiddenDim]),
-        bias: new Float32Array(hiddenDim).fill(0.0),
+        bias: new Float32Array(hiddenDim).fill(0.0)
       });
       currentDim = hiddenDim;
     }
@@ -100,7 +100,7 @@ class VAEModel extends NeuralModel {
       reconstruction,
       mu,
       logVar,
-      latent: z,
+      latent: z
     };
   }
 
@@ -119,7 +119,11 @@ class VAEModel extends NeuralModel {
 
     // Compute mean and log variance
     const mu = this.linearTransform(h, this.encoder.muLayer.weight, this.encoder.muLayer.bias);
-    const logVar = this.linearTransform(h, this.encoder.logVarLayer.weight, this.encoder.logVarLayer.bias);
+    const logVar = this.linearTransform(
+      h,
+      this.encoder.logVarLayer.weight,
+      this.encoder.logVarLayer.bias
+    );
 
     // Reparameterization trick
     const z = this.reparameterize(mu, logVar, training);
@@ -156,7 +160,8 @@ class VAEModel extends NeuralModel {
 
   sampleGaussian() {
     // Box-Muller transform for Gaussian sampling
-    let u = 0, v = 0;
+    let u = 0,
+      v = 0;
     while (u === 0) {
       u = Math.random();
     } // Converting [0,1) to (0,1)
@@ -212,29 +217,29 @@ class VAEModel extends NeuralModel {
 
   applyActivation(input) {
     switch (this.config.activation) {
-    case 'relu':
-      return this.relu(input);
-    case 'leaky_relu':
-      return this.leakyRelu(input);
-    case 'tanh':
-      return this.tanh(input);
-    case 'elu':
-      return this.elu(input);
-    default:
-      return this.relu(input);
+      case 'relu':
+        return this.relu(input);
+      case 'leaky_relu':
+        return this.leakyRelu(input);
+      case 'tanh':
+        return this.tanh(input);
+      case 'elu':
+        return this.elu(input);
+      default:
+        return this.relu(input);
     }
   }
 
   applyOutputActivation(input) {
     switch (this.config.outputActivation) {
-    case 'sigmoid':
-      return this.sigmoid(input);
-    case 'tanh':
-      return this.tanh(input);
-    case 'linear':
-      return input;
-    default:
-      return this.sigmoid(input);
+      case 'sigmoid':
+        return this.sigmoid(input);
+      case 'tanh':
+        return this.tanh(input);
+      case 'linear':
+        return input;
+      default:
+        return this.sigmoid(input);
     }
   }
 
@@ -291,7 +296,7 @@ class VAEModel extends NeuralModel {
     return {
       total: totalLoss,
       reconstruction: reconLoss,
-      kl: klLoss,
+      kl: klLoss
     };
   }
 
@@ -301,7 +306,7 @@ class VAEModel extends NeuralModel {
       batchSize = 32,
       learningRate = 0.001,
       validationSplit = 0.1,
-      annealKL = true,
+      annealKL = true
     } = options;
 
     const trainingHistory = [];
@@ -356,13 +361,13 @@ class VAEModel extends NeuralModel {
         valReconLoss: valLosses.reconstruction,
         valKLLoss: valLosses.kl,
         valTotalLoss: valLosses.total,
-        klWeight,
+        klWeight
       });
 
       console.log(
         `Epoch ${epoch + 1}/${epochs} - ` +
-        `Recon Loss: ${avgReconLoss.toFixed(4)}, KL Loss: ${avgKLLoss.toFixed(4)} - ` +
-        `Val Recon: ${valLosses.reconstruction.toFixed(4)}, Val KL: ${valLosses.kl.toFixed(4)}`,
+          `Recon Loss: ${avgReconLoss.toFixed(4)}, KL Loss: ${avgKLLoss.toFixed(4)} - ` +
+          `Val Recon: ${valLosses.reconstruction.toFixed(4)}, Val KL: ${valLosses.kl.toFixed(4)}`
       );
     }
 
@@ -370,7 +375,7 @@ class VAEModel extends NeuralModel {
       history: trainingHistory,
       finalLoss: trainingHistory[trainingHistory.length - 1].trainTotalLoss,
       modelType: 'vae',
-      accuracy: 0.94, // VAEs don't have traditional accuracy, this is a quality metric
+      accuracy: 0.94 // VAEs don't have traditional accuracy, this is a quality metric
     };
   }
 
@@ -391,7 +396,7 @@ class VAEModel extends NeuralModel {
     return {
       reconstruction: totalReconLoss / batchCount,
       kl: totalKLLoss / batchCount,
-      total: (totalReconLoss + this.config.betaKL * totalKLLoss) / batchCount,
+      total: (totalReconLoss + this.config.betaKL * totalKLLoss) / batchCount
     };
   }
 
@@ -462,8 +467,8 @@ class VAEModel extends NeuralModel {
       parameters: this.countParameters(),
       latentSpace: {
         dimensions: this.config.latentDimensions,
-        betaKL: this.config.betaKL,
-      },
+        betaKL: this.config.betaKL
+      }
     };
   }
 

@@ -30,13 +30,16 @@ async function testAgentTaskBinding() {
     const swarmResult = await mcpTools.swarm_init({
       topology: 'mesh',
       maxAgents: 5,
-      strategy: 'balanced',
+      strategy: 'balanced'
     });
     console.log('✅ Swarm initialized:', swarmResult.id);
-    console.log('   Features:', Object.entries(swarmResult.features)
-      .filter(([key, value]) => value)
-      .map(([key]) => key)
-      .join(', '));
+    console.log(
+      '   Features:',
+      Object.entries(swarmResult.features)
+        .filter(([key, value]) => value)
+        .map(([key]) => key)
+        .join(', ')
+    );
 
     // Step 2: Spawn multiple agents
     console.log('\n2️⃣ Spawning agents...');
@@ -47,10 +50,12 @@ async function testAgentTaskBinding() {
       const agentResult = await mcpTools.agent_spawn({
         type: agentTypes[i],
         name: `Agent-${agentTypes[i]}-${i + 1}`,
-        capabilities: [agentTypes[i], 'general'],
+        capabilities: [agentTypes[i], 'general']
       });
       agents.push(agentResult);
-      console.log(`✅ Spawned ${agentResult.agent.type} agent: ${agentResult.agent.name} (${agentResult.agent.id})`);
+      console.log(
+        `✅ Spawned ${agentResult.agent.type} agent: ${agentResult.agent.name} (${agentResult.agent.id})`
+      );
     }
 
     // Step 3: Check swarm status
@@ -60,7 +65,9 @@ async function testAgentTaskBinding() {
     console.log(`   Active swarms: ${statusResult.active_swarms}`);
     if (statusResult.swarms && statusResult.swarms.length > 0) {
       const swarm = statusResult.swarms[0];
-      console.log(`   Agents: ${swarm.status.agents.total} total, ${swarm.status.agents.idle} idle, ${swarm.status.agents.active} active`);
+      console.log(
+        `   Agents: ${swarm.status.agents.total} total, ${swarm.status.agents.idle} idle, ${swarm.status.agents.active} active`
+      );
     }
 
     // Step 4: Test task orchestration (this was failing before)
@@ -70,18 +77,18 @@ async function testAgentTaskBinding() {
       {
         description: 'Analyze system performance metrics',
         priority: 'high',
-        requiredCapabilities: ['analyst'],
+        requiredCapabilities: ['analyst']
       },
       {
         description: 'Research best practices for optimization',
         priority: 'medium',
-        requiredCapabilities: ['researcher'],
+        requiredCapabilities: ['researcher']
       },
       {
         description: 'Implement performance improvements',
         priority: 'medium',
-        requiredCapabilities: ['coder'],
-      },
+        requiredCapabilities: ['coder']
+      }
     ];
 
     const orchestratedTasks = [];
@@ -92,7 +99,7 @@ async function testAgentTaskBinding() {
           task: taskConfig.description,
           priority: taskConfig.priority,
           maxAgents: 2,
-          requiredCapabilities: taskConfig.requiredCapabilities,
+          requiredCapabilities: taskConfig.requiredCapabilities
         });
 
         orchestratedTasks.push(taskResult);
@@ -100,7 +107,6 @@ async function testAgentTaskBinding() {
         console.log(`   Task ID: ${taskResult.taskId}`);
         console.log(`   Assigned agents: ${taskResult.assigned_agents.length}`);
         console.log(`   Agent IDs: ${taskResult.assigned_agents.join(', ')}`);
-
       } catch (error) {
         console.error(`❌ Task orchestration failed: ${error.message}`);
         throw error;
@@ -115,7 +121,7 @@ async function testAgentTaskBinding() {
       try {
         const statusCheck = await mcpTools.task_status({
           taskId: taskResult.taskId,
-          detailed: true,
+          detailed: true
         });
         console.log(`📊 Task ${taskResult.taskId} status: ${statusCheck.status}`);
         console.log(`   Progress: ${(statusCheck.progress * 100).toFixed(1)}%`);
@@ -123,9 +129,11 @@ async function testAgentTaskBinding() {
         if (statusCheck.status === 'completed') {
           const results = await mcpTools.task_results({
             taskId: taskResult.taskId,
-            format: 'summary',
+            format: 'summary'
           });
-          console.log(`✅ Task completed in ${results.execution_summary?.execution_time_ms || 'N/A'}ms`);
+          console.log(
+            `✅ Task completed in ${results.execution_summary?.execution_time_ms || 'N/A'}ms`
+          );
         }
       } catch (error) {
         console.warn(`⚠️ Could not get task status: ${error.message}`);
@@ -137,7 +145,9 @@ async function testAgentTaskBinding() {
     const finalStatus = await mcpTools.swarm_status({ verbose: true });
     if (finalStatus.swarms && finalStatus.swarms.length > 0) {
       const swarm = finalStatus.swarms[0];
-      console.log(`📊 Final agent states: ${swarm.status.agents.idle} idle, ${swarm.status.agents.active} active`);
+      console.log(
+        `📊 Final agent states: ${swarm.status.agents.idle} idle, ${swarm.status.agents.active} active`
+      );
     }
 
     // Step 7: Test with multiple agents per task
@@ -147,12 +157,11 @@ async function testAgentTaskBinding() {
         task: 'Complex analysis requiring multiple perspectives',
         priority: 'high',
         maxAgents: 3,
-        strategy: 'parallel',
+        strategy: 'parallel'
       });
 
       console.log(`✅ Multi-agent task orchestrated: ${multiAgentTask.taskId}`);
       console.log(`   Assigned ${multiAgentTask.assigned_agents.length} agents`);
-
     } catch (error) {
       console.error(`❌ Multi-agent task failed: ${error.message}`);
       throw error;
@@ -166,7 +175,6 @@ async function testAgentTaskBinding() {
     console.log('   - No "No agents available" errors encountered');
 
     return true;
-
   } catch (error) {
     console.error('\n❌ Test failed:', error.message);
     console.error(error.stack);

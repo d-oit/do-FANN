@@ -488,6 +488,43 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56254986775e3233ffa9c4d7d3faaf6d36a2c09d30b20687e9f88bc8bafc16c8"
 
 [[package]]
+name = "do-fann"
+version = "0.1.6"
+dependencies = [
+ "anyhow",
+ "approx",
+ "async-trait",
+ "bincode",
+ "bytemuck",
+ "chrono",
+ "console_error_panic_hook",
+ "criterion",
+ "flate2",
+ "futures",
+ "getrandom 0.2.16",
+ "js-sys",
+ "lazy_static",
+ "log",
+ "num-traits",
+ "num_cpus",
+ "pollster",
+ "pretty_assertions",
+ "proptest",
+ "rand 0.8.5",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "uuid",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "wgpu",
+]
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1475,43 +1512,6 @@ dependencies = [
  "quick-error",
  "tempfile",
  "wait-timeout",
-]
-
-[[package]]
-name = "ruv-fann"
-version = "0.1.6"
-dependencies = [
- "anyhow",
- "approx",
- "async-trait",
- "bincode",
- "bytemuck",
- "chrono",
- "console_error_panic_hook",
- "criterion",
- "flate2",
- "futures",
- "getrandom 0.2.16",
- "js-sys",
- "lazy_static",
- "log",
- "num-traits",
- "num_cpus",
- "pollster",
- "pretty_assertions",
- "proptest",
- "rand 0.8.5",
- "rand_distr",
- "rayon",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "uuid",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "wgpu",
 ]
 
 [[package]]

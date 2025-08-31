@@ -28,13 +28,13 @@ class CognitivePatternEvolution {
         explorationRate: 0.1,
         exploitationRate: 0.9,
         decisionMaking: 'decisive',
-        patternRecognition: 'exact_match',
+        patternRecognition: 'exact_match'
       },
       adaptationRules: {
-        increasePrecision: (context) => context.accuracy > 0.8,
-        reduceExploration: (context) => context.confidence > 0.7,
-        focusAttention: (context) => context.taskComplexity < 0.5,
-      },
+        increasePrecision: context => context.accuracy > 0.8,
+        reduceExploration: context => context.confidence > 0.7,
+        focusAttention: context => context.taskComplexity < 0.5
+      }
     });
 
     // Divergent thinking patterns
@@ -46,13 +46,13 @@ class CognitivePatternEvolution {
         explorationRate: 0.8,
         exploitationRate: 0.2,
         decisionMaking: 'exploratory',
-        patternRecognition: 'flexible_match',
+        patternRecognition: 'flexible_match'
       },
       adaptationRules: {
-        increaseCreativity: (context) => context.noveltyScore > 0.6,
-        expandSearch: (context) => context.solutionDiversity < 0.5,
-        encourageRisk: (context) => context.safetyMargin > 0.8,
-      },
+        increaseCreativity: context => context.noveltyScore > 0.6,
+        expandSearch: context => context.solutionDiversity < 0.5,
+        encourageRisk: context => context.safetyMargin > 0.8
+      }
     });
 
     // Lateral thinking patterns
@@ -64,13 +64,13 @@ class CognitivePatternEvolution {
         explorationRate: 0.6,
         exploitationRate: 0.4,
         decisionMaking: 'innovative',
-        patternRecognition: 'analogical',
+        patternRecognition: 'analogical'
       },
       adaptationRules: {
-        seekAlternatives: (context) => context.standardSolutionFailed,
-        useAnalogies: (context) => context.domainKnowledge > 0.5,
-        breakAssumptions: (context) => context.progressStalled,
-      },
+        seekAlternatives: context => context.standardSolutionFailed,
+        useAnalogies: context => context.domainKnowledge > 0.5,
+        breakAssumptions: context => context.progressStalled
+      }
     });
 
     // Systems thinking patterns
@@ -82,13 +82,13 @@ class CognitivePatternEvolution {
         explorationRate: 0.4,
         exploitationRate: 0.6,
         decisionMaking: 'systemic',
-        patternRecognition: 'pattern_networks',
+        patternRecognition: 'pattern_networks'
       },
       adaptationRules: {
-        mapConnections: (context) => context.systemComplexity > 0.7,
-        identifyFeedback: (context) => context.iterationCount > 5,
-        emergentProperties: (context) => context.componentInteractions > 0.6,
-      },
+        mapConnections: context => context.systemComplexity > 0.7,
+        identifyFeedback: context => context.iterationCount > 5,
+        emergentProperties: context => context.componentInteractions > 0.6
+      }
     });
 
     // Critical thinking patterns
@@ -100,13 +100,13 @@ class CognitivePatternEvolution {
         explorationRate: 0.3,
         exploitationRate: 0.7,
         decisionMaking: 'analytical',
-        patternRecognition: 'evidence_based',
+        patternRecognition: 'evidence_based'
       },
       adaptationRules: {
-        validateEvidence: (context) => context.informationQuality < 0.8,
-        checkBias: (context) => context.subjectivity > 0.5,
-        logicalConsistency: (context) => context.contradictions > 0.2,
-      },
+        validateEvidence: context => context.informationQuality < 0.8,
+        checkBias: context => context.subjectivity > 0.5,
+        logicalConsistency: context => context.contradictions > 0.2
+      }
     });
 
     // Abstract thinking patterns
@@ -118,13 +118,13 @@ class CognitivePatternEvolution {
         explorationRate: 0.5,
         exploitationRate: 0.5,
         decisionMaking: 'principled',
-        patternRecognition: 'abstraction_layers',
+        patternRecognition: 'abstraction_layers'
       },
       adaptationRules: {
-        generalizePatterns: (context) => context.specificExamples > 3,
-        identifyPrinciples: (context) => context.abstraction_level < 0.6,
-        conceptualMapping: (context) => context.domainTransfer > 0.4,
-      },
+        generalizePatterns: context => context.specificExamples > 3,
+        identifyPrinciples: context => context.abstraction_level < 0.6,
+        conceptualMapping: context => context.domainTransfer > 0.4
+      }
     });
   }
 
@@ -143,7 +143,7 @@ class CognitivePatternEvolution {
       evolutionScore: 0,
       lastEvolution: Date.now(),
       crossAgentLearning: new Map(),
-      specializations: new Set(),
+      specializations: new Set()
     });
 
     this.evolutionHistory.set(agentId, []);
@@ -152,10 +152,12 @@ class CognitivePatternEvolution {
       successfulAdaptations: 0,
       patternSwitches: 0,
       crossAgentTransfers: 0,
-      emergentPatterns: 0,
+      emergentPatterns: 0
     });
 
-    console.log(`Initialized cognitive patterns for agent ${agentId}: ${initialPatterns.join(', ')}`);
+    console.log(
+      `Initialized cognitive patterns for agent ${agentId}: ${initialPatterns.join(', ')}`
+    );
   }
 
   /**
@@ -168,29 +170,29 @@ class CognitivePatternEvolution {
     // Select patterns based on model type and use case
     if (config.modelType) {
       switch (config.modelType) {
-      case 'transformer':
-      case 'lstm':
-      case 'gru':
-        patterns.push('convergent', 'systems');
-        break;
-      case 'cnn':
-      case 'resnet':
-        patterns.push('critical', 'abstract');
-        break;
-      case 'gnn':
-      case 'gat':
-        patterns.push('systems', 'lateral');
-        break;
-      case 'vae':
-      case 'autoencoder':
-        patterns.push('divergent', 'abstract');
-        break;
-      case 'diffusion_model':
-      case 'neural_ode':
-        patterns.push('divergent', 'lateral');
-        break;
-      default:
-        patterns.push('convergent', 'critical');
+        case 'transformer':
+        case 'lstm':
+        case 'gru':
+          patterns.push('convergent', 'systems');
+          break;
+        case 'cnn':
+        case 'resnet':
+          patterns.push('critical', 'abstract');
+          break;
+        case 'gnn':
+        case 'gat':
+          patterns.push('systems', 'lateral');
+          break;
+        case 'vae':
+        case 'autoencoder':
+          patterns.push('divergent', 'abstract');
+          break;
+        case 'diffusion_model':
+        case 'neural_ode':
+          patterns.push('divergent', 'lateral');
+          break;
+        default:
+          patterns.push('convergent', 'critical');
       }
     }
 
@@ -250,7 +252,7 @@ class CognitivePatternEvolution {
         oldPatterns: [...currentPatterns],
         newPatterns,
         context,
-        effectiveness: patternEffectiveness,
+        effectiveness: patternEffectiveness
       });
 
       console.log(`Evolved cognitive patterns for agent ${agentId}: ${evolutionStrategy.type}`);
@@ -270,7 +272,7 @@ class CognitivePatternEvolution {
       dimensionality: this.calculateDimensionality(trainingData),
       temporalDependency: this.assessTemporalDependency(trainingData),
       abstractionLevel: this.estimateAbstractionLevel(trainingData),
-      creativity_required: this.assessCreativityRequirement(trainingData),
+      creativity_required: this.assessCreativityRequirement(trainingData)
     };
 
     return context;
@@ -312,7 +314,9 @@ class CognitivePatternEvolution {
     let totalVariance = 0;
 
     for (let f = 0; f < numFeatures; f++) {
-      const values = samples.map(s => Array.isArray(s) ? s[f] : s).filter(v => typeof v === 'number');
+      const values = samples
+        .map(s => (Array.isArray(s) ? s[f] : s))
+        .filter(v => typeof v === 'number');
       if (values.length < 2) {
         continue;
       }
@@ -422,7 +426,7 @@ class CognitivePatternEvolution {
     const uniqueLabels = new Set(labelSequence);
 
     // More unique labels = less regular
-    const regularity = 1 - (uniqueLabels.size / labelSequence.length);
+    const regularity = 1 - uniqueLabels.size / labelSequence.length;
     return Math.max(0, Math.min(1, regularity));
   }
 
@@ -519,7 +523,7 @@ class CognitivePatternEvolution {
         contextMatch,
         historicalPerformance,
         adaptationSuccess,
-        overall: (contextMatch + historicalPerformance + adaptationSuccess) / 3,
+        overall: (contextMatch + historicalPerformance + adaptationSuccess) / 3
       };
     }
 
@@ -549,7 +553,10 @@ class CognitivePatternEvolution {
     weightSum += 0.25;
 
     // Match pattern recognition approach
-    const abstractionMatch = this.matchPatternRecognition(characteristics.patternRecognition, context);
+    const abstractionMatch = this.matchPatternRecognition(
+      characteristics.patternRecognition,
+      context
+    );
     totalMatch += abstractionMatch * 0.25;
     weightSum += 0.25;
 
@@ -568,12 +575,12 @@ class CognitivePatternEvolution {
    */
   matchDecisionStyle(style, systematicNeed) {
     const styleScores = {
-      'decisive': 0.9,
-      'analytical': 0.8,
-      'systematic': 0.8,
-      'principled': 0.7,
-      'exploratory': 0.3,
-      'innovative': 0.2,
+      decisive: 0.9,
+      analytical: 0.8,
+      systematic: 0.8,
+      principled: 0.7,
+      exploratory: 0.3,
+      innovative: 0.2
     };
 
     const styleScore = styleScores[style] || 0.5;
@@ -587,12 +594,12 @@ class CognitivePatternEvolution {
    */
   matchPatternRecognition(approach, context) {
     const approachScores = {
-      'exact_match': context.patternRegularity,
-      'flexible_match': 1 - context.patternRegularity,
-      'analogical': context.abstractionLevel,
-      'pattern_networks': context.dataComplexity,
-      'evidence_based': 1 - context.noiseLevel,
-      'abstraction_layers': context.abstractionLevel,
+      exact_match: context.patternRegularity,
+      flexible_match: 1 - context.patternRegularity,
+      analogical: context.abstractionLevel,
+      pattern_networks: context.dataComplexity,
+      evidence_based: 1 - context.noiseLevel,
+      abstraction_layers: context.abstractionLevel
     };
 
     return approachScores[approach] || 0.5;
@@ -605,12 +612,12 @@ class CognitivePatternEvolution {
    */
   matchSearchStrategy(strategy, context) {
     const strategyScores = {
-      'directed': 1 - context.creativity_required,
-      'random': context.creativity_required,
-      'lateral': context.noiseLevel + context.creativity_required,
-      'holistic': context.dataComplexity,
-      'systematic': context.patternRegularity,
-      'conceptual': context.abstractionLevel,
+      directed: 1 - context.creativity_required,
+      random: context.creativity_required,
+      lateral: context.noiseLevel + context.creativity_required,
+      holistic: context.dataComplexity,
+      systematic: context.patternRegularity,
+      conceptual: context.abstractionLevel
     };
 
     return Math.min(1, strategyScores[strategy] || 0.5);
@@ -623,7 +630,9 @@ class CognitivePatternEvolution {
    */
   getHistoricalPerformance(agentId, patternType) {
     const history = this.evolutionHistory.get(agentId) || [];
-    const patternHistory = history.filter(h => h.oldPatterns.includes(patternType) || h.newPatterns.includes(patternType));
+    const patternHistory = history.filter(
+      h => h.oldPatterns.includes(patternType) || h.newPatterns.includes(patternType)
+    );
 
     if (patternHistory.length === 0) {
       return 0.5;
@@ -664,7 +673,9 @@ class CognitivePatternEvolution {
    * @param {Object} context - Current context
    */
   assessEvolutionNeed(effectiveness, context) {
-    const avgEffectiveness = Object.values(effectiveness).reduce((sum, e) => sum + e.overall, 0) / Object.keys(effectiveness).length;
+    const avgEffectiveness =
+      Object.values(effectiveness).reduce((sum, e) => sum + e.overall, 0) /
+      Object.keys(effectiveness).length;
 
     // Evolution needed if effectiveness is low
     if (avgEffectiveness < 0.4) {
@@ -691,36 +702,36 @@ class CognitivePatternEvolution {
    */
   selectEvolutionStrategy(evolutionNeed, context) {
     const strategies = {
-      'pattern_addition': {
+      pattern_addition: {
         type: 'pattern_addition',
         description: 'Add new cognitive patterns',
-        priority: context.creativity_required > 0.6 ? 0.8 : 0.4,
+        priority: context.creativity_required > 0.6 ? 0.8 : 0.4
       },
-      'pattern_removal': {
+      pattern_removal: {
         type: 'pattern_removal',
         description: 'Remove ineffective patterns',
-        priority: evolutionNeed.urgency === 'high' ? 0.9 : 0.3,
+        priority: evolutionNeed.urgency === 'high' ? 0.9 : 0.3
       },
-      'pattern_modification': {
+      pattern_modification: {
         type: 'pattern_modification',
         description: 'Modify existing patterns',
-        priority: 0.6,
+        priority: 0.6
       },
-      'pattern_rebalancing': {
+      pattern_rebalancing: {
         type: 'pattern_rebalancing',
         description: 'Rebalance pattern weights',
-        priority: evolutionNeed.urgency === 'medium' ? 0.7 : 0.5,
+        priority: evolutionNeed.urgency === 'medium' ? 0.7 : 0.5
       },
-      'pattern_hybridization': {
+      pattern_hybridization: {
         type: 'pattern_hybridization',
         description: 'Create hybrid patterns',
-        priority: context.dataComplexity > 0.7 ? 0.8 : 0.3,
-      },
+        priority: context.dataComplexity > 0.7 ? 0.8 : 0.3
+      }
     };
 
     // Select strategy with highest priority
     const selectedStrategy = Object.values(strategies).reduce((best, current) =>
-      current.priority > best.priority ? current : best,
+      current.priority > best.priority ? current : best
     );
 
     return selectedStrategy;
@@ -741,25 +752,25 @@ class CognitivePatternEvolution {
     let newPatterns = [...agentData.activePatterns];
 
     switch (strategy.type) {
-    case 'pattern_addition':
-      newPatterns = await this.addPatterns(agentId, newPatterns, context);
-      break;
+      case 'pattern_addition':
+        newPatterns = await this.addPatterns(agentId, newPatterns, context);
+        break;
 
-    case 'pattern_removal':
-      newPatterns = await this.removePatterns(agentId, newPatterns, context);
-      break;
+      case 'pattern_removal':
+        newPatterns = await this.removePatterns(agentId, newPatterns, context);
+        break;
 
-    case 'pattern_modification':
-      newPatterns = await this.modifyPatterns(agentId, newPatterns, context);
-      break;
+      case 'pattern_modification':
+        newPatterns = await this.modifyPatterns(agentId, newPatterns, context);
+        break;
 
-    case 'pattern_rebalancing':
-      newPatterns = await this.rebalancePatterns(agentId, newPatterns, context);
-      break;
+      case 'pattern_rebalancing':
+        newPatterns = await this.rebalancePatterns(agentId, newPatterns, context);
+        break;
 
-    case 'pattern_hybridization':
-      newPatterns = await this.hybridizePatterns(agentId, newPatterns, context);
-      break;
+      case 'pattern_hybridization':
+        newPatterns = await this.hybridizePatterns(agentId, newPatterns, context);
+        break;
     }
 
     // Update agent patterns
@@ -884,8 +895,14 @@ class CognitivePatternEvolution {
 
     // Adapt characteristics based on context
     if (context.creativity_required > 0.7) {
-      adaptiveTemplate.characteristics.explorationRate = Math.min(1, adaptiveTemplate.characteristics.explorationRate + 0.2);
-      adaptiveTemplate.characteristics.exploitationRate = Math.max(0, adaptiveTemplate.characteristics.exploitationRate - 0.2);
+      adaptiveTemplate.characteristics.explorationRate = Math.min(
+        1,
+        adaptiveTemplate.characteristics.explorationRate + 0.2
+      );
+      adaptiveTemplate.characteristics.exploitationRate = Math.max(
+        0,
+        adaptiveTemplate.characteristics.exploitationRate - 0.2
+      );
     }
 
     if (context.dataComplexity > 0.8) {
@@ -965,7 +982,7 @@ class CognitivePatternEvolution {
       name: `Hybrid: ${template1.name} + ${template2.name}`,
       description: `Combination of ${template1.name.toLowerCase()} and ${template2.name.toLowerCase()}`,
       characteristics: {},
-      adaptationRules: {},
+      adaptationRules: {}
     };
 
     // Blend characteristics
@@ -973,17 +990,18 @@ class CognitivePatternEvolution {
     const chars2 = template2.characteristics;
 
     hybrid.characteristics = {
-      searchStrategy: context.creativity_required > 0.5 ? chars2.searchStrategy : chars1.searchStrategy,
+      searchStrategy:
+        context.creativity_required > 0.5 ? chars2.searchStrategy : chars1.searchStrategy,
       explorationRate: (chars1.explorationRate + chars2.explorationRate) / 2,
       exploitationRate: (chars1.exploitationRate + chars2.exploitationRate) / 2,
       decisionMaking: context.dataComplexity > 0.6 ? chars1.decisionMaking : chars2.decisionMaking,
-      patternRecognition: chars1.patternRecognition, // Use first template's approach
+      patternRecognition: chars1.patternRecognition // Use first template's approach
     };
 
     // Combine adaptation rules
     hybrid.adaptationRules = {
       ...template1.adaptationRules,
-      ...template2.adaptationRules,
+      ...template2.adaptationRules
     };
 
     return hybrid;
@@ -1058,7 +1076,7 @@ class CognitivePatternEvolution {
             lastExchange: 0,
             exchangeCount: 0,
             successRate: 0.5,
-            patternCompatibility: 0.5,
+            patternCompatibility: 0.5
           });
         }
       }
@@ -1093,7 +1111,9 @@ class CognitivePatternEvolution {
 
     // Transfer compatible patterns
     if (compatiblePatterns.length > 0) {
-      targetData.activePatterns = [...new Set([...targetData.activePatterns, ...compatiblePatterns])];
+      targetData.activePatterns = [
+        ...new Set([...targetData.activePatterns, ...compatiblePatterns])
+      ];
 
       // Update metrics
       const metrics = this.evolutionMetrics.get(targetAgentId);
@@ -1127,12 +1147,12 @@ class CognitivePatternEvolution {
 
     // Check for complementary patterns
     const complementaryPatterns = {
-      'convergent': ['divergent', 'lateral'],
-      'divergent': ['convergent', 'critical'],
-      'lateral': ['systems', 'convergent'],
-      'systems': ['lateral', 'abstract'],
-      'critical': ['divergent', 'abstract'],
-      'abstract': ['critical', 'systems'],
+      convergent: ['divergent', 'lateral'],
+      divergent: ['convergent', 'critical'],
+      lateral: ['systems', 'convergent'],
+      systems: ['lateral', 'abstract'],
+      critical: ['divergent', 'abstract'],
+      abstract: ['critical', 'systems']
     };
 
     const complements = complementaryPatterns[patternType] || [];
@@ -1164,7 +1184,7 @@ class CognitivePatternEvolution {
         template,
         effectiveness: this.getHistoricalPerformance(agentId, patternType),
         adaptationHistory: agentData.adaptationHistory.filter(a => a.patternType === patternType),
-        dominance: patternType === agentData.dominantPattern ? 1.0 : 0.5,
+        dominance: patternType === agentData.dominantPattern ? 1.0 : 0.5
       });
     }
 
@@ -1234,20 +1254,21 @@ class CognitivePatternEvolution {
 
     const growth = {
       patternDiversity: agentData.activePatterns.length / 6, // Normalize by max patterns
-      evolutionFrequency: metrics.totalEvolutions / Math.max(1, (Date.now() - agentData.lastEvolution) / (24 * 60 * 60 * 1000)),
+      evolutionFrequency:
+        metrics.totalEvolutions /
+        Math.max(1, (Date.now() - agentData.lastEvolution) / (24 * 60 * 60 * 1000)),
       adaptationSuccess: metrics.successfulAdaptations / Math.max(1, metrics.totalEvolutions),
       crossAgentLearning: metrics.crossAgentTransfers / Math.max(1, metrics.totalEvolutions),
-      emergentPatterns: metrics.emergentPatterns / Math.max(1, metrics.totalEvolutions),
+      emergentPatterns: metrics.emergentPatterns / Math.max(1, metrics.totalEvolutions)
     };
 
     // Calculate overall growth score
-    const overallGrowth = (
+    const overallGrowth =
       growth.patternDiversity * 0.2 +
       growth.evolutionFrequency * 0.2 +
       growth.adaptationSuccess * 0.3 +
       growth.crossAgentLearning * 0.15 +
-      growth.emergentPatterns * 0.15
-    );
+      growth.emergentPatterns * 0.15;
 
     return Math.min(1, overallGrowth);
   }
@@ -1274,7 +1295,7 @@ class CognitivePatternEvolution {
       totalEvolutions,
       avgPatternsPerAgent: totalAgents > 0 ? totalPatterns / totalAgents : 0,
       availablePatternTypes: this.patternTemplates.size,
-      crossAgentSessions: this.crossAgentPatterns.size,
+      crossAgentSessions: this.crossAgentPatterns.size
     };
   }
 
@@ -1290,7 +1311,7 @@ class CognitivePatternEvolution {
     return {
       patterns: agentData ? { ...agentData } : null,
       history: history ? [...history] : [],
-      metrics: metrics ? { ...metrics } : null,
+      metrics: metrics ? { ...metrics } : null
     };
   }
 

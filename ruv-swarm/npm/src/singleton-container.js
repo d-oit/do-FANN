@@ -25,7 +25,7 @@ class SingletonContainer {
       factory,
       lazy: options.lazy !== false, // Default to lazy loading
       singleton: options.singleton !== false, // Default to singleton
-      dependencies: options.dependencies || [],
+      dependencies: options.dependencies || []
     });
   }
 
@@ -56,7 +56,7 @@ class SingletonContainer {
     try {
       // Create instance using factory
       const instance = config.factory(...dependencies);
-      
+
       // Store singleton instance
       if (config.singleton) {
         this.instances.set(key, instance);
@@ -97,7 +97,7 @@ class SingletonContainer {
 
     // Destroy instances in reverse order of creation
     const instances = Array.from(this.instances.entries()).reverse();
-    
+
     for (const [key, instance] of instances) {
       try {
         if (instance && typeof instance.destroy === 'function') {
@@ -110,7 +110,7 @@ class SingletonContainer {
 
     this.instances.clear();
     this.factories.clear();
-    
+
     // Keep destroying flag to prevent new instance creation
     // Reset only when explicitly requested
   }
@@ -132,7 +132,7 @@ class SingletonContainer {
       registeredServices: this.factories.size,
       activeInstances: this.instances.size,
       services: Array.from(this.factories.keys()),
-      instances: Array.from(this.instances.keys()),
+      instances: Array.from(this.instances.keys())
     };
   }
 }
@@ -147,7 +147,7 @@ let globalContainer = null;
 export function getContainer() {
   if (!globalContainer) {
     globalContainer = new SingletonContainer();
-    
+
     // Register cleanup on process exit
     if (typeof process !== 'undefined') {
       process.on('exit', () => {
@@ -166,7 +166,7 @@ export function getContainer() {
       });
     }
   }
-  
+
   return globalContainer;
 }
 

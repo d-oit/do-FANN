@@ -10,28 +10,28 @@ const DEFAULT_LOG_LEVELS = {
   'mcp-server': 'INFO',
   'mcp-tools': 'INFO',
   'swarm-core': 'INFO',
-  'agent': 'DEBUG',
-  'neural': 'INFO',
+  agent: 'DEBUG',
+  neural: 'INFO',
   'wasm-loader': 'WARN',
-  'persistence': 'INFO',
-  'hooks': 'DEBUG',
-  'performance': 'INFO',
-  'memory': 'WARN',
+  persistence: 'INFO',
+  hooks: 'DEBUG',
+  performance: 'INFO',
+  memory: 'WARN'
 };
 
 // Log level mapping from environment variables
 const ENV_LOG_MAPPING = {
-  'LOG_LEVEL': null, // Global log level
-  'MCP_LOG_LEVEL': 'mcp-server',
-  'TOOLS_LOG_LEVEL': 'mcp-tools',
-  'SWARM_LOG_LEVEL': 'swarm-core',
-  'AGENT_LOG_LEVEL': 'agent',
-  'NEURAL_LOG_LEVEL': 'neural',
-  'WASM_LOG_LEVEL': 'wasm-loader',
-  'DB_LOG_LEVEL': 'persistence',
-  'HOOKS_LOG_LEVEL': 'hooks',
-  'PERF_LOG_LEVEL': 'performance',
-  'MEMORY_LOG_LEVEL': 'memory',
+  LOG_LEVEL: null, // Global log level
+  MCP_LOG_LEVEL: 'mcp-server',
+  TOOLS_LOG_LEVEL: 'mcp-tools',
+  SWARM_LOG_LEVEL: 'swarm-core',
+  AGENT_LOG_LEVEL: 'agent',
+  NEURAL_LOG_LEVEL: 'neural',
+  WASM_LOG_LEVEL: 'wasm-loader',
+  DB_LOG_LEVEL: 'persistence',
+  HOOKS_LOG_LEVEL: 'hooks',
+  PERF_LOG_LEVEL: 'performance',
+  MEMORY_LOG_LEVEL: 'memory'
 };
 
 /**
@@ -80,7 +80,7 @@ export class LoggingConfig {
       enableFile: process.env.LOG_TO_FILE === 'true' || options.enableFile,
       formatJson: process.env.LOG_FORMAT === 'json' || options.formatJson,
       logDir: process.env.LOG_DIR || options.logDir || './logs',
-      ...options,
+      ...options
     });
 
     this.loggers.set(component, logger);
@@ -118,7 +118,7 @@ export class LoggingConfig {
   getLogLevels() {
     return {
       global: this.globalLevel,
-      components: { ...this.componentLevels },
+      components: { ...this.componentLevels }
     };
   }
 
@@ -128,7 +128,7 @@ export class LoggingConfig {
   createChildLogger(parentLogger, module, correlationId = null) {
     return parentLogger.child({
       module,
-      correlationId: correlationId || parentLogger.correlationId,
+      correlationId: correlationId || parentLogger.correlationId
     });
   }
 
@@ -143,12 +143,12 @@ export class LoggingConfig {
         fileLogging: process.env.LOG_TO_FILE === 'true',
         jsonFormat: process.env.LOG_FORMAT === 'json',
         stderrOutput: process.env.MCP_MODE === 'stdio',
-        logDirectory: process.env.LOG_DIR || './logs',
+        logDirectory: process.env.LOG_DIR || './logs'
       },
       environment: {
         MCP_MODE: process.env.MCP_MODE,
-        NODE_ENV: process.env.NODE_ENV,
-      },
+        NODE_ENV: process.env.NODE_ENV
+      }
     };
 
     console.error('📊 Logging Configuration:', JSON.stringify(config, null, 2));
@@ -162,7 +162,7 @@ export const loggingConfig = new LoggingConfig();
 // Convenience functions
 export const getLogger = (component, options) => loggingConfig.getLogger(component, options);
 export const setLogLevel = (component, level) => loggingConfig.setLogLevel(component, level);
-export const setGlobalLogLevel = (level) => loggingConfig.setGlobalLogLevel(level);
+export const setGlobalLogLevel = level => loggingConfig.setGlobalLogLevel(level);
 
 // Pre-configured loggers for common components
 export const mcpLogger = loggingConfig.getLogger('mcp-server');

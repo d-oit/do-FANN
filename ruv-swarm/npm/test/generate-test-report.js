@@ -31,9 +31,9 @@ class TestReportGenerator {
           lines: 0,
           statements: 0,
           functions: 0,
-          branches: 0,
-        },
-      },
+          branches: 0
+        }
+      }
     };
   }
 
@@ -62,12 +62,7 @@ class TestReportGenerator {
   }
 
   countTestFiles() {
-    const testDirs = [
-      'test/unit',
-      'test/integration',
-      'test/performance',
-      'test',
-    ];
+    const testDirs = ['test/unit', 'test/integration', 'test/performance', 'test'];
 
     let totalFiles = 0;
     for (const dir of testDirs) {
@@ -77,7 +72,7 @@ class TestReportGenerator {
         totalFiles += files.length;
         this.reportData.testSuites[dir] = {
           files: files.length,
-          fileList: files.map(f => path.relative(path.join(__dirname, '..'), f)),
+          fileList: files.map(f => path.relative(path.join(__dirname, '..'), f))
         };
       }
     }
@@ -108,12 +103,14 @@ class TestReportGenerator {
       const output = execSync('npm test -- --coverage --json --outputFile=test-results.json', {
         cwd: path.join(__dirname, '..'),
         encoding: 'utf8',
-        stdio: 'pipe',
+        stdio: 'pipe'
       });
 
       // Parse test results
       if (fs.existsSync(path.join(__dirname, '..', 'test-results.json'))) {
-        const results = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'test-results.json'), 'utf8'));
+        const results = JSON.parse(
+          fs.readFileSync(path.join(__dirname, '..', 'test-results.json'), 'utf8')
+        );
         this.parseTestResults(results);
       }
     } catch (error) {
@@ -145,7 +142,7 @@ class TestReportGenerator {
           lines: coverage.total.lines.pct,
           statements: coverage.total.statements.pct,
           functions: coverage.total.functions.pct,
-          branches: coverage.total.branches.pct,
+          branches: coverage.total.branches.pct
         };
       }
     }
@@ -373,7 +370,10 @@ Version: ${this.reportData.version}
     if (this.reportData.summary.totalTests === 0) {
       return 0;
     }
-    return ((this.reportData.summary.totalPassed / this.reportData.summary.totalTests) * 100).toFixed(2);
+    return (
+      (this.reportData.summary.totalPassed / this.reportData.summary.totalTests) *
+      100
+    ).toFixed(2);
   }
 
   getCoverageStatus(percentage) {

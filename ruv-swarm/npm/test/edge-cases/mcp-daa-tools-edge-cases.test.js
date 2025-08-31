@@ -10,25 +10,25 @@ import { DAA_MCPTools, daaMcpTools } from '../../src/mcp-daa-tools.js';
 const mockDaaService = {
   initialize: vi.fn().mockResolvedValue(true),
   getCapabilities: vi.fn().mockReturnValue(['autonomous', 'learning', 'coordination']),
-  createAgent: vi.fn().mockImplementation(async(config) => ({
+  createAgent: vi.fn().mockImplementation(async config => ({
     id: config.id,
     cognitivePattern: config.cognitivePattern,
     capabilities: new Set(config.capabilities || []),
-    created: Date.now(),
+    created: Date.now()
   })),
-  adaptAgent: vi.fn().mockImplementation(async(agentId, feedback) => ({
+  adaptAgent: vi.fn().mockImplementation(async (agentId, feedback) => ({
     previousPattern: 'convergent',
     newPattern: 'adaptive',
     improvement: 0.15,
-    insights: ['Pattern adaptation successful', 'Performance improved'],
+    insights: ['Pattern adaptation successful', 'Performance improved']
   })),
-  createWorkflow: vi.fn().mockImplementation(async(id, steps, dependencies) => ({
+  createWorkflow: vi.fn().mockImplementation(async (id, steps, dependencies) => ({
     id,
     steps: steps || [],
     dependencies: dependencies || {},
-    status: 'created',
+    status: 'created'
   })),
-  executeWorkflow: vi.fn().mockImplementation(async(workflowId, options) => ({
+  executeWorkflow: vi.fn().mockImplementation(async (workflowId, options) => ({
     complete: true,
     stepsCompleted: 5,
     totalSteps: 5,
@@ -39,14 +39,14 @@ const mockDaaService = {
       { step: 2, result: 'success' },
       { step: 3, result: 'success' },
       { step: 4, result: 'success' },
-      { step: 5, result: 'success' },
-    ],
+      { step: 5, result: 'success' }
+    ]
   })),
-  shareKnowledge: vi.fn().mockImplementation(async(sourceId, targetIds, knowledge) => ({
+  shareKnowledge: vi.fn().mockImplementation(async (sourceId, targetIds, knowledge) => ({
     updatedAgents: targetIds.length,
-    transferRate: 0.95,
+    transferRate: 0.95
   })),
-  getAgentLearningStatus: vi.fn().mockImplementation(async(agentId) => ({
+  getAgentLearningStatus: vi.fn().mockImplementation(async agentId => ({
     totalCycles: 42,
     avgProficiency: 0.87,
     domains: ['language', 'vision', 'reasoning'],
@@ -57,40 +57,40 @@ const mockDaaService = {
     detailedMetrics: {
       accuracy: 0.92,
       speed: 0.85,
-      efficiency: 0.78,
-    },
+      efficiency: 0.78
+    }
   })),
-  getSystemLearningStatus: vi.fn().mockImplementation(async() => ({
+  getSystemLearningStatus: vi.fn().mockImplementation(async () => ({
     totalCycles: 156,
     avgProficiency: 0.83,
     domains: ['nlp', 'cv', 'rl', 'graph'],
     adaptationRate: 0.19,
     neuralModelsCount: 12,
     persistentMemorySize: 8 * 1024 * 1024,
-    performanceTrend: 'stable',
+    performanceTrend: 'stable'
   })),
-  analyzeCognitivePatterns: vi.fn().mockImplementation(async(agentId) => ({
+  analyzeCognitivePatterns: vi.fn().mockImplementation(async agentId => ({
     patterns: ['convergent', 'systems', 'adaptive'],
     effectiveness: {
       convergent: 0.89,
       systems: 0.76,
-      adaptive: 0.91,
+      adaptive: 0.91
     },
     recommendations: ['Increase adaptive pattern usage', 'Optimize convergent thinking'],
-    optimizationScore: 0.85,
+    optimizationScore: 0.85
   })),
-  setCognitivePattern: vi.fn().mockImplementation(async(agentId, pattern) => ({
+  setCognitivePattern: vi.fn().mockImplementation(async (agentId, pattern) => ({
     previousPattern: 'convergent',
     success: true,
-    expectedImprovement: 0.12,
+    expectedImprovement: 0.12
   })),
-  performMetaLearning: vi.fn().mockImplementation(async(config) => ({
+  performMetaLearning: vi.fn().mockImplementation(async config => ({
     knowledgeItems: 47,
     updatedAgents: 8,
     proficiencyGain: 0.18,
-    insights: ['Cross-domain transfer successful', 'New patterns emerged'],
+    insights: ['Cross-domain transfer successful', 'New patterns emerged']
   })),
-  getPerformanceMetrics: vi.fn().mockImplementation(async(config) => ({
+  getPerformanceMetrics: vi.fn().mockImplementation(async config => ({
     totalAgents: 15,
     activeAgents: 12,
     tasksCompleted: 1847,
@@ -105,23 +105,29 @@ const mockDaaService = {
     memoryOptimization: 0.45,
     neuralModelsActive: 9,
     avgInferenceTime: 15.6,
-    totalTrainingIterations: 12847,
-  })),
+    totalTrainingIterations: 12847
+  }))
 };
 
 // Mock the enhanced MCP tools
 const mockMcpTools = {
   recordToolMetrics: vi.fn(),
   activeSwarms: new Map([
-    ['test-swarm-1', {
-      agents: new Map(),
-      maxAgents: 10,
-    }],
-    ['test-swarm-2', {
-      agents: new Map(),
-      maxAgents: 5,
-    }],
-  ]),
+    [
+      'test-swarm-1',
+      {
+        agents: new Map(),
+        maxAgents: 10
+      }
+    ],
+    [
+      'test-swarm-2',
+      {
+        agents: new Map(),
+        maxAgents: 5
+      }
+    ]
+  ])
 };
 
 describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
@@ -135,7 +141,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
 
     // Mock the daaService import
     vi.doMock('../../src/daa-service.js', () => ({
-      daaService: mockDaaService,
+      daaService: mockDaaService
     }));
   });
 
@@ -144,7 +150,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
   });
 
   describe('Initialization Edge Cases', () => {
-    it('should handle multiple initialization calls gracefully', async() => {
+    it('should handle multiple initialization calls gracefully', async () => {
       await daaTools.ensureInitialized();
       await daaTools.ensureInitialized();
       await daaTools.ensureInitialized();
@@ -153,14 +159,14 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(daaTools.daaInitialized).toBe(true);
     });
 
-    it('should handle initialization failure', async() => {
+    it('should handle initialization failure', async () => {
       mockDaaService.initialize.mockRejectedValueOnce(new Error('Init failed'));
 
       await expect(daaTools.ensureInitialized()).rejects.toThrow('Init failed');
       expect(daaTools.daaInitialized).toBe(false);
     });
 
-    it('should handle concurrent initialization calls', async() => {
+    it('should handle concurrent initialization calls', async () => {
       const promises = Array.from({ length: 5 }, () => daaTools.ensureInitialized());
 
       await Promise.all(promises);
@@ -171,7 +177,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
   });
 
   describe('daa_init Edge Cases', () => {
-    it('should handle successful initialization with default parameters', async() => {
+    it('should handle successful initialization with default parameters', async () => {
       const result = await daaTools.daa_init({});
 
       expect(result).toEqual({
@@ -181,24 +187,24 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
           peerCoordination: true,
           persistenceMode: 'auto',
           neuralIntegration: true,
-          cognitivePatterns: 6,
+          cognitivePatterns: 6
         },
         capabilities: ['autonomous', 'learning', 'coordination'],
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
 
       expect(mockMcpTools.recordToolMetrics).toHaveBeenCalledWith(
         'daa_init',
         expect.any(Number),
-        'success',
+        'success'
       );
     });
 
-    it('should handle custom initialization parameters', async() => {
+    it('should handle custom initialization parameters', async () => {
       const params = {
         enableLearning: false,
         enableCoordination: false,
-        persistenceMode: 'memory',
+        persistenceMode: 'memory'
       };
 
       const result = await daaTools.daa_init(params);
@@ -208,11 +214,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         peerCoordination: false,
         persistenceMode: 'memory',
         neuralIntegration: true,
-        cognitivePatterns: 6,
+        cognitivePatterns: 6
       });
     });
 
-    it('should handle initialization errors gracefully', async() => {
+    it('should handle initialization errors gracefully', async () => {
       mockDaaService.initialize.mockRejectedValueOnce(new Error('Service unavailable'));
 
       await expect(daaTools.daa_init({})).rejects.toThrow('Service unavailable');
@@ -221,11 +227,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         'daa_init',
         expect.any(Number),
         'error',
-        'Service unavailable',
+        'Service unavailable'
       );
     });
 
-    it('should handle missing metrics recorder gracefully', async() => {
+    it('should handle missing metrics recorder gracefully', async () => {
       const daaToolsNoMetrics = new DAA_MCPTools(null);
 
       const result = await daaToolsNoMetrics.daa_init({});
@@ -236,7 +242,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
   });
 
   describe('daa_agent_create Edge Cases', () => {
-    it('should handle successful agent creation with minimal parameters', async() => {
+    it('should handle successful agent creation with minimal parameters', async () => {
       const params = { id: 'test-agent-1' };
 
       const result = await daaTools.daa_agent_create(params);
@@ -249,17 +255,17 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         learning_enabled: false,
         memory_enabled: true,
         status: 'active',
-        created_at: expect.any(String),
+        created_at: expect.any(String)
       });
     });
 
-    it('should handle agent creation with full configuration', async() => {
+    it('should handle agent creation with full configuration', async () => {
       const params = {
         id: 'full-agent',
         capabilities: ['reasoning', 'learning', 'adaptation'],
         cognitivePattern: 'divergent',
         learningRate: 0.005,
-        enableMemory: false,
+        enableMemory: false
       };
 
       const result = await daaTools.daa_agent_create(params);
@@ -272,11 +278,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         learning_enabled: true,
         memory_enabled: false,
         status: 'active',
-        created_at: expect.any(String),
+        created_at: expect.any(String)
       });
     });
 
-    it('should handle missing agent ID error', async() => {
+    it('should handle missing agent ID error', async () => {
       const params = { capabilities: ['test'] };
 
       await expect(daaTools.daa_agent_create(params)).rejects.toThrow('Agent ID is required');
@@ -285,11 +291,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         'daa_agent_create',
         expect.any(Number),
         'error',
-        'Agent ID is required',
+        'Agent ID is required'
       );
     });
 
-    it('should handle swarm assignment when all swarms are full', async() => {
+    it('should handle swarm assignment when all swarms are full', async () => {
       // Fill up all available swarms
       const swarm1 = mockMcpTools.activeSwarms.get('test-swarm-1');
       const swarm2 = mockMcpTools.activeSwarms.get('test-swarm-2');
@@ -309,7 +315,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.swarm_id).toBe('daa-default-swarm');
     });
 
-    it('should handle no active swarms scenario', async() => {
+    it('should handle no active swarms scenario', async () => {
       const daaToolsNoSwarms = new DAA_MCPTools({ recordToolMetrics: vi.fn() });
 
       const result = await daaToolsNoSwarms.daa_agent_create({ id: 'no-swarm-agent' });
@@ -317,15 +323,17 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.swarm_id).toBe('daa-default-swarm');
     });
 
-    it('should handle agent creation service errors', async() => {
+    it('should handle agent creation service errors', async () => {
       mockDaaService.createAgent.mockRejectedValueOnce(new Error('Agent creation failed'));
 
-      await expect(daaTools.daa_agent_create({ id: 'fail-agent' })).rejects.toThrow('Agent creation failed');
+      await expect(daaTools.daa_agent_create({ id: 'fail-agent' })).rejects.toThrow(
+        'Agent creation failed'
+      );
     });
   });
 
   describe('daa_agent_adapt Edge Cases', () => {
-    it('should handle successful agent adaptation with minimal parameters', async() => {
+    it('should handle successful agent adaptation with minimal parameters', async () => {
       const params = { agentId: 'adapt-test' };
 
       const result = await daaTools.daa_agent_adapt(params);
@@ -337,16 +345,16 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         new_pattern: 'adaptive',
         performance_improvement: 0.15,
         learning_insights: ['Pattern adaptation successful', 'Performance improved'],
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle adaptation with full feedback', async() => {
+    it('should handle adaptation with full feedback', async () => {
       const params = {
         agentId: 'detailed-adapt',
         feedback: 'Agent performed well but could improve reasoning speed',
         performanceScore: 0.85,
-        suggestions: ['Optimize inference pipeline', 'Increase attention weights'],
+        suggestions: ['Optimize inference pipeline', 'Increase attention weights']
       };
 
       const result = await daaTools.daa_agent_adapt(params);
@@ -355,20 +363,22 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.adaptation_complete).toBe(true);
     });
 
-    it('should handle missing agent ID error', async() => {
+    it('should handle missing agent ID error', async () => {
       await expect(daaTools.daa_agent_adapt({})).rejects.toThrow('Agent ID is required');
     });
 
-    it('should handle adaptation service failures', async() => {
+    it('should handle adaptation service failures', async () => {
       mockDaaService.adaptAgent.mockRejectedValueOnce(new Error('Adaptation failed'));
 
-      await expect(daaTools.daa_agent_adapt({ agentId: 'fail-adapt' })).rejects.toThrow('Adaptation failed');
+      await expect(daaTools.daa_agent_adapt({ agentId: 'fail-adapt' })).rejects.toThrow(
+        'Adaptation failed'
+      );
     });
 
-    it('should handle invalid performance scores gracefully', async() => {
+    it('should handle invalid performance scores gracefully', async () => {
       const params = {
         agentId: 'invalid-score',
-        performanceScore: -0.5, // Invalid negative score
+        performanceScore: -0.5 // Invalid negative score
       };
 
       // Should still work, DAA service should handle validation
@@ -378,16 +388,16 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
   });
 
   describe('daa_workflow_create Edge Cases', () => {
-    it('should handle successful workflow creation', async() => {
+    it('should handle successful workflow creation', async () => {
       const params = {
         id: 'test-workflow',
         name: 'Test Workflow',
         steps: [
           { id: 'step1', action: 'initialize' },
           { id: 'step2', action: 'process' },
-          { id: 'step3', action: 'finalize' },
+          { id: 'step3', action: 'finalize' }
         ],
-        dependencies: { step2: ['step1'], step3: ['step2'] },
+        dependencies: { step2: ['step1'], step3: ['step2'] }
       };
 
       const result = await daaTools.daa_workflow_create(params);
@@ -399,23 +409,29 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         execution_strategy: 'parallel',
         dependencies_count: 2,
         status: 'created',
-        created_at: expect.any(String),
+        created_at: expect.any(String)
       });
     });
 
-    it('should handle missing required parameters', async() => {
-      await expect(daaTools.daa_workflow_create({})).rejects.toThrow('Workflow ID and name are required');
+    it('should handle missing required parameters', async () => {
+      await expect(daaTools.daa_workflow_create({})).rejects.toThrow(
+        'Workflow ID and name are required'
+      );
 
-      await expect(daaTools.daa_workflow_create({ id: 'test' })).rejects.toThrow('Workflow ID and name are required');
+      await expect(daaTools.daa_workflow_create({ id: 'test' })).rejects.toThrow(
+        'Workflow ID and name are required'
+      );
 
-      await expect(daaTools.daa_workflow_create({ name: 'test' })).rejects.toThrow('Workflow ID and name are required');
+      await expect(daaTools.daa_workflow_create({ name: 'test' })).rejects.toThrow(
+        'Workflow ID and name are required'
+      );
     });
 
-    it('should handle different execution strategies', async() => {
+    it('should handle different execution strategies', async () => {
       const params = {
         id: 'sequential-workflow',
         name: 'Sequential Test',
-        strategy: 'sequential',
+        strategy: 'sequential'
       };
 
       const result = await daaTools.daa_workflow_create(params);
@@ -423,10 +439,10 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.execution_strategy).toBe('sequential');
     });
 
-    it('should handle empty steps and dependencies', async() => {
+    it('should handle empty steps and dependencies', async () => {
       const params = {
         id: 'minimal-workflow',
-        name: 'Minimal Workflow',
+        name: 'Minimal Workflow'
       };
 
       const result = await daaTools.daa_workflow_create(params);
@@ -435,22 +451,24 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.dependencies_count).toBe(0);
     });
 
-    it('should handle workflow creation service errors', async() => {
+    it('should handle workflow creation service errors', async () => {
       mockDaaService.createWorkflow.mockRejectedValueOnce(new Error('Workflow creation failed'));
 
-      await expect(daaTools.daa_workflow_create({
-        id: 'fail-workflow',
-        name: 'Failing Workflow',
-      })).rejects.toThrow('Workflow creation failed');
+      await expect(
+        daaTools.daa_workflow_create({
+          id: 'fail-workflow',
+          name: 'Failing Workflow'
+        })
+      ).rejects.toThrow('Workflow creation failed');
     });
   });
 
   describe('daa_workflow_execute Edge Cases', () => {
-    it('should handle successful workflow execution', async() => {
+    it('should handle successful workflow execution', async () => {
       const params = {
         workflowId: 'execute-test',
         agentIds: ['agent-1', 'agent-2', 'agent-3'],
-        parallelExecution: true,
+        parallelExecution: true
       };
 
       const result = await daaTools.daa_workflow_execute(params);
@@ -463,15 +481,15 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         execution_time_ms: 1250,
         agents_involved: ['agent-1', 'agent-2', 'agent-3'],
         results: expect.any(Array),
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle missing workflow ID', async() => {
+    it('should handle missing workflow ID', async () => {
       await expect(daaTools.daa_workflow_execute({})).rejects.toThrow('Workflow ID is required');
     });
 
-    it('should handle execution with default parameters', async() => {
+    it('should handle execution with default parameters', async () => {
       const params = { workflowId: 'default-test' };
 
       const result = await daaTools.daa_workflow_execute(params);
@@ -480,18 +498,20 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.agents_involved).toEqual(['agent-1', 'agent-2']); // Default from mock
     });
 
-    it('should handle execution service failures', async() => {
+    it('should handle execution service failures', async () => {
       mockDaaService.executeWorkflow.mockRejectedValueOnce(new Error('Execution failed'));
 
-      await expect(daaTools.daa_workflow_execute({
-        workflowId: 'fail-execute',
-      })).rejects.toThrow('Execution failed');
+      await expect(
+        daaTools.daa_workflow_execute({
+          workflowId: 'fail-execute'
+        })
+      ).rejects.toThrow('Execution failed');
     });
 
-    it('should handle sequential execution mode', async() => {
+    it('should handle sequential execution mode', async () => {
       const params = {
         workflowId: 'sequential-test',
-        parallelExecution: false,
+        parallelExecution: false
       };
 
       const result = await daaTools.daa_workflow_execute(params);
@@ -501,7 +521,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
   });
 
   describe('daa_knowledge_share Edge Cases', () => {
-    it('should handle successful knowledge sharing', async() => {
+    it('should handle successful knowledge sharing', async () => {
       const params = {
         sourceAgentId: 'teacher-agent',
         targetAgentIds: ['student-1', 'student-2', 'student-3'],
@@ -509,8 +529,8 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         knowledgeContent: {
           concepts: ['tokenization', 'embeddings', 'attention'],
           expertise_level: 'intermediate',
-          confidence: 0.92,
-        },
+          confidence: 0.92
+        }
       };
 
       const result = await daaTools.daa_knowledge_share(params);
@@ -522,45 +542,55 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         sharing_complete: true,
         agents_updated: 3,
         knowledge_transfer_rate: 0.95,
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle missing required parameters', async() => {
-      await expect(daaTools.daa_knowledge_share({})).rejects.toThrow('Source and target agent IDs are required');
+    it('should handle missing required parameters', async () => {
+      await expect(daaTools.daa_knowledge_share({})).rejects.toThrow(
+        'Source and target agent IDs are required'
+      );
 
-      await expect(daaTools.daa_knowledge_share({
-        sourceAgentId: 'teacher',
-      })).rejects.toThrow('Source and target agent IDs are required');
+      await expect(
+        daaTools.daa_knowledge_share({
+          sourceAgentId: 'teacher'
+        })
+      ).rejects.toThrow('Source and target agent IDs are required');
 
-      await expect(daaTools.daa_knowledge_share({
-        targetAgentIds: ['student'],
-      })).rejects.toThrow('Source and target agent IDs are required');
+      await expect(
+        daaTools.daa_knowledge_share({
+          targetAgentIds: ['student']
+        })
+      ).rejects.toThrow('Source and target agent IDs are required');
     });
 
-    it('should handle empty target agents list', async() => {
+    it('should handle empty target agents list', async () => {
       const params = {
         sourceAgentId: 'teacher',
-        targetAgentIds: [],
+        targetAgentIds: []
       };
 
-      await expect(daaTools.daa_knowledge_share(params)).rejects.toThrow('Source and target agent IDs are required');
+      await expect(daaTools.daa_knowledge_share(params)).rejects.toThrow(
+        'Source and target agent IDs are required'
+      );
     });
 
-    it('should handle knowledge sharing service failures', async() => {
+    it('should handle knowledge sharing service failures', async () => {
       mockDaaService.shareKnowledge.mockRejectedValueOnce(new Error('Knowledge sharing failed'));
 
-      await expect(daaTools.daa_knowledge_share({
-        sourceAgentId: 'fail-teacher',
-        targetAgentIds: ['student'],
-      })).rejects.toThrow('Knowledge sharing failed');
+      await expect(
+        daaTools.daa_knowledge_share({
+          sourceAgentId: 'fail-teacher',
+          targetAgentIds: ['student']
+        })
+      ).rejects.toThrow('Knowledge sharing failed');
     });
 
-    it('should handle undefined knowledge content', async() => {
+    it('should handle undefined knowledge content', async () => {
       const params = {
         sourceAgentId: 'teacher',
         targetAgentIds: ['student'],
-        knowledgeContent: undefined,
+        knowledgeContent: undefined
       };
 
       const result = await daaTools.daa_knowledge_share(params);
@@ -569,7 +599,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
   });
 
   describe('daa_learning_status Edge Cases', () => {
-    it('should handle specific agent learning status', async() => {
+    it('should handle specific agent learning status', async () => {
       const params = { agentId: 'learning-agent-1', detailed: true };
 
       const result = await daaTools.daa_learning_status(params);
@@ -586,13 +616,13 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         detailed_metrics: {
           accuracy: 0.92,
           speed: 0.85,
-          efficiency: 0.78,
+          efficiency: 0.78
         },
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle system-wide learning status', async() => {
+    it('should handle system-wide learning status', async () => {
       const params = {};
 
       const result = await daaTools.daa_learning_status(params);
@@ -602,7 +632,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.knowledge_domains).toEqual(['nlp', 'cv', 'rl', 'graph']);
     });
 
-    it('should handle detailed metrics only when requested', async() => {
+    it('should handle detailed metrics only when requested', async () => {
       const params = { agentId: 'test-agent', detailed: false };
 
       const result = await daaTools.daa_learning_status(params);
@@ -610,23 +640,27 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result).not.toHaveProperty('detailed_metrics');
     });
 
-    it('should handle learning status service failures', async() => {
+    it('should handle learning status service failures', async () => {
       mockDaaService.getAgentLearningStatus.mockRejectedValueOnce(new Error('Status unavailable'));
 
-      await expect(daaTools.daa_learning_status({
-        agentId: 'fail-agent',
-      })).rejects.toThrow('Status unavailable');
+      await expect(
+        daaTools.daa_learning_status({
+          agentId: 'fail-agent'
+        })
+      ).rejects.toThrow('Status unavailable');
     });
 
-    it('should handle system learning status service failures', async() => {
-      mockDaaService.getSystemLearningStatus.mockRejectedValueOnce(new Error('System status unavailable'));
+    it('should handle system learning status service failures', async () => {
+      mockDaaService.getSystemLearningStatus.mockRejectedValueOnce(
+        new Error('System status unavailable')
+      );
 
       await expect(daaTools.daa_learning_status({})).rejects.toThrow('System status unavailable');
     });
   });
 
   describe('daa_cognitive_pattern Edge Cases', () => {
-    it('should handle cognitive pattern analysis', async() => {
+    it('should handle cognitive pattern analysis', async () => {
       const params = { agentId: 'analyze-agent', analyze: true };
 
       const result = await daaTools.daa_cognitive_pattern(params);
@@ -638,19 +672,19 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         pattern_effectiveness: {
           convergent: 0.89,
           systems: 0.76,
-          adaptive: 0.91,
+          adaptive: 0.91
         },
         recommendations: ['Increase adaptive pattern usage', 'Optimize convergent thinking'],
         optimization_potential: 0.85,
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle cognitive pattern change', async() => {
+    it('should handle cognitive pattern change', async () => {
       const params = {
         agentId: 'pattern-agent',
         pattern: 'lateral',
-        analyze: false,
+        analyze: false
       };
 
       const result = await daaTools.daa_cognitive_pattern(params);
@@ -661,48 +695,56 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         new_pattern: 'lateral',
         adaptation_success: true,
         expected_improvement: 0.12,
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle pattern change without agent ID', async() => {
+    it('should handle pattern change without agent ID', async () => {
       const params = { pattern: 'divergent', analyze: false };
 
-      await expect(daaTools.daa_cognitive_pattern(params)).rejects.toThrow('Agent ID and pattern are required for pattern change');
+      await expect(daaTools.daa_cognitive_pattern(params)).rejects.toThrow(
+        'Agent ID and pattern are required for pattern change'
+      );
     });
 
-    it('should handle pattern change without pattern', async() => {
+    it('should handle pattern change without pattern', async () => {
       const params = { agentId: 'test-agent', analyze: false };
 
-      await expect(daaTools.daa_cognitive_pattern(params)).rejects.toThrow('Agent ID and pattern are required for pattern change');
+      await expect(daaTools.daa_cognitive_pattern(params)).rejects.toThrow(
+        'Agent ID and pattern are required for pattern change'
+      );
     });
 
-    it('should handle analysis service failures', async() => {
+    it('should handle analysis service failures', async () => {
       mockDaaService.analyzeCognitivePatterns.mockRejectedValueOnce(new Error('Analysis failed'));
 
-      await expect(daaTools.daa_cognitive_pattern({
-        agentId: 'fail-agent',
-        analyze: true,
-      })).rejects.toThrow('Analysis failed');
+      await expect(
+        daaTools.daa_cognitive_pattern({
+          agentId: 'fail-agent',
+          analyze: true
+        })
+      ).rejects.toThrow('Analysis failed');
     });
 
-    it('should handle pattern setting service failures', async() => {
+    it('should handle pattern setting service failures', async () => {
       mockDaaService.setCognitivePattern.mockRejectedValueOnce(new Error('Pattern change failed'));
 
-      await expect(daaTools.daa_cognitive_pattern({
-        agentId: 'fail-agent',
-        pattern: 'adaptive',
-      })).rejects.toThrow('Pattern change failed');
+      await expect(
+        daaTools.daa_cognitive_pattern({
+          agentId: 'fail-agent',
+          pattern: 'adaptive'
+        })
+      ).rejects.toThrow('Pattern change failed');
     });
   });
 
   describe('daa_meta_learning Edge Cases', () => {
-    it('should handle successful meta-learning transfer', async() => {
+    it('should handle successful meta-learning transfer', async () => {
       const params = {
         sourceDomain: 'computer-vision',
         targetDomain: 'natural-language-processing',
         transferMode: 'adaptive',
-        agentIds: ['agent-1', 'agent-2', 'agent-3'],
+        agentIds: ['agent-1', 'agent-2', 'agent-3']
       };
 
       const result = await daaTools.daa_meta_learning(params);
@@ -716,14 +758,14 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         agents_updated: 8,
         domain_proficiency_gain: 0.18,
         cross_domain_insights: ['Cross-domain transfer successful', 'New patterns emerged'],
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle meta-learning with default parameters', async() => {
+    it('should handle meta-learning with default parameters', async () => {
       const params = {
         sourceDomain: 'reinforcement-learning',
-        targetDomain: 'supervised-learning',
+        targetDomain: 'supervised-learning'
       };
 
       const result = await daaTools.daa_meta_learning(params);
@@ -732,11 +774,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.meta_learning_complete).toBe(true);
     });
 
-    it('should handle different transfer modes', async() => {
+    it('should handle different transfer modes', async () => {
       const params = {
         sourceDomain: 'domain-a',
         targetDomain: 'domain-b',
-        transferMode: 'direct',
+        transferMode: 'direct'
       };
 
       const result = await daaTools.daa_meta_learning(params);
@@ -744,11 +786,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.transfer_mode).toBe('direct');
     });
 
-    it('should handle empty agent IDs list', async() => {
+    it('should handle empty agent IDs list', async () => {
       const params = {
         sourceDomain: 'domain-a',
         targetDomain: 'domain-b',
-        agentIds: [],
+        agentIds: []
       };
 
       const result = await daaTools.daa_meta_learning(params);
@@ -756,18 +798,20 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(result.meta_learning_complete).toBe(true);
     });
 
-    it('should handle meta-learning service failures', async() => {
+    it('should handle meta-learning service failures', async () => {
       mockDaaService.performMetaLearning.mockRejectedValueOnce(new Error('Meta-learning failed'));
 
-      await expect(daaTools.daa_meta_learning({
-        sourceDomain: 'fail-source',
-        targetDomain: 'fail-target',
-      })).rejects.toThrow('Meta-learning failed');
+      await expect(
+        daaTools.daa_meta_learning({
+          sourceDomain: 'fail-source',
+          targetDomain: 'fail-target'
+        })
+      ).rejects.toThrow('Meta-learning failed');
     });
   });
 
   describe('daa_performance_metrics Edge Cases', () => {
-    it('should handle comprehensive performance metrics', async() => {
+    it('should handle comprehensive performance metrics', async () => {
       const params = { category: 'all', timeRange: '24h' };
 
       const result = await daaTools.daa_performance_metrics(params);
@@ -780,29 +824,29 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
           active_agents: 12,
           autonomous_tasks_completed: 1847,
           average_task_time_ms: 2341,
-          learning_cycles_completed: 89,
+          learning_cycles_completed: 89
         },
         performance_metrics: {
           task_success_rate: 0.94,
           adaptation_effectiveness: 0.87,
           knowledge_sharing_events: 234,
-          cross_domain_transfers: 45,
+          cross_domain_transfers: 45
         },
         efficiency_metrics: {
           token_reduction: 0.32,
           parallel_execution_gain: 2.8,
-          memory_optimization: 0.45,
+          memory_optimization: 0.45
         },
         neural_metrics: {
           models_active: 9,
           inference_speed_ms: 15.6,
-          training_iterations: 12847,
+          training_iterations: 12847
         },
-        timestamp: expect.any(String),
+        timestamp: expect.any(String)
       });
     });
 
-    it('should handle different metric categories', async() => {
+    it('should handle different metric categories', async () => {
       const categories = ['system', 'performance', 'efficiency', 'neural'];
 
       for (const category of categories) {
@@ -811,19 +855,21 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       }
     });
 
-    it('should handle default parameters', async() => {
+    it('should handle default parameters', async () => {
       const result = await daaTools.daa_performance_metrics({});
 
       expect(result.metrics_category).toBe('all');
       expect(result.time_range).toBe('1h');
     });
 
-    it('should handle performance metrics service failures', async() => {
+    it('should handle performance metrics service failures', async () => {
       mockDaaService.getPerformanceMetrics.mockRejectedValueOnce(new Error('Metrics unavailable'));
 
-      await expect(daaTools.daa_performance_metrics({
-        category: 'fail',
-      })).rejects.toThrow('Metrics unavailable');
+      await expect(
+        daaTools.daa_performance_metrics({
+          category: 'fail'
+        })
+      ).rejects.toThrow('Metrics unavailable');
     });
   });
 
@@ -845,7 +891,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         'daa_learning_status',
         'daa_cognitive_pattern',
         'daa_meta_learning',
-        'daa_performance_metrics',
+        'daa_performance_metrics'
       ]);
     });
 
@@ -878,7 +924,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       expect(daaMcpTools.mcpTools).toBe(null); // Initialized with null
     });
 
-    it('should handle singleton operations without enhanced MCP tools', async() => {
+    it('should handle singleton operations without enhanced MCP tools', async () => {
       // This should work even without mcpTools set
       const result = await daaMcpTools.daa_init({});
       expect(result.initialized).toBe(true);
@@ -886,11 +932,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
   });
 
   describe('End-to-End DAA Workflow Tests', () => {
-    it('should complete full DAA agent lifecycle', async() => {
+    it('should complete full DAA agent lifecycle', async () => {
       // Step 1: Initialize DAA service
       const initResult = await daaTools.daa_init({
         enableLearning: true,
-        enableCoordination: true,
+        enableCoordination: true
       });
       expect(initResult.initialized).toBe(true);
 
@@ -901,8 +947,8 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
           id: `e2e-agent-${i}`,
           capabilities: [`capability-${i}`, 'learning'],
           cognitivePattern: ['convergent', 'divergent', 'adaptive'][i],
-          learningRate: 0.001 + (i * 0.001),
-          enableMemory: true,
+          learningRate: 0.001 + i * 0.001,
+          enableMemory: true
         });
 
         agentIds.push(createResult.agent_id);
@@ -916,16 +962,16 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         steps: [
           { id: 'analyze', action: 'data_analysis' },
           { id: 'learn', action: 'pattern_learning' },
-          { id: 'adapt', action: 'behavior_adaptation' },
+          { id: 'adapt', action: 'behavior_adaptation' }
         ],
-        strategy: 'parallel',
+        strategy: 'parallel'
       });
       expect(workflowResult.workflow_id).toBe('e2e-workflow');
 
       const executeResult = await daaTools.daa_workflow_execute({
         workflowId: 'e2e-workflow',
         agentIds,
-        parallelExecution: true,
+        parallelExecution: true
       });
       expect(executeResult.execution_complete).toBe(true);
 
@@ -934,7 +980,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         sourceAgentId: agentIds[0],
         targetAgentIds: agentIds.slice(1),
         knowledgeDomain: 'test-domain',
-        knowledgeContent: { insights: ['pattern-1', 'pattern-2'] },
+        knowledgeContent: { insights: ['pattern-1', 'pattern-2'] }
       });
       expect(shareResult.sharing_complete).toBe(true);
 
@@ -943,15 +989,15 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         const adaptResult = await daaTools.daa_agent_adapt({
           agentId,
           feedback: 'Good performance, continue learning',
-          performanceScore: 0.8 + (Math.random() * 0.2),
-          suggestions: ['Increase learning rate', 'Focus on weak areas'],
+          performanceScore: 0.8 + Math.random() * 0.2,
+          suggestions: ['Increase learning rate', 'Focus on weak areas']
         });
         expect(adaptResult.adaptation_complete).toBe(true);
       }
 
       // Step 6: Check learning status
       const statusResult = await daaTools.daa_learning_status({
-        detailed: true,
+        detailed: true
       });
       expect(statusResult.agent_id).toBe('all');
       expect(statusResult).toHaveProperty('detailed_metrics');
@@ -959,12 +1005,12 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       // Step 7: Get performance metrics
       const metricsResult = await daaTools.daa_performance_metrics({
         category: 'all',
-        timeRange: '1h',
+        timeRange: '1h'
       });
       expect(metricsResult.system_metrics.total_agents).toBeGreaterThan(0);
     });
 
-    it('should handle concurrent DAA operations', async() => {
+    it('should handle concurrent DAA operations', async () => {
       // Initialize once
       await daaTools.daa_init({});
 
@@ -973,8 +1019,8 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         daaTools.daa_agent_create({
           id: `concurrent-agent-${i}`,
           capabilities: [`concurrent-${i}`],
-          cognitivePattern: 'adaptive',
-        }),
+          cognitivePattern: 'adaptive'
+        })
       );
 
       const agents = await Promise.all(agentPromises);
@@ -985,8 +1031,8 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
         daaTools.daa_agent_adapt({
           agentId: agent.agent_id,
           feedback: 'Concurrent adaptation test',
-          performanceScore: Math.random(),
-        }),
+          performanceScore: Math.random()
+        })
       );
 
       const adaptResults = await Promise.all(adaptPromises);
@@ -996,11 +1042,11 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
       });
     });
 
-    it('should handle error recovery in complex DAA workflows', async() => {
+    it('should handle error recovery in complex DAA workflows', async () => {
       await daaTools.daa_init({});
 
       // Create agents with some expected to fail
-      const agentPromises = Array.from({ length: 5 }, async(_, i) => {
+      const agentPromises = Array.from({ length: 5 }, async (_, i) => {
         try {
           if (i === 2) {
             // Mock a failure
@@ -1009,7 +1055,7 @@ describe('MCP DAA Tools Edge Cases and E2E Tests', () => {
 
           return await daaTools.daa_agent_create({
             id: `recovery-agent-${i}`,
-            capabilities: [`recovery-${i}`],
+            capabilities: [`recovery-${i}`]
           });
         } catch (error) {
           return { error: error.message, failed: true };

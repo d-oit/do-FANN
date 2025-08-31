@@ -28,14 +28,14 @@ class MetaLearningFramework {
         innerLearningRate: 0.01,
         outerLearningRate: 0.001,
         innerSteps: 5,
-        metaBatchSize: 4,
+        metaBatchSize: 4
       },
       applicability: {
         fewShotLearning: 0.9,
         domainTransfer: 0.8,
         taskAdaptation: 0.9,
-        continualLearning: 0.6,
-      },
+        continualLearning: 0.6
+      }
     });
 
     // Prototypical Networks
@@ -46,14 +46,14 @@ class MetaLearningFramework {
       parameters: {
         embeddingDim: 64,
         distanceMetric: 'euclidean',
-        temperatureScale: 1.0,
+        temperatureScale: 1.0
       },
       applicability: {
         fewShotLearning: 0.95,
         domainTransfer: 0.7,
         taskAdaptation: 0.8,
-        continualLearning: 0.5,
-      },
+        continualLearning: 0.5
+      }
     });
 
     // Memory-Augmented Networks
@@ -66,14 +66,14 @@ class MetaLearningFramework {
         keySize: 64,
         valueSize: 64,
         readHeads: 1,
-        writeHeads: 1,
+        writeHeads: 1
       },
       applicability: {
         fewShotLearning: 0.8,
         domainTransfer: 0.6,
         taskAdaptation: 0.7,
-        continualLearning: 0.9,
-      },
+        continualLearning: 0.9
+      }
     });
 
     // Reptile Meta-Learning
@@ -85,14 +85,14 @@ class MetaLearningFramework {
         innerLearningRate: 0.02,
         outerLearningRate: 1.0,
         innerSteps: 10,
-        metaBatchSize: 5,
+        metaBatchSize: 5
       },
       applicability: {
         fewShotLearning: 0.85,
         domainTransfer: 0.75,
         taskAdaptation: 0.8,
-        continualLearning: 0.7,
-      },
+        continualLearning: 0.7
+      }
     });
 
     // Learning to Optimize
@@ -104,14 +104,14 @@ class MetaLearningFramework {
         optimizerType: 'lstm',
         optimizerHiddenSize: 20,
         learningRate: 0.001,
-        coordinatewise: true,
+        coordinatewise: true
       },
       applicability: {
         fewShotLearning: 0.7,
         domainTransfer: 0.8,
         taskAdaptation: 0.9,
-        continualLearning: 0.8,
-      },
+        continualLearning: 0.8
+      }
     });
 
     // Meta-Learning for Domain Adaptation
@@ -123,14 +123,14 @@ class MetaLearningFramework {
         domainDiscriminatorStrength: 0.1,
         gradientReversalLambda: 1.0,
         alignmentLoss: 'coral',
-        adaptationSteps: 20,
+        adaptationSteps: 20
       },
       applicability: {
         fewShotLearning: 0.6,
         domainTransfer: 0.95,
         taskAdaptation: 0.7,
-        continualLearning: 0.6,
-      },
+        continualLearning: 0.6
+      }
     });
 
     // Continual Meta-Learning
@@ -142,14 +142,14 @@ class MetaLearningFramework {
         regularizationStrength: 0.01,
         memoryReplayRatio: 0.2,
         plasticity: 0.8,
-        stability: 0.7,
+        stability: 0.7
       },
       applicability: {
         fewShotLearning: 0.7,
         domainTransfer: 0.7,
         taskAdaptation: 0.8,
-        continualLearning: 0.95,
-      },
+        continualLearning: 0.95
+      }
     });
 
     // Multi-Task Meta-Learning
@@ -161,14 +161,14 @@ class MetaLearningFramework {
         sharedLayers: 3,
         taskSpecificLayers: 2,
         taskWeighting: 'equal',
-        gradientNormalization: true,
+        gradientNormalization: true
       },
       applicability: {
         fewShotLearning: 0.8,
         domainTransfer: 0.8,
         taskAdaptation: 0.9,
-        continualLearning: 0.8,
-      },
+        continualLearning: 0.8
+      }
     });
   }
 
@@ -213,8 +213,8 @@ class MetaLearningFramework {
         strategy: 'maml',
         adaptiveRate: 0.01,
         experienceBuffer: 100,
-        transferThreshold: 0.7,
-      },
+        transferThreshold: 0.7
+      }
     };
   }
 
@@ -230,7 +230,7 @@ class MetaLearningFramework {
       taskComplexity: this.calculateAverageTaskComplexity(experiences),
       adaptationSuccess: this.calculateAdaptationSuccess(experiences),
       forgettingRate: this.calculateForgettingRate(experiences),
-      transferEfficiency: this.calculateTransferEfficiency(experiences),
+      transferEfficiency: this.calculateTransferEfficiency(experiences)
     };
 
     return patterns;
@@ -336,8 +336,8 @@ class MetaLearningFramework {
       return 0.5;
     }
 
-    const successfulAdaptations = experiences.filter(exp =>
-      exp.adaptationResult && exp.adaptationResult.success,
+    const successfulAdaptations = experiences.filter(
+      exp => exp.adaptationResult && exp.adaptationResult.success
     ).length;
 
     return successfulAdaptations / experiences.length;
@@ -459,7 +459,7 @@ class MetaLearningFramework {
       fewShot: patterns.learningSpeed < 0.4 || config.dataSize < 1000,
       domainTransfer: patterns.domainVariability > 0.5,
       taskAdaptation: patterns.adaptationSuccess < 0.6,
-      continualLearning: patterns.forgettingRate > 0.5,
+      continualLearning: patterns.forgettingRate > 0.5
     };
   }
 
@@ -474,33 +474,33 @@ class MetaLearningFramework {
 
     // Apply strategy-specific adaptations
     switch (strategy.type) {
-    case 'gradient_based':
-      adaptedConfig.metaLearning = this.applyGradientBasedMeta(strategy, patterns);
-      break;
+      case 'gradient_based':
+        adaptedConfig.metaLearning = this.applyGradientBasedMeta(strategy, patterns);
+        break;
 
-    case 'metric_based':
-      adaptedConfig.metaLearning = this.applyMetricBasedMeta(strategy, patterns);
-      break;
+      case 'metric_based':
+        adaptedConfig.metaLearning = this.applyMetricBasedMeta(strategy, patterns);
+        break;
 
-    case 'memory_based':
-      adaptedConfig.metaLearning = this.applyMemoryBasedMeta(strategy, patterns);
-      break;
+      case 'memory_based':
+        adaptedConfig.metaLearning = this.applyMemoryBasedMeta(strategy, patterns);
+        break;
 
-    case 'optimization_based':
-      adaptedConfig.metaLearning = this.applyOptimizationBasedMeta(strategy, patterns);
-      break;
+      case 'optimization_based':
+        adaptedConfig.metaLearning = this.applyOptimizationBasedMeta(strategy, patterns);
+        break;
 
-    case 'domain_based':
-      adaptedConfig.metaLearning = this.applyDomainBasedMeta(strategy, patterns);
-      break;
+      case 'domain_based':
+        adaptedConfig.metaLearning = this.applyDomainBasedMeta(strategy, patterns);
+        break;
 
-    case 'continual_based':
-      adaptedConfig.metaLearning = this.applyContinualBasedMeta(strategy, patterns);
-      break;
+      case 'continual_based':
+        adaptedConfig.metaLearning = this.applyContinualBasedMeta(strategy, patterns);
+        break;
 
-    case 'multi_task_based':
-      adaptedConfig.metaLearning = this.applyMultiTaskBasedMeta(strategy, patterns);
-      break;
+      case 'multi_task_based':
+        adaptedConfig.metaLearning = this.applyMultiTaskBasedMeta(strategy, patterns);
+        break;
     }
 
     // Add common meta-learning properties
@@ -719,7 +719,7 @@ class MetaLearningFramework {
       warmupEpochs: this.calculateWarmupEpochs(patterns),
       schedulerType: this.selectSchedulerType(patterns),
       regularizationStrength: this.optimizeRegularization(patterns),
-      earlyStoppingPatience: this.optimizeEarlyStopping(patterns),
+      earlyStoppingPatience: this.optimizeEarlyStopping(patterns)
     };
 
     console.log(`Optimized training parameters for agent ${agentId} based on meta-learning`);
@@ -826,7 +826,6 @@ class MetaLearningFramework {
       return 'step_decay'; // Stepwise reduction for complex tasks
     }
     return 'constant'; // Keep constant for stable cases
-
   }
 
   /**
@@ -903,7 +902,7 @@ class MetaLearningFramework {
     const enrichedExperience = {
       ...experience,
       timestamp: Date.now(),
-      id: `exp_${agentId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `exp_${agentId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
     experiences.push(enrichedExperience);
@@ -930,7 +929,7 @@ class MetaLearningFramework {
         averageAccuracy: 0,
         adaptationSuccessRate: 0,
         domainTransferCount: 0,
-        lastUpdate: Date.now(),
+        lastUpdate: Date.now()
       });
     }
 
@@ -945,7 +944,7 @@ class MetaLearningFramework {
         metrics.averageLearningTime = this.updateRunningAverage(
           metrics.averageLearningTime,
           experience.metrics.trainingTime,
-          metrics.totalExperiences,
+          metrics.totalExperiences
         );
       }
 
@@ -953,7 +952,7 @@ class MetaLearningFramework {
         metrics.averageAccuracy = this.updateRunningAverage(
           metrics.averageAccuracy,
           experience.metrics.accuracy,
-          metrics.totalExperiences,
+          metrics.totalExperiences
         );
       }
     }
@@ -999,7 +998,7 @@ class MetaLearningFramework {
       agentId,
       adaptationStrategy,
       sourceData,
-      targetData,
+      targetData
     );
 
     // Record domain adaptation experience
@@ -1012,8 +1011,8 @@ class MetaLearningFramework {
       adaptationResult,
       transferLearning: {
         enabled: true,
-        efficiencyGain: adaptationResult.efficiencyGain || 0,
-      },
+        efficiencyGain: adaptationResult.efficiencyGain || 0
+      }
     });
 
     return adaptationResult;
@@ -1030,7 +1029,7 @@ class MetaLearningFramework {
       featureShift: this.calculateFeatureShift(sourceData, targetData),
       labelShift: this.calculateLabelShift(sourceData, targetData),
       marginalShift: this.calculateMarginalShift(sourceData, targetData),
-      conditionalShift: this.calculateConditionalShift(sourceData, targetData),
+      conditionalShift: this.calculateConditionalShift(sourceData, targetData)
     };
   }
 
@@ -1132,7 +1131,7 @@ class MetaLearningFramework {
     const intersection = new Set([...sourceLabels].filter(x => targetLabels.has(x)));
     const union = new Set([...sourceLabels, ...targetLabels]);
 
-    return 1 - (intersection.size / union.size); // Jaccard distance
+    return 1 - intersection.size / union.size; // Jaccard distance
   }
 
   /**
@@ -1194,7 +1193,6 @@ class MetaLearningFramework {
       return 'label_adaptation';
     }
     return 'fine_tuning';
-
   }
 
   /**
@@ -1214,7 +1212,7 @@ class MetaLearningFramework {
       efficiencyGain: Math.random() * 0.4 + 0.1, // 10-50% efficiency gain
       accuracyImprovement: Math.random() * 0.2 + 0.05, // 5-25% accuracy improvement
       adaptationTime: Math.random() * 100 + 50, // 50-150 time units
-      transferredKnowledge: this.calculateTransferredKnowledge(sourceData, targetData),
+      transferredKnowledge: this.calculateTransferredKnowledge(sourceData, targetData)
     };
 
     // Store adaptation in transfer learning map
@@ -1227,7 +1225,7 @@ class MetaLearningFramework {
       strategy,
       result: adaptationResult,
       sourceDataSummary: this.summarizeData(sourceData),
-      targetDataSummary: this.summarizeData(targetData),
+      targetDataSummary: this.summarizeData(targetData)
     });
 
     return adaptationResult;
@@ -1253,7 +1251,7 @@ class MetaLearningFramework {
       sampleCount: data.samples ? data.samples.length : 0,
       featureDimensions: this.getFeatureDimensions(data),
       uniqueLabels: this.extractLabels(data).size,
-      dataType: this.inferDataType(data),
+      dataType: this.inferDataType(data)
     };
   }
 
@@ -1315,7 +1313,7 @@ class MetaLearningFramework {
       avgExperiencesPerAgent: totalAgents > 0 ? totalExperiences / totalAgents : 0,
       avgSuccessRate: totalAgents > 0 ? avgSuccessRate / totalAgents : 0,
       availableStrategies: this.metaStrategies.size,
-      transferLearningInstances: this.transferLearning.size,
+      transferLearningInstances: this.transferLearning.size
     };
   }
 
@@ -1328,7 +1326,7 @@ class MetaLearningFramework {
       experiences: this.agentExperiences.get(agentId) || [],
       domainAdaptations: this.domainAdaptations.get(agentId) || [],
       transferLearning: this.transferLearning.get(agentId) || [],
-      learningMetrics: this.learningMetrics.get(agentId) || null,
+      learningMetrics: this.learningMetrics.get(agentId) || null
     };
   }
 

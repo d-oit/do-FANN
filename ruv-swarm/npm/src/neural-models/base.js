@@ -12,7 +12,7 @@ class NeuralModel {
       accuracy: 0,
       loss: 1.0,
       epochsTrained: 0,
-      totalSamples: 0,
+      totalSamples: 0
     };
   }
 
@@ -206,7 +206,7 @@ class NeuralModel {
       config: this.getConfig(),
       weights: this.getWeights(),
       metrics: this.metrics,
-      trainingHistory: this.trainingHistory,
+      trainingHistory: this.trainingHistory
     };
 
     // In a real implementation, save to file
@@ -233,7 +233,7 @@ class NeuralModel {
   getConfig() {
     // To be overridden by subclasses
     return {
-      modelType: this.modelType,
+      modelType: this.modelType
     };
   }
 
@@ -241,7 +241,7 @@ class NeuralModel {
     return {
       ...this.metrics,
       modelType: this.modelType,
-      trainingHistory: this.trainingHistory,
+      trainingHistory: this.trainingHistory
     };
   }
 
@@ -260,7 +260,7 @@ class NeuralModel {
       accuracy: 0,
       loss: 1.0,
       epochsTrained: 0,
-      totalSamples: 0,
+      totalSamples: 0
     };
     this.initializeWeights();
   }

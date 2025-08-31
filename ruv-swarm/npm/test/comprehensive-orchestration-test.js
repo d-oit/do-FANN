@@ -29,12 +29,12 @@ async function comprehensiveOrchestrationTest() {
     const swarm1 = await mcpTools.swarm_init({
       topology: 'mesh',
       maxAgents: 3,
-      strategy: 'balanced',
+      strategy: 'balanced'
     });
     const swarm2 = await mcpTools.swarm_init({
       topology: 'star',
       maxAgents: 2,
-      strategy: 'balanced',
+      strategy: 'balanced'
     });
     console.log(`✅ Created ${swarm1.id} and ${swarm2.id}`);
 
@@ -47,7 +47,7 @@ async function comprehensiveOrchestrationTest() {
       await mcpTools.agent_spawn({
         type: agentTypes[i],
         name: `${agentTypes[i]}-agent-${i}`,
-        capabilities: [agentTypes[i], 'general', 'task-execution'],
+        capabilities: [agentTypes[i], 'general', 'task-execution']
       });
       agentCount++;
     }
@@ -65,18 +65,18 @@ async function comprehensiveOrchestrationTest() {
       {
         description: 'Research quantum computing applications',
         capabilities: ['researcher'],
-        priority: 'high',
+        priority: 'high'
       },
       {
         description: 'Optimize database queries',
         capabilities: ['optimizer'],
-        priority: 'medium',
+        priority: 'medium'
       },
       {
         description: 'Coordinate team activities',
         capabilities: ['coordinator'],
-        priority: 'low',
-      },
+        priority: 'low'
+      }
     ];
 
     const capabilityResults = [];
@@ -85,10 +85,12 @@ async function comprehensiveOrchestrationTest() {
         task: task.description,
         priority: task.priority,
         requiredCapabilities: task.capabilities,
-        maxAgents: 1,
+        maxAgents: 1
       });
       capabilityResults.push(result);
-      console.log(`✅ Assigned "${task.description}" to agent with ${task.capabilities} capability`);
+      console.log(
+        `✅ Assigned "${task.description}" to agent with ${task.capabilities} capability`
+      );
     }
 
     // Test 5: Test maxAgents parameter
@@ -97,9 +99,11 @@ async function comprehensiveOrchestrationTest() {
       task: 'Large-scale data analysis requiring multiple agents',
       priority: 'high',
       maxAgents: 3,
-      strategy: 'parallel',
+      strategy: 'parallel'
     });
-    console.log(`✅ Multi-agent task assigned to ${multiAgentTask.assigned_agents.length} agents (max: 3)`);
+    console.log(
+      `✅ Multi-agent task assigned to ${multiAgentTask.assigned_agents.length} agents (max: 3)`
+    );
 
     // Test 6: Test task queue when all agents are busy
     console.log('\n6️⃣ Testing task queue with busy agents...');
@@ -109,7 +113,7 @@ async function comprehensiveOrchestrationTest() {
       const task = await mcpTools.task_orchestrate({
         task: `Long running task ${i + 1}`,
         priority: 'medium',
-        maxAgents: 2,
+        maxAgents: 2
       });
       longRunningTasks.push(task);
     }
@@ -121,7 +125,7 @@ async function comprehensiveOrchestrationTest() {
       await mcpTools.task_orchestrate({
         task: 'Task when all agents are busy',
         priority: 'high',
-        maxAgents: 1,
+        maxAgents: 1
       });
       console.log('✅ Successfully handled task orchestration with busy agents');
     } catch (error) {
@@ -140,14 +144,14 @@ async function comprehensiveOrchestrationTest() {
     for (const taskResult of capabilityResults) {
       const status = await mcpTools.task_status({
         taskId: taskResult.taskId,
-        detailed: true,
+        detailed: true
       });
       console.log(`📊 Task ${taskResult.taskId}: ${status.status} (${status.progress * 100}%)`);
 
       if (status.status === 'completed') {
         const results = await mcpTools.task_results({
           taskId: taskResult.taskId,
-          format: 'summary',
+          format: 'summary'
         });
         console.log(`   Execution time: ${results.completion_time}ms`);
       }
@@ -157,26 +161,32 @@ async function comprehensiveOrchestrationTest() {
     console.log('\n8️⃣ Testing swarm metrics...');
     const swarmStatus = await mcpTools.swarm_status({ verbose: true });
     console.log(`📊 Active swarms: ${swarmStatus.active_swarms}`);
-    console.log(`🔧 Runtime features: ${Object.keys(swarmStatus.runtime_info.features).filter(f => swarmStatus.runtime_info.features[f]).join(', ')}`);
+    console.log(
+      `🔧 Runtime features: ${Object.keys(swarmStatus.runtime_info.features)
+        .filter(f => swarmStatus.runtime_info.features[f])
+        .join(', ')}`
+    );
 
     // Test 9: Test memory usage tracking
     console.log('\n9️⃣ Testing memory usage tracking...');
     const memoryUsage = await mcpTools.memory_usage({ detail: 'summary' });
     console.log(`💾 Total memory: ${memoryUsage.total_mb.toFixed(2)} MB`);
-    console.log(`   WASM: ${memoryUsage.wasm_mb.toFixed(2)} MB, JS: ${memoryUsage.javascript_mb.toFixed(2)} MB`);
+    console.log(
+      `   WASM: ${memoryUsage.wasm_mb.toFixed(2)} MB, JS: ${memoryUsage.javascript_mb.toFixed(2)} MB`
+    );
 
     // Test 10: Test error handling
     console.log('\n🔟 Testing error handling...');
     try {
       await mcpTools.task_orchestrate({
         task: 'Task with invalid swarm',
-        priority: 'high',
+        priority: 'high'
       });
       // If we get here, clear the swarms first
       mcpTools.activeSwarms.clear();
       await mcpTools.task_orchestrate({
         task: 'Task with no swarm',
-        priority: 'high',
+        priority: 'high'
       });
     } catch (error) {
       if (error.message.includes('No active swarm found')) {
@@ -198,7 +208,6 @@ async function comprehensiveOrchestrationTest() {
     console.log('   - Agent state transitions (idle ↔ busy)');
 
     return true;
-
   } catch (error) {
     console.error('\n❌ Comprehensive test failed:', error.message);
     console.error(error.stack);

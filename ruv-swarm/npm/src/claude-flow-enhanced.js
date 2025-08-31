@@ -34,7 +34,7 @@ class BatchToolEnforcer {
     const operation = {
       type: operationType,
       timestamp,
-      sessionId: this.getCurrentSessionId(),
+      sessionId: this.getCurrentSessionId()
     };
 
     this.sessionOperations.push(operation);
@@ -61,7 +61,7 @@ class BatchToolEnforcer {
       this.violationWarnings.set(operationType, {
         count: recentOps.length,
         timestamp: Date.now(),
-        warning,
+        warning
       });
     }
   }
@@ -71,9 +71,7 @@ class BatchToolEnforcer {
    */
   getRecentOperations(operationType, timeWindowMs) {
     const cutoff = Date.now() - timeWindowMs;
-    return this.sessionOperations.filter(
-      op => op.type === operationType && op.timestamp > cutoff,
-    );
+    return this.sessionOperations.filter(op => op.type === operationType && op.timestamp > cutoff);
   }
 
   /**
@@ -82,16 +80,17 @@ class BatchToolEnforcer {
   getBatchingReport() {
     const totalOps = this.sessionOperations.length;
     const violations = Array.from(this.violationWarnings.values());
-    const batchableOps = Array.from(this.operationCounts.entries())
-      .filter(([_, count]) => count >= this.parallelThreshold);
+    const batchableOps = Array.from(this.operationCounts.entries()).filter(
+      ([_, count]) => count >= this.parallelThreshold
+    );
 
     return {
       totalOperations: totalOps,
       violations: violations.length,
       violationDetails: violations,
       batchableOperations: batchableOps,
-      complianceScore: Math.max(0, 100 - (violations.length * 20)),
-      recommendations: this.generateRecommendations(),
+      complianceScore: Math.max(0, 100 - violations.length * 20),
+      recommendations: this.generateRecommendations()
     };
   }
 
@@ -139,7 +138,7 @@ class ClaudeFlowEnhanced {
       parallelizationRate: 0,
       avgBatchSize: 0,
       speedupFactor: 1.0,
-      tokenEfficiency: 0,
+      tokenEfficiency: 0
     };
   }
 
@@ -153,7 +152,7 @@ class ClaudeFlowEnhanced {
       enforceBatching = true,
       enableSIMD = true,
       enableNeuralNetworks = true,
-      debug = false,
+      debug = false
     } = options;
 
     try {
@@ -162,7 +161,7 @@ class ClaudeFlowEnhanced {
         loadingStrategy: 'progressive',
         useSIMD: enableSIMD,
         enableNeuralNetworks,
-        debug,
+        debug
       });
 
       // Initialize enhanced MCP tools
@@ -177,7 +176,7 @@ class ClaudeFlowEnhanced {
       console.log('📊 Features:', {
         simdSupported: this.ruvSwarm.features.simd_support,
         neuralNetworks: this.ruvSwarm.features.neural_networks,
-        batchingEnforced: enforceBatching,
+        batchingEnforced: enforceBatching
       });
 
       return this;
@@ -220,8 +219,12 @@ class ClaudeFlowEnhanced {
     }
 
     const toolMethods = [
-      'swarm_init', 'agent_spawn', 'task_orchestrate',
-      'memory_usage', 'neural_status', 'benchmark_run',
+      'swarm_init',
+      'agent_spawn',
+      'task_orchestrate',
+      'memory_usage',
+      'neural_status',
+      'benchmark_run'
     ];
 
     toolMethods.forEach(method => {
@@ -239,13 +242,7 @@ class ClaudeFlowEnhanced {
    * Create optimized workflow with mandatory parallel execution
    */
   async createOptimizedWorkflow(workflowConfig) {
-    const {
-      id,
-      name,
-      steps,
-      parallelStrategy = 'aggressive',
-      enableSIMD = true,
-    } = workflowConfig;
+    const { id, name, steps, parallelStrategy = 'aggressive', enableSIMD = true } = workflowConfig;
 
     // Validate workflow for parallel optimization
     const parallelSteps = this.analyzeParallelizationOpportunities(steps);
@@ -265,14 +262,16 @@ class ClaudeFlowEnhanced {
       metrics: {
         totalSteps: steps.length,
         parallelSteps: parallelSteps.length,
-        parallelizationRate: parallelSteps.length / steps.length,
-      },
+        parallelizationRate: parallelSteps.length / steps.length
+      }
     };
 
     this.workflows.set(workflow.id, workflow);
 
     console.log(`📋 Created optimized workflow: ${name}`);
-    console.log(`⚡ Parallelization rate: ${(workflow.metrics.parallelizationRate * 100).toFixed(1)}%`);
+    console.log(
+      `⚡ Parallelization rate: ${(workflow.metrics.parallelizationRate * 100).toFixed(1)}%`
+    );
 
     return workflow;
   }
@@ -290,7 +289,7 @@ class ClaudeFlowEnhanced {
         parallelizable,
         dependencies,
         batchable: parallelizable && dependencies.length === 0,
-        estimatedSpeedup: parallelizable ? 2.8 : 1.0,
+        estimatedSpeedup: parallelizable ? 2.8 : 1.0
       };
     });
   }
@@ -300,12 +299,15 @@ class ClaudeFlowEnhanced {
    */
   isStepParallelizable(step) {
     const parallelizableTypes = [
-      'file_read', 'file_write', 'mcp_tool_call',
-      'neural_inference', 'data_processing', 'api_call',
+      'file_read',
+      'file_write',
+      'mcp_tool_call',
+      'neural_inference',
+      'data_processing',
+      'api_call'
     ];
 
-    return parallelizableTypes.includes(step.type) ||
-           step.parallelizable === true;
+    return parallelizableTypes.includes(step.type) || step.parallelizable === true;
   }
 
   /**
@@ -324,9 +326,7 @@ class ClaudeFlowEnhanced {
       const otherOutputs = otherStep.outputs || [];
 
       const hasDepedency = stepInputs.some(input =>
-        otherOutputs.some(output =>
-          input.includes(output) || output.includes(input),
-        ),
+        otherOutputs.some(output => input.includes(output) || output.includes(input))
       );
 
       if (hasDepedency) {
@@ -352,7 +352,7 @@ class ClaudeFlowEnhanced {
     const swarm = await this.mcpTools.swarm_init({
       topology: 'hierarchical',
       maxAgents: Math.min(8, workflow.steps.length),
-      strategy: 'parallel',
+      strategy: 'parallel'
     });
 
     const executionId = `exec_${workflowId}_${Date.now()}`;
@@ -360,7 +360,7 @@ class ClaudeFlowEnhanced {
       workflowId,
       swarmId: swarm.id,
       startTime: Date.now(),
-      status: 'running',
+      status: 'running'
     });
 
     try {
@@ -372,7 +372,9 @@ class ClaudeFlowEnhanced {
       const results = [];
 
       for (const [batchIndex, batch] of batches.entries()) {
-        console.log(`⚡ Executing batch ${batchIndex + 1}/${batches.length} (${batch.length} steps)`);
+        console.log(
+          `⚡ Executing batch ${batchIndex + 1}/${batches.length} (${batch.length} steps)`
+        );
 
         if (batch.length === 1) {
           // Single step execution
@@ -407,9 +409,8 @@ class ClaudeFlowEnhanced {
         duration: coordination.duration,
         results,
         metrics,
-        batchingReport: this.batchEnforcer.getBatchingReport(),
+        batchingReport: this.batchEnforcer.getBatchingReport()
       };
-
     } catch (error) {
       const coordination = this.activeCoordinations.get(executionId);
       coordination.status = 'failed';
@@ -450,7 +451,10 @@ class ClaudeFlowEnhanced {
       }
 
       if (currentBatch.length === 0) {
-        throw new ClaudeFlowError('Circular dependency detected in workflow', 'CIRCULAR_DEPENDENCY');
+        throw new ClaudeFlowError(
+          'Circular dependency detected in workflow',
+          'CIRCULAR_DEPENDENCY'
+        );
       }
 
       batches.push(currentBatch);
@@ -469,13 +473,13 @@ class ClaudeFlowEnhanced {
     console.log(`🔄 PARALLEL EXECUTION: ${steps.length} steps in single batch`);
 
     // Create parallel promises for all steps
-    const stepPromises = steps.map(async(step, index) => {
+    const stepPromises = steps.map(async (step, index) => {
       try {
         // Spawn agent for this step if needed
         if (step.requiresAgent) {
           await this.mcpTools.agent_spawn({
             type: step.agentType || 'coordinator',
-            name: `${step.name || step.id}_agent`,
+            name: `${step.name || step.id}_agent`
           });
         }
 
@@ -487,7 +491,7 @@ class ClaudeFlowEnhanced {
           stepId: step.id,
           status: 'completed',
           result,
-          executionTime: result.executionTime || 0,
+          executionTime: result.executionTime || 0
         };
       } catch (error) {
         console.error(`❌ Step ${index + 1}/${steps.length} failed: ${step.name || step.id}`);
@@ -496,7 +500,7 @@ class ClaudeFlowEnhanced {
           stepId: step.id,
           status: 'failed',
           error: error.message,
-          executionTime: 0,
+          executionTime: 0
         };
       }
     });
@@ -522,20 +526,20 @@ class ClaudeFlowEnhanced {
       let result;
 
       switch (step.type) {
-      case 'mcp_tool_call':
-        result = await this.executeMCPToolStep(step, context, swarm);
-        break;
-      case 'file_operation':
-        result = await this.executeFileOperationStep(step, context);
-        break;
-      case 'neural_inference':
-        result = await this.executeNeuralInferenceStep(step, context, swarm);
-        break;
-      case 'data_processing':
-        result = await this.executeDataProcessingStep(step, context);
-        break;
-      default:
-        result = await this.executeGenericStep(step, context);
+        case 'mcp_tool_call':
+          result = await this.executeMCPToolStep(step, context, swarm);
+          break;
+        case 'file_operation':
+          result = await this.executeFileOperationStep(step, context);
+          break;
+        case 'neural_inference':
+          result = await this.executeNeuralInferenceStep(step, context, swarm);
+          break;
+        case 'data_processing':
+          result = await this.executeDataProcessingStep(step, context);
+          break;
+        default:
+          result = await this.executeGenericStep(step, context);
       }
 
       const executionTime = Date.now() - startTime;
@@ -543,13 +547,13 @@ class ClaudeFlowEnhanced {
       return {
         ...result,
         executionTime,
-        simdUsed: step.enableSIMD && this.ruvSwarm.features.simd_support,
+        simdUsed: step.enableSIMD && this.ruvSwarm.features.simd_support
       };
     } catch (error) {
       const _executionTime = Date.now() - startTime;
       throw new ClaudeFlowError(
         `Step execution failed: ${step.name || step.id} - ${error.message}`,
-        'STEP_EXECUTION_FAILED',
+        'STEP_EXECUTION_FAILED'
       );
     }
   }
@@ -564,7 +568,6 @@ class ClaudeFlowEnhanced {
       return await this.mcpTools[toolName](parameters);
     }
     throw new ClaudeFlowError(`Unknown MCP tool: ${toolName}`, 'UNKNOWN_MCP_TOOL');
-
   }
 
   /**
@@ -579,7 +582,7 @@ class ClaudeFlowEnhanced {
       operation: step.operation,
       filePath: step.filePath,
       success: true,
-      message: `File operation ${step.operation} completed`,
+      message: `File operation ${step.operation} completed`
     };
   }
 
@@ -597,12 +600,12 @@ class ClaudeFlowEnhanced {
     const agentResult = await this.mcpTools.agent_spawn({
       type: 'neural',
       name: `neural_${step.id}`,
-      capabilities: ['inference', enableSIMD ? 'simd' : 'scalar'],
+      capabilities: ['inference', enableSIMD ? 'simd' : 'scalar']
     });
 
     // Run inference with SIMD optimization
     const inferenceResult = await this.mcpTools.neural_status({
-      agentId: agentResult.agentId,
+      agentId: agentResult.agentId
     });
 
     return {
@@ -611,8 +614,8 @@ class ClaudeFlowEnhanced {
       simdEnabled: enableSIMD && this.ruvSwarm.features.simd_support,
       inference: inferenceResult,
       performance: {
-        simdSpeedup: enableSIMD ? 3.2 : 1.0,
-      },
+        simdSpeedup: enableSIMD ? 3.2 : 1.0
+      }
     };
   }
 
@@ -633,8 +636,8 @@ class ClaudeFlowEnhanced {
       processedData: data || [],
       performance: {
         processingTime: Date.now() - startTime,
-        simdSpeedup: enableSIMD ? 4.1 : 1.0,
-      },
+        simdSpeedup: enableSIMD ? 4.1 : 1.0
+      }
     };
 
     return result;
@@ -648,7 +651,7 @@ class ClaudeFlowEnhanced {
       stepId: step.id,
       type: step.type,
       status: 'completed',
-      message: 'Generic step executed successfully',
+      message: 'Generic step executed successfully'
     };
   }
 
@@ -688,7 +691,7 @@ class ClaudeFlowEnhanced {
       actualDuration: actualTime,
       theoreticalSequentialTime,
       efficiency: Math.min(100, speedupFactor * parallelizationRate * 100),
-      batchingCompliance: this.batchEnforcer.getBatchingReport().complianceScore,
+      batchingCompliance: this.batchEnforcer.getBatchingReport().complianceScore
     };
   }
 
@@ -705,21 +708,23 @@ class ClaudeFlowEnhanced {
         totalWorkflows: workflows.length,
         activeCoordinations: coordinations.filter(c => c.status === 'running').length,
         completedCoordinations: coordinations.filter(c => c.status === 'completed').length,
-        averageSpeedup: coordinations.reduce((acc, c) => acc + (c.metrics?.speedupFactor || 1), 0) / coordinations.length,
+        averageSpeedup:
+          coordinations.reduce((acc, c) => acc + (c.metrics?.speedupFactor || 1), 0) /
+          coordinations.length
       },
       batching: batchingReport,
       features: {
         simdSupported: this.ruvSwarm?.features?.simd_support || false,
         neuralNetworks: this.ruvSwarm?.features?.neural_networks || false,
-        batchingEnforced: true,
+        batchingEnforced: true
       },
       workflows: workflows.map(w => ({
         id: w.id,
         name: w.name,
         parallelizationRate: w.metrics.parallelizationRate,
-        totalSteps: w.metrics.totalSteps,
+        totalSteps: w.metrics.totalSteps
       })),
-      recommendations: batchingReport.recommendations,
+      recommendations: batchingReport.recommendations
     };
   }
 
@@ -739,7 +744,7 @@ class ClaudeFlowEnhanced {
 
     // Check for missing SIMD optimization
     const simdCandidates = workflow.steps.filter(s =>
-      ['neural_inference', 'data_processing', 'vector_operations'].includes(s.type),
+      ['neural_inference', 'data_processing', 'vector_operations'].includes(s.type)
     );
     const simdEnabled = simdCandidates.filter(s => s.enableSIMD);
 
@@ -750,7 +755,7 @@ class ClaudeFlowEnhanced {
 
     // Check for batching opportunities
     const batchableOps = workflow.steps.filter(s =>
-      ['file_read', 'file_write', 'mcp_tool_call'].includes(s.type),
+      ['file_read', 'file_write', 'mcp_tool_call'].includes(s.type)
     );
 
     if (batchableOps.length >= 3) {
@@ -762,8 +767,8 @@ class ClaudeFlowEnhanced {
       isOptimized: issues.length === 0,
       issues,
       recommendations,
-      optimizationScore: Math.max(0, 100 - (issues.length * 20)),
-      potentialSpeedup: this.calculatePotentialSpeedup(workflow),
+      optimizationScore: Math.max(0, 100 - issues.length * 20),
+      potentialSpeedup: this.calculatePotentialSpeedup(workflow)
     };
   }
 
@@ -773,7 +778,7 @@ class ClaudeFlowEnhanced {
   calculatePotentialSpeedup(workflow) {
     const parallelizableSteps = workflow.steps.filter(s => s.batchable).length;
     const simdCandidates = workflow.steps.filter(s =>
-      ['neural_inference', 'data_processing'].includes(s.type),
+      ['neural_inference', 'data_processing'].includes(s.type)
     ).length;
 
     const parallelSpeedup = parallelizableSteps > 0 ? 2.8 : 1.0;
@@ -784,7 +789,7 @@ class ClaudeFlowEnhanced {
       parallel: parallelSpeedup,
       simd: simdSpeedup,
       batching: batchingSpeedup,
-      combined: parallelSpeedup * simdSpeedup * batchingSpeedup,
+      combined: parallelSpeedup * simdSpeedup * batchingSpeedup
     };
   }
 }

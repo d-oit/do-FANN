@@ -118,7 +118,7 @@ class ClaudeGitHubHooks {
         return {
           hasConflicts: false,
           warningCount: Object.keys(status.swarmStatus).length - 1,
-          message: 'Multiple swarms active, coordinate through GitHub issues',
+          message: 'Multiple swarms active, coordinate through GitHub issues'
         };
       }
 
@@ -137,7 +137,7 @@ class ClaudeGitHubHooks {
     return {
       issues: `${baseUrl}/issues?q=is:issue+is:open+label:${this.coordinator.config.labelPrefix}${this.swarmId}`,
       allSwarms: `${baseUrl}/issues?q=is:issue+is:open+label:${this.coordinator.config.labelPrefix}`,
-      board: `${baseUrl}/projects`,
+      board: `${baseUrl}/projects`
     };
   }
 }
@@ -146,16 +146,16 @@ class ClaudeGitHubHooks {
 async function registerHooks() {
   const hooks = new ClaudeGitHubHooks({
     owner: process.env.GITHUB_OWNER || 'ruvnet',
-    repo: process.env.GITHUB_REPO || 'ruv-FANN',
+    repo: process.env.GITHUB_REPO || 'ruv-FANN'
   });
 
   // Register with Claude Code's hook system
   return {
-    'pre-task': (args) => hooks.preTask(args.description),
-    'post-edit': (args) => hooks.postEdit(args.file, args.changes),
-    'post-task': (args) => hooks.postTask(args.taskId, args.result),
+    'pre-task': args => hooks.preTask(args.description),
+    'post-edit': args => hooks.postEdit(args.file, args.changes),
+    'post-task': args => hooks.postTask(args.taskId, args.result),
     'check-conflicts': () => hooks.detectConflicts(),
-    'get-dashboard': () => hooks.getDashboardUrl(),
+    'get-dashboard': () => hooks.getDashboardUrl()
   };
 }
 

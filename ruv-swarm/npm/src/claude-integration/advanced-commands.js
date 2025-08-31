@@ -11,8 +11,8 @@ class AdvancedCommandsGenerator {
   }
 
   /**
-     * Generate advanced optimization command documentation
-     */
+   * Generate advanced optimization command documentation
+   */
   async generateAdvancedCommands() {
     const commandsDir = path.join(this.workingDir, '.claude', 'commands');
 
@@ -75,7 +75,7 @@ The pre-task hook automatically handles topology selection:
 {
   "command": "npx ruv-swarm hook pre-task --auto-spawn-agents --optimize-topology"
 }
-\`\`\``,
+\`\`\``
       },
 
       'optimization/parallel-execution.md': {
@@ -123,7 +123,7 @@ Tool: mcp__ruv-swarm__swarm_monitor
 Parameters: {"interval": 1, "duration": 10}
 \`\`\`
 
-Watch real-time parallel execution progress!`,
+Watch real-time parallel execution progress!`
       },
 
       // Analysis commands
@@ -187,7 +187,7 @@ Result includes:
 \`\`\`
 
 ## Continuous Optimization
-The system learns from each task to prevent future bottlenecks!`,
+The system learns from each task to prevent future bottlenecks!`
       },
 
       'analysis/token-efficiency.md': {
@@ -235,7 +235,7 @@ npx ruv-swarm hook session-end --export-metrics
 - 📉 32.3% average token reduction
 - 🎯 More focused operations
 - 🔄 Intelligent result reuse
-- 📊 Cumulative improvements`,
+- 📊 Cumulative improvements`
       },
 
       // Training commands
@@ -289,7 +289,7 @@ Result: {
 - 🧠 Learns your coding style
 - 📈 Improves with each use
 - 🎯 Better task predictions
-- ⚡ Faster coordination`,
+- ⚡ Faster coordination`
       },
 
       'training/specialization.md': {
@@ -346,7 +346,7 @@ Result shows expertise levels:
 \`\`\`
 
 ## Continuous Improvement
-Agents share learnings across sessions for cumulative expertise!`,
+Agents share learnings across sessions for cumulative expertise!`
       },
 
       // Automation commands
@@ -396,7 +396,7 @@ Already enabled in settings.json:
 - 🤖 Zero manual agent management
 - 🎯 Perfect agent selection
 - 📈 Dynamic scaling
-- 💾 Resource efficiency`,
+- 💾 Resource efficiency`
       },
 
       'automation/self-healing.md': {
@@ -461,7 +461,7 @@ Each recovery improves future prevention:
 - 🛡️ Resilient workflows
 - 🔄 Automatic recovery
 - 📚 Learns from errors
-- ⏱️ Saves debugging time`,
+- ⏱️ Saves debugging time`
       },
 
       'automation/session-memory.md': {
@@ -526,8 +526,8 @@ export RUV_SWARM_MEMORY_PERSIST=false
 - 🧠 Contextual awareness
 - 📈 Cumulative learning
 - ⚡ Faster task completion
-- 🎯 Personalized optimization`,
-      },
+- 🎯 Personalized optimization`
+      }
     };
 
     const createdFiles = [];

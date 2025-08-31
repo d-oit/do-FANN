@@ -15,7 +15,7 @@ class GHCoordinator {
       repo: options.repo || process.env.GITHUB_REPO,
       dbPath: options.dbPath || path.join(__dirname, '..', '..', 'data', 'gh-coordinator.db'),
       labelPrefix: options.labelPrefix || 'swarm-',
-      ...options,
+      ...options
     };
 
     this.db = null;
@@ -92,17 +92,27 @@ class GHCoordinator {
     try {
       // Add swarm label to issue
       const label = `${this.config.labelPrefix}${swarmId}`;
-      execSync(`gh issue edit ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --add-label "${label}"`, { stdio: 'ignore' });
+      execSync(
+        `gh issue edit ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --add-label "${label}"`,
+        { stdio: 'ignore' }
+      );
 
       // Add comment to issue
       const comment = `🐝 Task claimed by swarm: ${swarmId}\n\nThis task is being worked on by an automated swarm agent. Updates will be posted as progress is made.`;
-      execSync(`gh issue comment ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --body "${comment}"`, { stdio: 'ignore' });
+      execSync(
+        `gh issue comment ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --body "${comment}"`,
+        { stdio: 'ignore' }
+      );
 
       // Record in local database
-      this.db.prepare(`
+      this.db
+        .prepare(
+          `
         INSERT OR REPLACE INTO swarm_tasks (issue_number, swarm_id, locked_at, lock_expires)
         VALUES (?, ?, strftime('%s', 'now'), strftime('%s', 'now', '+1 hour'))
-      `).run(issueNumber, swarmId);
+      `
+        )
+        .run(issueNumber, swarmId);
 
       return true;
     } catch (error) {
@@ -117,7 +127,10 @@ class GHCoordinator {
   async releaseTask(swarmId, issueNumber) {
     try {
       const label = `${this.config.labelPrefix}${swarmId}`;
-      execSync(`gh issue edit ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --remove-label "${label}"`, { stdio: 'ignore' });
+      execSync(
+        `gh issue edit ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --remove-label "${label}"`,
+        { stdio: 'ignore' }
+      );
 
       this.db.prepare('DELETE FROM swarm_tasks WHERE issue_number = ?').run(issueNumber);
       return true;
@@ -133,7 +146,10 @@ class GHCoordinator {
   async updateTaskProgress(swarmId, issueNumber, message) {
     try {
       const comment = `🔄 **Progress Update from swarm ${swarmId}**\n\n${message}`;
-      execSync(`gh issue comment ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --body "${comment}"`, { stdio: 'ignore' });
+      execSync(
+        `gh issue comment ${issueNumber} --repo ${this.config.owner}/${this.config.repo} --body "${comment}"`,
+        { stdio: 'ignore' }
+      );
       return true;
     } catch (error) {
       console.error(`Failed to update task ${issueNumber}:`, error.message);
@@ -150,7 +166,7 @@ class GHCoordinator {
     // Create allocation file
     const allocationContent = {
       timestamp: new Date().toISOString(),
-      allocations,
+      allocations
     };
 
     const allocationPath = '.github/swarm-allocations.json';
@@ -172,7 +188,10 @@ ${allocations.map(a => `- Issue #${a.issue}: Assigned to swarm ${a.swarm_id}`).j
 
 This is an automated update from the swarm coordinator.`;
 
-      const output = execSync(`gh pr create --repo ${this.config.owner}/${this.config.repo} --title "Update swarm task allocations" --body "${prBody}" --base main --head ${branch}`, { encoding: 'utf8' });
+      const output = execSync(
+        `gh pr create --repo ${this.config.owner}/${this.config.repo} --title "Update swarm task allocations" --body "${prBody}" --base main --head ${branch}`,
+        { encoding: 'utf8' }
+      );
 
       return output.trim();
     } catch (error) {
@@ -191,7 +210,7 @@ This is an automated update from the swarm coordinator.`;
     const issues = JSON.parse(output);
 
     const swarmTasks = issues.filter(issue =>
-      issue.labels.some(l => l.name.startsWith(this.config.labelPrefix)),
+      issue.labels.some(l => l.name.startsWith(this.config.labelPrefix))
     );
 
     // Group by swarm
@@ -205,7 +224,7 @@ This is an automated update from the swarm coordinator.`;
         }
         swarmStatus[swarmId].push({
           number: issue.number,
-          title: issue.title,
+          title: issue.title
         });
       }
     });
@@ -214,7 +233,7 @@ This is an automated update from the swarm coordinator.`;
       totalIssues: issues.length,
       swarmTasks: swarmTasks.length,
       availableTasks: issues.length - swarmTasks.length,
-      swarmStatus,
+      swarmStatus
     };
   }
 
@@ -222,10 +241,14 @@ This is an automated update from the swarm coordinator.`;
    * Clean up stale locks
    */
   async cleanupStaleLocks() {
-    const staleTasks = this.db.prepare(`
+    const staleTasks = this.db
+      .prepare(
+        `
       SELECT issue_number, swarm_id FROM swarm_tasks 
       WHERE lock_expires < strftime('%s', 'now')
-    `).all();
+    `
+      )
+      .all();
 
     for (const task of staleTasks) {
       await this.releaseTask(task.swarm_id, task.issue_number);

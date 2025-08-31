@@ -20,7 +20,6 @@ async function loadModule(path, isESM = true) {
       return await import(path);
     }
     return require(path);
-
   } catch (error) {
     console.log(`  ⚠️  Failed to load ${path}: ${error.message}`);
     return null;

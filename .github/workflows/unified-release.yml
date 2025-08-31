@@ -1,0 +1,339 @@
+name: Unified Release Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Cargo.toml'
+      - 'ruv-swarm/Cargo.toml'
+      - 'neuro-divergent/Cargo.toml'
+      - 'cuda-wasm/Cargo.toml'
+      - 'opencv-rust/Cargo.toml'
+      - 'ruv-swarm/npm/package.json'
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      components:
+        description: 'Components to release (comma-separated)'
+        required: false
+        default: 'all'
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  analyze-changes:
+    name: Analyze Changes
+    runs-on: ubuntu-latest
+    outputs:
+      main_changed: ${{ steps.main.outputs.changed }}
+      ruv_swarm_changed: ${{ steps.ruv_swarm.outputs.changed }}
+      neuro_divergent_changed: ${{ steps.neuro_divergent.outputs.changed }}
+      cuda_wasm_changed: ${{ steps.cuda_wasm.outputs.changed }}
+      opencv_rust_changed: ${{ steps.opencv_rust.outputs.changed }}
+      npm_changed: ${{ steps.npm.outputs.changed }}
+      release_version: ${{ steps.version.outputs.release_version }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Check main crate changes
+      id: main
+      run: |
+        if git diff HEAD~1 Cargo.toml | grep -q "^+version"; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check ruv-swarm changes
+      id: ruv_swarm
+      run: |
+        if git diff HEAD~1 ruv-swarm/Cargo.toml | grep -q "^+version"; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check neuro-divergent changes
+      id: neuro_divergent
+      run: |
+        if git diff HEAD~1 neuro-divergent/Cargo.toml | grep -q "^+version"; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check cuda-wasm changes
+      id: cuda_wasm
+      run: |
+        if git diff HEAD~1 cuda-wasm/Cargo.toml | grep -q "^+version"; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check opencv-rust changes
+      id: opencv_rust
+      run: |
+        if git diff HEAD~1 opencv-rust/Cargo.toml | grep -q "^+version"; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check NPM changes
+      id: npm
+      run: |
+        if git diff HEAD~1 ruv-swarm/npm/package.json | grep -q '"version"'; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Determine release version
+      id: version
+      run: |
+        # Extract version from main Cargo.toml
+        VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+        echo "release_version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Release version: $VERSION"
+
+  validate-release:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.main_changed == 'true' || needs.analyze-changes.outputs.ruv_swarm_changed == 'true' || needs.analyze-changes.outputs.neuro_divergent_changed == 'true' || needs.analyze-changes.outputs.cuda_wasm_changed == 'true' || needs.analyze-changes.outputs.opencv_rust_changed == 'true' || needs.analyze-changes.outputs.npm_changed == 'true'
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Validate main crate
+      if: needs.analyze-changes.outputs.main_changed == 'true'
+      run: |
+        cargo package --all-features
+        cargo publish --dry-run --all-features
+
+    - name: Validate ruv-swarm
+      if: needs.analyze-changes.outputs.ruv_swarm_changed == 'true'
+      working-directory: ruv-swarm
+      run: |
+        cargo package --all-features
+        cargo publish --dry-run --all-features
+
+    - name: Validate neuro-divergent
+      if: needs.analyze-changes.outputs.neuro_divergent_changed == 'true'
+      working-directory: neuro-divergent
+      run: |
+        cargo package --all-features
+        cargo publish --dry-run --all-features
+
+    - name: Validate cuda-wasm
+      if: needs.analyze-changes.outputs.cuda_wasm_changed == 'true'
+      working-directory: cuda-wasm
+      run: |
+        cargo package --all-features
+        cargo publish --dry-run --all-features
+
+    - name: Validate opencv-rust
+      if: needs.analyze-changes.outputs.opencv_rust_changed == 'true'
+      working-directory: opencv-rust
+      run: |
+        cargo package --all-features
+        cargo publish --dry-run --all-features
+
+    - name: Validate NPM package
+      if: needs.analyze-changes.outputs.npm_changed == 'true'
+      working-directory: ruv-swarm/npm
+      run: |
+        npm install --no-audit --no-fund
+        npm pack --dry-run
+
+  publish-crates:
+    name: Publish Rust Crates
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, validate-release]
+    if: always() && needs.validate-release.result == 'success'
+    strategy:
+      matrix:
+        crate: [main, ruv-swarm, neuro-divergent, cuda-wasm, opencv-rust]
+        include:
+          - crate: main
+            path: .
+            changed: ${{ needs.analyze-changes.outputs.main_changed }}
+          - crate: ruv-swarm
+            path: ruv-swarm
+            changed: ${{ needs.analyze-changes.outputs.ruv_swarm_changed }}
+          - crate: neuro-divergent
+            path: neuro-divergent
+            changed: ${{ needs.analyze-changes.outputs.neuro_divergent_changed }}
+          - crate: cuda-wasm
+            path: cuda-wasm
+            changed: ${{ needs.analyze-changes.outputs.cuda_wasm_changed }}
+          - crate: opencv-rust
+            path: opencv-rust
+            changed: ${{ needs.analyze-changes.outputs.opencv_rust_changed }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Publish ${{ matrix.crate }}
+      if: matrix.changed == 'true'
+      working-directory: ${{ matrix.path }}
+      run: |
+        cargo publish --all-features
+      env:
+        CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+
+  publish-npm:
+    name: Publish NPM Package
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, validate-release]
+    if: always() && needs.validate-release.result == 'success' && needs.analyze-changes.outputs.npm_changed == 'true'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Install dependencies
+      working-directory: ruv-swarm/npm
+      run: npm ci
+
+    - name: Build WASM modules
+      working-directory: ruv-swarm/npm
+      run: npm run build:all
+
+    - name: Publish to NPM
+      working-directory: ruv-swarm/npm
+      run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [publish-crates, publish-npm]
+    if: always() && (needs.publish-crates.result == 'success' || needs.publish-npm.result == 'success')
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Extract version from main Cargo.toml
+        VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+
+        # Generate changelog content
+        echo "## Release v$VERSION" > release_notes.md
+        echo "" >> release_notes.md
+
+        # Add component versions
+        if [ -f "ruv-swarm/Cargo.toml" ]; then
+          RUV_VERSION=$(cd ruv-swarm && cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "- **ruv-swarm**: v$RUV_VERSION" >> release_notes.md
+        fi
+
+        if [ -f "neuro-divergent/Cargo.toml" ]; then
+          ND_VERSION=$(cd neuro-divergent && cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "- **neuro-divergent**: v$ND_VERSION" >> release_notes.md
+        fi
+
+        if [ -f "cuda-wasm/Cargo.toml" ]; then
+          CUDA_VERSION=$(cd cuda-wasm && cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "- **cuda-wasm**: v$CUDA_VERSION" >> release_notes.md
+        fi
+
+        if [ -f "opencv-rust/Cargo.toml" ]; then
+          OPENCV_VERSION=$(cd opencv-rust && cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "- **opencv-rust**: v$OPENCV_VERSION" >> release_notes.md
+        fi
+
+        if [ -f "ruv-swarm/npm/package.json" ]; then
+          NPM_VERSION=$(cd ruv-swarm/npm && node -p "require('./package.json').version")
+          echo "- **do-swarm (NPM)**: v$NPM_VERSION" >> release_notes.md
+        fi
+
+        echo "" >> release_notes.md
+        echo "### Changes" >> release_notes.md
+        echo "" >> release_notes.md
+
+        # Add recent commits
+        git log --oneline --since="1 week ago" | head -10 >> release_notes.md
+
+        echo "release_version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.changelog.outputs.release_version }}
+        release_name: Release v${{ steps.changelog.outputs.release_version }}
+        body_path: release_notes.md
+        draft: false
+        prerelease: false
+
+  update-homebrew:
+    name: Update Homebrew Formula
+    runs-on: ubuntu-latest
+    needs: create-release
+    if: always() && needs.create-release.result == 'success'
+
+    steps:
+    - name: Update Homebrew formula
+      run: |
+        echo "Homebrew formula update would go here"
+        # This would typically update a Homebrew formula for the main binary
+
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [create-release, update-homebrew]
+    if: always()
+
+    steps:
+    - name: Send success notification
+      if: needs.create-release.result == 'success'
+      run: |
+        echo "🎉 Release completed successfully!"
+        echo "All components have been published and tagged."
+
+    - name: Send failure notification
+      if: failure()
+      run: |
+        echo "❌ Release failed!"
+        echo "Check the logs for details on what went wrong."

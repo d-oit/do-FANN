@@ -18,29 +18,29 @@ class IntegrationTestRunner {
         path: 'scenarios/lifecycle/full-workflow.test.js',
         timeout: 60000,
         parallel: false,
-        critical: true,
+        critical: true
       },
       {
         name: 'Resilience Tests',
         path: 'scenarios/resilience/error-recovery.test.js',
         timeout: 45000,
         parallel: false,
-        critical: true,
+        critical: true
       },
       {
         name: 'Performance Tests',
         path: 'scenarios/performance/load-testing.test.js',
         timeout: 120000,
         parallel: true,
-        critical: false,
+        critical: false
       },
       {
         name: 'Cross-Feature Integration',
         path: 'scenarios/cross-feature/system-integration.test.js',
         timeout: 90000,
         parallel: false,
-        critical: true,
-      },
+        critical: true
+      }
     ];
 
     this.results = {
@@ -49,7 +49,7 @@ class IntegrationTestRunner {
       failed: 0,
       skipped: 0,
       duration: 0,
-      suites: [],
+      suites: []
     };
 
     this.config = {
@@ -57,7 +57,7 @@ class IntegrationTestRunner {
       verbose: process.env.VERBOSE === 'true',
       bail: process.env.BAIL_ON_FAILURE === 'true',
       coverage: process.env.COVERAGE === 'true',
-      environment: process.env.NODE_ENV || 'test',
+      environment: process.env.NODE_ENV || 'test'
     };
   }
 
@@ -168,7 +168,14 @@ class IntegrationTestRunner {
 
       if (this.config.verbose && result.output) {
         console.log(chalk.gray('  Output:'));
-        console.log(chalk.gray(result.output.split('\n').map(line => `    ${line}`).join('\n')));
+        console.log(
+          chalk.gray(
+            result.output
+              .split('\n')
+              .map(line => `    ${line}`)
+              .join('\n')
+          )
+        );
       }
 
       this.results.suites.push({
@@ -177,7 +184,7 @@ class IntegrationTestRunner {
         duration,
         exitCode: result.exitCode,
         output: result.output,
-        critical: suite.critical,
+        critical: suite.critical
       });
 
       if (result.exitCode === 0) {
@@ -190,7 +197,6 @@ class IntegrationTestRunner {
       }
 
       this.results.total++;
-
     } catch (error) {
       console.log(chalk.red(`  ERROR: ${error.message}`));
 
@@ -199,7 +205,7 @@ class IntegrationTestRunner {
         status: 'ERROR',
         duration: Date.now() - startTime,
         error: error.message,
-        critical: suite.critical,
+        critical: suite.critical
       });
 
       this.results.failed++;
@@ -210,11 +216,13 @@ class IntegrationTestRunner {
   }
 
   executeMocha(testPath, suite) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const args = [
         testPath,
-        '--timeout', suite.timeout.toString(),
-        '--reporter', this.config.verbose ? 'spec' : 'json',
+        '--timeout',
+        suite.timeout.toString(),
+        '--reporter',
+        this.config.verbose ? 'spec' : 'json'
       ];
 
       if (this.config.coverage) {
@@ -223,33 +231,33 @@ class IntegrationTestRunner {
 
       const mocha = spawn('npx', ['mocha', ...args], {
         cwd: path.join(__dirname, '../..'),
-        stdio: ['pipe', 'pipe', 'pipe'],
+        stdio: ['pipe', 'pipe', 'pipe']
       });
 
       let output = '';
       let error = '';
 
-      mocha.stdout.on('data', (data) => {
+      mocha.stdout.on('data', data => {
         output += data.toString();
       });
 
-      mocha.stderr.on('data', (data) => {
+      mocha.stderr.on('data', data => {
         error += data.toString();
       });
 
-      mocha.on('close', (exitCode) => {
+      mocha.on('close', exitCode => {
         resolve({
           exitCode,
           output: output || error,
-          error: exitCode !== 0 ? error : null,
+          error: exitCode !== 0 ? error : null
         });
       });
 
-      mocha.on('error', (err) => {
+      mocha.on('error', err => {
         resolve({
           exitCode: 1,
           output: '',
-          error: err.message,
+          error: err.message
         });
       });
     });
@@ -260,7 +268,8 @@ class IntegrationTestRunner {
     console.log(chalk.gray('============================\n'));
 
     // Summary
-    const successRate = this.results.total > 0 ? (this.results.passed / this.results.total * 100).toFixed(1) : 0;
+    const successRate =
+      this.results.total > 0 ? ((this.results.passed / this.results.total) * 100).toFixed(1) : 0;
     const durationSeconds = (this.results.duration / 1000).toFixed(2);
 
     console.log(chalk.cyan('Summary:'));
@@ -314,23 +323,25 @@ class IntegrationTestRunner {
       return;
     }
 
-    const criticalFailures = this.results.suites.filter(s => s.critical && s.status !== 'PASSED').length;
+    const criticalFailures = this.results.suites.filter(
+      s => s.critical && s.status !== 'PASSED'
+    ).length;
 
     if (criticalFailures > 0) {
       console.log(chalk.red('  🚨 Critical failures detected - do not deploy to production'));
       console.log(chalk.yellow('  📋 Review failed critical test suites immediately'));
     }
 
-    const performanceFailures = this.results.suites.filter(s =>
-      s.name.includes('Performance') && s.status !== 'PASSED',
+    const performanceFailures = this.results.suites.filter(
+      s => s.name.includes('Performance') && s.status !== 'PASSED'
     ).length;
 
     if (performanceFailures > 0) {
       console.log(chalk.yellow('  ⚡ Performance issues detected - review system capacity'));
     }
 
-    const resilienceFailures = this.results.suites.filter(s =>
-      s.name.includes('Resilience') && s.status !== 'PASSED',
+    const resilienceFailures = this.results.suites.filter(
+      s => s.name.includes('Resilience') && s.status !== 'PASSED'
     ).length;
 
     if (resilienceFailures > 0) {
@@ -353,12 +364,11 @@ class IntegrationTestRunner {
         ...this.results,
         timestamp: new Date().toISOString(),
         environment: this.config.environment,
-        configuration: this.config,
+        configuration: this.config
       };
 
       fs.writeFileSync(resultsPath, JSON.stringify(fullResults, null, 2));
       console.log(chalk.gray(`\n📄 Results saved to: ${resultsPath}`));
-
     } catch (error) {
       console.warn(chalk.yellow(`Warning: Could not save results - ${error.message}`));
     }

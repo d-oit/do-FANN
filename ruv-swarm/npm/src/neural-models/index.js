@@ -23,11 +23,13 @@ export const createNeuralModel = (type, config = {}) => {
     gnn: () => import('./gnn.js').then(m => new m.GNNModel(config)),
     resnet: () => import('./resnet.js').then(m => new m.ResNetModel(config)),
     vae: () => import('./vae.js').then(m => new m.VAEModel(config)),
-    lstm: () => import('./lstm.js').then(m => new m.LSTMModel(config)),
+    lstm: () => import('./lstm.js').then(m => new m.LSTMModel(config))
   };
 
   if (!models[type]) {
-    throw new Error(`Unknown neural model type: ${type}. Available types: ${Object.keys(models).join(', ')}`);
+    throw new Error(
+      `Unknown neural model type: ${type}. Available types: ${Object.keys(models).join(', ')}`
+    );
   }
 
   return models[type]();
@@ -42,22 +44,22 @@ export const MODEL_PRESETS = {
       heads: 4,
       layers: 3,
       ffDimensions: 1024,
-      dropoutRate: 0.1,
+      dropoutRate: 0.1
     },
     base: {
       dimensions: 512,
       heads: 8,
       layers: 6,
       ffDimensions: 2048,
-      dropoutRate: 0.1,
+      dropoutRate: 0.1
     },
     large: {
       dimensions: 1024,
       heads: 16,
       layers: 12,
       ffDimensions: 4096,
-      dropoutRate: 0.1,
-    },
+      dropoutRate: 0.1
+    }
   },
 
   // CNN presets
@@ -66,22 +68,22 @@ export const MODEL_PRESETS = {
       inputShape: [28, 28, 1],
       convLayers: [
         { filters: 32, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
-        { filters: 64, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
+        { filters: 64, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' }
       ],
       denseLayers: [128],
       outputSize: 10,
-      dropoutRate: 0.5,
+      dropoutRate: 0.5
     },
     cifar10: {
       inputShape: [32, 32, 3],
       convLayers: [
         { filters: 32, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
         { filters: 64, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
-        { filters: 128, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
+        { filters: 128, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' }
       ],
       denseLayers: [256, 128],
       outputSize: 10,
-      dropoutRate: 0.5,
+      dropoutRate: 0.5
     },
     imagenet: {
       inputShape: [224, 224, 3],
@@ -89,12 +91,12 @@ export const MODEL_PRESETS = {
         { filters: 64, kernelSize: 7, stride: 2, padding: 'same', activation: 'relu' },
         { filters: 128, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
         { filters: 256, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
-        { filters: 512, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' },
+        { filters: 512, kernelSize: 3, stride: 1, padding: 'same', activation: 'relu' }
       ],
       denseLayers: [4096, 4096],
       outputSize: 1000,
-      dropoutRate: 0.5,
-    },
+      dropoutRate: 0.5
+    }
   },
 
   // GRU presets
@@ -105,7 +107,7 @@ export const MODEL_PRESETS = {
       numLayers: 2,
       outputSize: 2, // Binary classification
       bidirectional: true,
-      dropoutRate: 0.2,
+      dropoutRate: 0.2
     },
     sequence_generation: {
       inputSize: 128,
@@ -113,7 +115,7 @@ export const MODEL_PRESETS = {
       numLayers: 3,
       outputSize: 10000, // Vocabulary size
       bidirectional: false,
-      dropoutRate: 0.3,
+      dropoutRate: 0.3
     },
     time_series: {
       inputSize: 10, // Feature dimensions
@@ -121,8 +123,8 @@ export const MODEL_PRESETS = {
       numLayers: 2,
       outputSize: 1, // Regression
       bidirectional: false,
-      dropoutRate: 0.1,
-    },
+      dropoutRate: 0.1
+    }
   },
 
   // Autoencoder presets
@@ -133,7 +135,7 @@ export const MODEL_PRESETS = {
       bottleneckSize: 32,
       activation: 'relu',
       outputActivation: 'sigmoid',
-      dropoutRate: 0.1,
+      dropoutRate: 0.1
     },
     image_denoise: {
       inputSize: 4096, // 64x64 grayscale
@@ -142,7 +144,7 @@ export const MODEL_PRESETS = {
       activation: 'relu',
       outputActivation: 'sigmoid',
       denoisingNoise: 0.3,
-      dropoutRate: 0.2,
+      dropoutRate: 0.2
     },
     vae_generation: {
       inputSize: 784,
@@ -151,8 +153,8 @@ export const MODEL_PRESETS = {
       activation: 'relu',
       outputActivation: 'sigmoid',
       variational: true,
-      dropoutRate: 0.1,
-    },
+      dropoutRate: 0.1
+    }
   },
 
   // GNN presets
@@ -163,7 +165,7 @@ export const MODEL_PRESETS = {
       hiddenDimensions: 256,
       outputDimensions: 128,
       numLayers: 3,
-      aggregation: 'mean',
+      aggregation: 'mean'
     },
     molecular: {
       nodeDimensions: 64,
@@ -171,7 +173,7 @@ export const MODEL_PRESETS = {
       hiddenDimensions: 128,
       outputDimensions: 64,
       numLayers: 4,
-      aggregation: 'sum',
+      aggregation: 'sum'
     },
     knowledge_graph: {
       nodeDimensions: 256,
@@ -179,8 +181,8 @@ export const MODEL_PRESETS = {
       hiddenDimensions: 512,
       outputDimensions: 256,
       numLayers: 2,
-      aggregation: 'max',
-    },
+      aggregation: 'max'
+    }
   },
 
   // ResNet presets
@@ -189,20 +191,20 @@ export const MODEL_PRESETS = {
       numBlocks: 4,
       blockDepth: 2,
       hiddenDimensions: 512,
-      initialChannels: 64,
+      initialChannels: 64
     },
     resnet34: {
       numBlocks: 6,
       blockDepth: 3,
       hiddenDimensions: 512,
-      initialChannels: 64,
+      initialChannels: 64
     },
     resnet50: {
       numBlocks: 8,
       blockDepth: 3,
       hiddenDimensions: 1024,
-      initialChannels: 128,
-    },
+      initialChannels: 128
+    }
   },
 
   // VAE presets
@@ -212,22 +214,22 @@ export const MODEL_PRESETS = {
       encoderLayers: [512, 256],
       latentDimensions: 20,
       decoderLayers: [256, 512],
-      betaKL: 1.0,
+      betaKL: 1.0
     },
     cifar_vae: {
       inputSize: 3072,
       encoderLayers: [1024, 512, 256],
       latentDimensions: 128,
       decoderLayers: [256, 512, 1024],
-      betaKL: 0.5,
+      betaKL: 0.5
     },
     beta_vae: {
       inputSize: 784,
       encoderLayers: [512, 256],
       latentDimensions: 10,
       decoderLayers: [256, 512],
-      betaKL: 4.0, // Higher beta for disentanglement
-    },
+      betaKL: 4.0 // Higher beta for disentanglement
+    }
   },
 
   // LSTM presets
@@ -238,7 +240,7 @@ export const MODEL_PRESETS = {
       numLayers: 2,
       outputSize: 10000,
       bidirectional: false,
-      returnSequence: true,
+      returnSequence: true
     },
     sentiment_analysis: {
       inputSize: 300,
@@ -246,7 +248,7 @@ export const MODEL_PRESETS = {
       numLayers: 2,
       outputSize: 2,
       bidirectional: true,
-      returnSequence: false,
+      returnSequence: false
     },
     time_series_forecast: {
       inputSize: 10,
@@ -254,9 +256,9 @@ export const MODEL_PRESETS = {
       numLayers: 3,
       outputSize: 1,
       bidirectional: false,
-      returnSequence: false,
-    },
-  },
+      returnSequence: false
+    }
+  }
 };
 
 // Utility function to get preset configuration

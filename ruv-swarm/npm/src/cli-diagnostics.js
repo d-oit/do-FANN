@@ -18,30 +18,30 @@ async function main() {
 
   try {
     switch (command) {
-    case 'test':
-      await runDiagnosticTests(logger);
-      break;
+      case 'test':
+        await runDiagnosticTests(logger);
+        break;
 
-    case 'report':
-      await generateReport(args.slice(1), logger);
-      break;
+      case 'report':
+        await generateReport(args.slice(1), logger);
+        break;
 
-    case 'monitor':
-      await startMonitoring(args.slice(1), logger);
-      break;
+      case 'monitor':
+        await startMonitoring(args.slice(1), logger);
+        break;
 
-    case 'logs':
-      await analyzeLogs(args.slice(1), logger);
-      break;
+      case 'logs':
+        await analyzeLogs(args.slice(1), logger);
+        break;
 
-    case 'config':
-      showLoggingConfig(logger);
-      break;
+      case 'config':
+        showLoggingConfig(logger);
+        break;
 
-    case 'help':
-    default:
-      showHelp();
-      break;
+      case 'help':
+      default:
+        showHelp();
+        break;
     }
   } catch (error) {
     logger.error('Diagnostic command failed', { error, command });
@@ -114,8 +114,14 @@ async function generateReport(args, logger) {
 }
 
 async function startMonitoring(args, logger) {
-  const duration = parseInt(args.find(arg => arg.startsWith('--duration='))?.split('=')[1] || '60', 10);
-  const interval = parseInt(args.find(arg => arg.startsWith('--interval='))?.split('=')[1] || '1000', 10);
+  const duration = parseInt(
+    args.find(arg => arg.startsWith('--duration='))?.split('=')[1] || '60',
+    10
+  );
+  const interval = parseInt(
+    args.find(arg => arg.startsWith('--interval='))?.split('=')[1] || '1000',
+    10
+  );
 
   logger.info('Starting system monitoring...', { duration, interval });
 
@@ -191,7 +197,7 @@ async function analyzeLogs(args, logger) {
   const results = {
     totalLines: 0,
     matches: 0,
-    files: {},
+    files: {}
   };
 
   const regex = new RegExp(pattern, 'i');
@@ -207,7 +213,7 @@ async function analyzeLogs(args, logger) {
     if (matches.length > 0) {
       results.files[file] = {
         matches: matches.length,
-        samples: matches.slice(0, 3),
+        samples: matches.slice(0, 3)
       };
     }
   });
@@ -294,7 +300,7 @@ function formatReportAsMarkdown(report) {
     `- **Active Connections**: ${report.connection.connections.activeConnections}`,
     `- **Failure Rate**: ${(report.connection.connections.failureRate * 100).toFixed(1)}%`,
     `- **Total Events**: ${report.connection.connections.totalEvents}`,
-    '',
+    ''
   ];
 
   if (report.connection.patterns.recommendations.length > 0) {

@@ -21,17 +21,17 @@ class NeuralBenchmark {
       let stdout = '';
       let stderr = '';
 
-      proc.stdout.on('data', (data) => {
+      proc.stdout.on('data', data => {
         stdout += data.toString();
         process.stdout.write(data);
       });
 
-      proc.stderr.on('data', (data) => {
+      proc.stderr.on('data', data => {
         stderr += data.toString();
         process.stderr.write(data);
       });
 
-      proc.on('close', (code) => {
+      proc.on('close', code => {
         if (code !== 0) {
           reject(new Error(`Command failed with code ${code}: ${stderr}`));
         } else {
@@ -52,7 +52,7 @@ class NeuralBenchmark {
       metrics: {},
       timings: {},
       memory: {},
-      activations: {},
+      activations: {}
     };
 
     // Phase 1: Training benchmark
@@ -64,9 +64,12 @@ class NeuralBenchmark {
         'ruv-swarm',
         'neural',
         'train',
-        '--model', model,
-        '--iterations', iterations.toString(),
-        '--learning-rate', '0.001',
+        '--model',
+        model,
+        '--iterations',
+        iterations.toString(),
+        '--learning-rate',
+        '0.001'
       ]);
 
       modelResults.timings.training = Date.now() - trainStart;
@@ -85,7 +88,8 @@ class NeuralBenchmark {
         'ruv-swarm',
         'neural',
         'patterns',
-        '--model', model,
+        '--model',
+        model
       ]);
 
       modelResults.timings.patternAnalysis = Date.now() - patternStart;
@@ -104,8 +108,10 @@ class NeuralBenchmark {
         'ruv-swarm',
         'neural',
         'export',
-        '--model', model,
-        '--output', exportPath,
+        '--model',
+        model,
+        '--output',
+        exportPath
       ]);
 
       modelResults.timings.export = Date.now() - exportStart;
@@ -116,7 +122,7 @@ class NeuralBenchmark {
         layers: weights.models[model]?.layers || 0,
         parameters: weights.models[model]?.parameters || 0,
         accuracy: weights.models[model]?.performance?.accuracy || 0,
-        loss: weights.models[model]?.performance?.loss || 0,
+        loss: weights.models[model]?.performance?.loss || 0
       };
     } catch (error) {
       modelResults.architecture = { error: error.message };
@@ -162,17 +168,17 @@ class NeuralBenchmark {
       lstm: { base: 512, perLayer: 128, overhead: 1.2 },
       attention: { base: 768, perLayer: 256, overhead: 1.5 },
       transformer: { base: 1024, perLayer: 512, overhead: 2.0 },
-      feedforward: { base: 256, perLayer: 64, overhead: 1.1 },
+      feedforward: { base: 256, perLayer: 64, overhead: 1.1 }
     };
 
     const profile = baseMemory[model] || baseMemory.feedforward;
     const layers = Math.floor(Math.random() * 8) + 4;
 
     return {
-      totalMemory: profile.base + (profile.perLayer * layers),
-      peakMemory: (profile.base + (profile.perLayer * layers)) * profile.overhead,
+      totalMemory: profile.base + profile.perLayer * layers,
+      peakMemory: (profile.base + profile.perLayer * layers) * profile.overhead,
       efficiency: 85 + Math.random() * 10,
-      layerCount: layers,
+      layerCount: layers
     };
   }
 
@@ -181,7 +187,7 @@ class NeuralBenchmark {
       lstm: { base: 100, variance: 20 },
       attention: { base: 150, variance: 30 },
       transformer: { base: 200, variance: 40 },
-      feedforward: { base: 300, variance: 50 },
+      feedforward: { base: 300, variance: 50 }
     };
 
     const speed = speeds[model] || speeds.feedforward;
@@ -197,7 +203,7 @@ class NeuralBenchmark {
       min: Math.min(...results),
       max: Math.max(...results),
       variance: this.calculateVariance(results),
-      samples,
+      samples
     };
   }
 
@@ -224,12 +230,19 @@ class NeuralBenchmark {
 
     // Save results
     const outputFile = path.join(outputDir, `neural-benchmark-${Date.now()}.json`);
-    await fs.writeFile(outputFile, JSON.stringify({
-      timestamp: new Date().toISOString(),
-      duration: Date.now() - this.startTime,
-      results: this.results,
-      analysis,
-    }, null, 2));
+    await fs.writeFile(
+      outputFile,
+      JSON.stringify(
+        {
+          timestamp: new Date().toISOString(),
+          duration: Date.now() - this.startTime,
+          results: this.results,
+          analysis
+        },
+        null,
+        2
+      )
+    );
 
     // Display summary
     this.displaySummary(analysis);
@@ -242,7 +255,7 @@ class NeuralBenchmark {
       performance: {},
       memory: {},
       architecture: {},
-      recommendations: [],
+      recommendations: []
     };
 
     // Performance comparison
@@ -251,32 +264,35 @@ class NeuralBenchmark {
         trainingTime: data.timings.training,
         inferenceSpeed: data.inference?.mean || 0,
         accuracy: parseFloat(data.architecture?.accuracy) || 0,
-        loss: parseFloat(data.architecture?.loss) || 0,
+        loss: parseFloat(data.architecture?.loss) || 0
       };
 
       analysis.memory[model] = {
         totalMemory: data.memory?.totalMemory || 0,
-        efficiency: data.memory?.efficiency || 0,
+        efficiency: data.memory?.efficiency || 0
       };
 
       analysis.architecture[model] = {
         layers: data.architecture?.layers || 0,
-        parameters: data.architecture?.parameters || 0,
+        parameters: data.architecture?.parameters || 0
       };
     });
 
     // Generate recommendations
-    const bestAccuracy = Object.entries(analysis.performance)
-      .sort((a, b) => b[1].accuracy - a[1].accuracy)[0];
-    const bestSpeed = Object.entries(analysis.performance)
-      .sort((a, b) => b[1].inferenceSpeed - a[1].inferenceSpeed)[0];
-    const mostEfficient = Object.entries(analysis.memory)
-      .sort((a, b) => b[1].efficiency - a[1].efficiency)[0];
+    const bestAccuracy = Object.entries(analysis.performance).sort(
+      (a, b) => b[1].accuracy - a[1].accuracy
+    )[0];
+    const bestSpeed = Object.entries(analysis.performance).sort(
+      (a, b) => b[1].inferenceSpeed - a[1].inferenceSpeed
+    )[0];
+    const mostEfficient = Object.entries(analysis.memory).sort(
+      (a, b) => b[1].efficiency - a[1].efficiency
+    )[0];
 
     analysis.recommendations = [
       `Best accuracy: ${bestAccuracy[0]} (${bestAccuracy[1].accuracy}%)`,
       `Fastest inference: ${bestSpeed[0]} (${bestSpeed[1].inferenceSpeed.toFixed(1)} ops/sec)`,
-      `Most memory efficient: ${mostEfficient[0]} (${mostEfficient[1].efficiency.toFixed(1)}%)`,
+      `Most memory efficient: ${mostEfficient[0]} (${mostEfficient[1].efficiency.toFixed(1)}%)`
     ];
 
     return analysis;
@@ -284,7 +300,7 @@ class NeuralBenchmark {
 
   displaySummary(analysis) {
     console.log('\n📊 COMPARATIVE ANALYSIS SUMMARY');
-    console.log('=' .repeat(60));
+    console.log('='.repeat(60));
 
     console.log('\n🎯 Performance Metrics:');
     Object.entries(analysis.performance).forEach(([model, metrics]) => {
@@ -297,12 +313,16 @@ class NeuralBenchmark {
 
     console.log('\n💾 Memory Usage:');
     Object.entries(analysis.memory).forEach(([model, metrics]) => {
-      console.log(`${model.toUpperCase()}: ${metrics.totalMemory}MB (${metrics.efficiency.toFixed(1)}% efficient)`);
+      console.log(
+        `${model.toUpperCase()}: ${metrics.totalMemory}MB (${metrics.efficiency.toFixed(1)}% efficient)`
+      );
     });
 
     console.log('\n🏗️ Architecture Complexity:');
     Object.entries(analysis.architecture).forEach(([model, arch]) => {
-      console.log(`${model.toUpperCase()}: ${arch.layers} layers, ${arch.parameters.toLocaleString()} parameters`);
+      console.log(
+        `${model.toUpperCase()}: ${arch.layers} layers, ${arch.parameters.toLocaleString()} parameters`
+      );
     });
 
     console.log('\n🎯 Recommendations:');

@@ -1,13 +1,13 @@
-# RUV-Swarm Performance Research Report
+# do-Swarm Performance Research Report
 ## Comprehensive Analysis of Multi-Agent Coding Swarm Performance Against State-of-the-Art Systems
 
 ### Executive Summary
 
-**RUV-Swarm has achieved a breakthrough that fundamentally changes the landscape of AI-powered software engineering.** Our multi-agent cognitive swarm system has reached **84.8% solve rate on SWE-Bench Verified**, establishing a **14.5 percentage point lead** over the current state-of-the-art Claude 3.7 Sonnet (70.3%) and representing a **6x improvement** over the previous generation of coding agents.
+**do-Swarm has achieved a breakthrough that fundamentally changes the landscape of AI-powered software engineering.** Our multi-agent cognitive swarm system has reached **84.8% solve rate on SWE-Bench Verified**, establishing a **14.5 percentage point lead** over the current state-of-the-art Claude 3.7 Sonnet (70.3%) and representing a **6x improvement** over the previous generation of coding agents.
 
 #### **Revolutionary Performance Achievements**
 
-In the span of six months (January-June 2025), RUV-Swarm has delivered results that redefine what's possible in automated software engineering:
+In the span of six months (January-June 2025), do-Swarm has delivered results that redefine what's possible in automated software engineering:
 
 - **🏆 #1 SWE-Bench Performance**: 84.8% solve rate on 500 human-verified software engineering challenges
 - **⚡ 4.4x Speed Improvement**: Average solution time of 52.3 seconds vs. industry average of 180+ seconds  
@@ -20,7 +20,7 @@ The software engineering AI field has experienced explosive growth, with SWE-Ben
 
 **Competitive Position:**
 ```
-RUV-Swarm (Multi-Agent):     84.8% ⭐ NEW CATEGORY LEADER
+do-Swarm (Multi-Agent):     84.8% ⭐ NEW CATEGORY LEADER
 Claude 3.7 + Scaffold:       70.3% (Current single-agent SOTA)
 SwarmAgentic (Research):     +261.8% on TravelPlanner benchmark
 CrewAI (Production):         75-85% coordination efficiency
@@ -29,7 +29,7 @@ AutoGen (Enterprise):        70-80% coordination efficiency
 
 #### **Technical Innovation Breakthrough**
 
-RUV-Swarm introduces **the world's first production-ready cognitive diversity framework** for software engineering, integrating:
+do-Swarm introduces **the world's first production-ready cognitive diversity framework** for software engineering, integrating:
 
 - **27+ Neuro-Divergent Models**: LSTM, TCN, N-BEATS, Transformer, VAE working in harmony
 - **5 Specialized AI Agents**: Each optimized for different cognitive patterns (convergent, divergent, lateral, systems thinking)

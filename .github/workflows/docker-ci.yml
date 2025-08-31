@@ -1,0 +1,261 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'docker/**'
+      - 'Dockerfile*'
+      - '.github/workflows/docker-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'docker/**'
+      - 'Dockerfile*'
+  schedule:
+    # Weekly Docker security scan
+    - cron: '0 5 * * 0'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-test:
+    name: Build and Test Docker Images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile:
+          - path: ./Dockerfile
+            name: main
+          - path: ./cuda-wasm/Dockerfile
+            name: cuda-wasm
+          - path: ./ruv-swarm/Dockerfile
+            name: ruv-swarm
+          - path: ./docker/docker-npm-test/Dockerfile
+            name: npm-test
+          - path: ./docker/docker-wasm-test/Dockerfile
+            name: wasm-test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ${{ matrix.dockerfile.path }}
+        push: false
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          BUILDKIT_INLINE_CACHE=1
+
+    - name: Test Docker image
+      run: |
+        # Test basic functionality
+        docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --version || true
+
+        # Test specific functionality based on image type
+        case "${{ matrix.dockerfile.name }}" in
+          "npm-test")
+            docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} npm --version
+            ;;
+          "wasm-test")
+            docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} node --version
+            ;;
+          "cuda-wasm")
+            docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} rustc --version
+            ;;
+        esac
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build for scanning
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: true
+        tags: scan-image
+        cache-from: type=gha
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'image'
+        scan-ref: 'scan-image'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: Run Dockle (Docker image linter)
+      uses: goodwithtech/dockle-action@v1
+      with:
+        image: 'scan-image'
+        format: 'sarif'
+        output: 'dockle-results.sarif'
+
+    - name: Upload Dockle results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'dockle-results.sarif'
+
+  performance-test:
+    name: Performance Test Containers
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build performance test image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./docker/docker-wasm-test/Dockerfile
+        load: true
+        tags: perf-test
+        cache-from: type=gha
+
+    - name: Run performance benchmarks
+      run: |
+        # Run container performance tests
+        docker run --rm \
+          --memory=2g \
+          --cpus=2 \
+          perf-test \
+          timeout 300s npm run benchmark:wasm || [ $? -eq 124 ]
+
+    - name: Collect container metrics
+      run: |
+        # Collect Docker container metrics
+        docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+
+  multi-arch-build:
+    name: Multi-Architecture Build
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push multi-arch image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [security-scan, performance-test, multi-arch-build]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+
+    steps:
+    - name: Deploy to staging environment
+      run: |
+        echo "Deploying to staging environment..."
+        # Add actual deployment commands here
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [security-scan, performance-test, multi-arch-build]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+    - name: Deploy to production environment
+      run: |
+        echo "Deploying to production environment..."
+        # Add actual deployment commands here
+
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [build-and-test, security-scan, performance-test]
+
+    steps:
+    - name: Clean up Docker resources
+      run: |
+        docker system prune -f
+        docker image prune -f
+
+    - name: Clean up build cache (weekly)
+      if: github.event.schedule == '0 5 * * 0'
+      run: |
+        docker buildx prune -f

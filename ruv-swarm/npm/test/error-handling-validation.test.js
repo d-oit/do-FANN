@@ -13,30 +13,30 @@ const mockRuvSwarm = {
     neural_networks: true,
     forecasting: true,
     cognitive_diversity: true,
-    simd_support: true,
+    simd_support: true
   },
   wasmLoader: {
     getTotalMemoryUsage: jest.fn(() => 1024 * 1024),
-    getModuleStatus: jest.fn(() => ({ core: { loaded: true } })),
-  },
+    getModuleStatus: jest.fn(() => ({ core: { loaded: true } }))
+  }
 };
 
 const mockPersistence = {
   createSwarm: jest.fn(),
   createAgent: jest.fn(),
   getActiveSwarms: jest.fn(() => []),
-  getSwarmAgents: jest.fn(() => []),
+  getSwarmAgents: jest.fn(() => [])
 };
 
 // Import the modules with mocking
 jest.unstable_mockModule('../src/index-enhanced.js', () => ({
   RuvSwarm: {
-    initialize: jest.fn(() => mockRuvSwarm),
-  },
+    initialize: jest.fn(() => mockRuvSwarm)
+  }
 }));
 
 jest.unstable_mockModule('../src/persistence.js', () => ({
-  SwarmPersistence: jest.fn(() => mockPersistence),
+  SwarmPersistence: jest.fn(() => mockPersistence)
 }));
 
 // Now import the modules under test
@@ -48,7 +48,7 @@ const {
   NeuralError,
   WasmError,
   ErrorFactory,
-  ErrorContext,
+  ErrorContext
 } = await import('../src/errors.js');
 
 const { ValidationUtils } = await import('../src/schemas.js');
@@ -71,7 +71,7 @@ describe('Error Handling System', () => {
       expect(error.field).toBe('testField');
       expect(error.value).toBe('badValue');
       expect(error.expectedType).toBe('string');
-      expect(error.getSuggestions()).toContain('Check the \'testField\' parameter');
+      expect(error.getSuggestions()).toContain("Check the 'testField' parameter");
     });
 
     test('SwarmError should include swarm context', () => {
@@ -131,19 +131,19 @@ describe('Error Handling System', () => {
       const validationError = ErrorFactory.createError('validation', 'Invalid input', {
         field: 'test',
         value: 'bad',
-        expectedType: 'number',
+        expectedType: 'number'
       });
       expect(validationError).toBeInstanceOf(ValidationError);
 
       const swarmError = ErrorFactory.createError('swarm', 'Swarm failed', {
         swarmId: 'test-id',
-        operation: 'init',
+        operation: 'init'
       });
       expect(swarmError).toBeInstanceOf(SwarmError);
 
       const agentError = ErrorFactory.createError('agent', 'Agent failed', {
         agentId: 'test-id',
-        agentType: 'researcher',
+        agentType: 'researcher'
       });
       expect(agentError).toBeInstanceOf(AgentError);
     });
@@ -152,7 +152,7 @@ describe('Error Handling System', () => {
       const originalError = new Error('Original error');
       const wrappedError = ErrorFactory.wrapError(originalError, 'wasm', {
         module: 'core',
-        operation: 'load',
+        operation: 'load'
       });
 
       expect(wrappedError).toBeInstanceOf(WasmError);
@@ -170,7 +170,7 @@ describe('Error Handling System', () => {
       expect(context.get('operation')).toBe('test');
       expect(context.toObject()).toEqual({
         operation: 'test',
-        timestamp: '2023-01-01',
+        timestamp: '2023-01-01'
       });
 
       context.clear();
@@ -187,7 +187,7 @@ describe('Error Handling System', () => {
 
       expect(enrichedError.details.context).toEqual({
         tool: 'swarm_init',
-        operation: 'test',
+        operation: 'test'
       });
     });
   });
@@ -199,7 +199,7 @@ describe('Validation System', () => {
       const validParams = {
         topology: 'mesh',
         maxAgents: 10,
-        strategy: 'balanced',
+        strategy: 'balanced'
       };
 
       const result = ValidationUtils.validateParams(validParams, 'swarm_init');
@@ -219,7 +219,7 @@ describe('Validation System', () => {
 
     test('should reject invalid enum values', () => {
       const invalidParams = {
-        topology: 'invalid-topology',
+        topology: 'invalid-topology'
       };
 
       expect(() => {
@@ -229,7 +229,7 @@ describe('Validation System', () => {
 
     test('should reject out-of-range numbers', () => {
       const invalidParams = {
-        maxAgents: 200, // Max is 100
+        maxAgents: 200 // Max is 100
       };
 
       expect(() => {
@@ -241,7 +241,7 @@ describe('Validation System', () => {
       const validParams = {
         type: 'researcher',
         name: 'Test Agent',
-        capabilities: ['analysis', 'research'],
+        capabilities: ['analysis', 'research']
       };
 
       const result = ValidationUtils.validateParams(validParams, 'agent_spawn');
@@ -255,7 +255,7 @@ describe('Validation System', () => {
         agentId: 'test-agent-123',
         iterations: 50,
         learningRate: 0.01,
-        modelType: 'feedforward',
+        modelType: 'feedforward'
       };
 
       const result = ValidationUtils.validateParams(validParams, 'neural_train');
@@ -268,7 +268,7 @@ describe('Validation System', () => {
     test('should reject invalid learning rates', () => {
       const invalidParams = {
         agentId: 'test-agent',
-        learningRate: 2.0, // Max is 1.0
+        learningRate: 2.0 // Max is 1.0
       };
 
       expect(() => {
@@ -339,7 +339,7 @@ describe('Enhanced MCP Tools Error Handling', () => {
     test('should validate tool parameters', () => {
       const params = {
         topology: 'mesh',
-        maxAgents: 10,
+        maxAgents: 10
       };
 
       const result = mcpTools.validateToolParams(params, 'swarm_init');
@@ -349,7 +349,7 @@ describe('Enhanced MCP Tools Error Handling', () => {
 
     test('should throw ValidationError for invalid parameters', () => {
       const params = {
-        topology: 'invalid',
+        topology: 'invalid'
       };
 
       expect(() => {
@@ -388,7 +388,7 @@ describe('Enhanced MCP Tools Error Handling', () => {
   });
 
   describe('Integration with MCP Tools', () => {
-    test('swarm_init should use enhanced error handling', async() => {
+    test('swarm_init should use enhanced error handling', async () => {
       // Mock to throw an error
       mockRuvSwarm.createSwarm = jest.fn().mockRejectedValue(new Error('WASM module not loaded'));
 
@@ -399,22 +399,22 @@ describe('Enhanced MCP Tools Error Handling', () => {
       expect(mcpTools.errorLog[0].tool).toBe('swarm_init');
     });
 
-    test('should handle validation errors in swarm_init', async() => {
+    test('should handle validation errors in swarm_init', async () => {
       const invalidParams = {
         topology: 'invalid-topology',
-        maxAgents: 'not-a-number',
+        maxAgents: 'not-a-number'
       };
 
       await expect(mcpTools.swarm_init(invalidParams)).rejects.toThrow(ValidationError);
     });
 
-    test('agent_spawn should use enhanced error handling', async() => {
+    test('agent_spawn should use enhanced error handling', async () => {
       // First initialize a swarm
       mockRuvSwarm.createSwarm = jest.fn().mockResolvedValue({
         id: 'test-swarm',
         agents: new Map(),
         maxAgents: 5,
-        spawn: jest.fn().mockRejectedValue(new Error('Neural network initialization failed')),
+        spawn: jest.fn().mockRejectedValue(new Error('Neural network initialization failed'))
       });
 
       await mcpTools.swarm_init({});

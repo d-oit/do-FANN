@@ -14,7 +14,7 @@ describe('Performance Under Load Integration Tests', () => {
     performanceMonitor = new PerformanceMonitor();
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     if (swarm) {
       await swarm.shutdown();
     }
@@ -22,7 +22,7 @@ describe('Performance Under Load Integration Tests', () => {
   });
 
   describe('High Agent Count Stress Tests', () => {
-    it('should handle 100+ agents efficiently', async function() {
+    it('should handle 100+ agents efficiently', async function () {
       this.timeout(60000); // 60 second timeout
 
       swarm = new RuvSwarm();
@@ -31,8 +31,8 @@ describe('Performance Under Load Integration Tests', () => {
         maxAgents: 150,
         performance: {
           monitoring: true,
-          adaptiveScaling: true,
-        },
+          adaptiveScaling: true
+        }
       });
 
       performanceMonitor.startTracking('agent-creation');
@@ -46,10 +46,12 @@ describe('Performance Under Load Integration Tests', () => {
         const batchPromises = [];
         for (let i = 0; i < batchSize; i++) {
           const agentType = ['coder', 'researcher', 'analyst', 'optimizer'][i % 4];
-          batchPromises.push(swarm.spawnAgent({
-            type: agentType,
-            lightweight: true,
-          }));
+          batchPromises.push(
+            swarm.spawnAgent({
+              type: agentType,
+              lightweight: true
+            })
+          );
         }
 
         const batchAgents = await Promise.all(batchPromises);
@@ -73,11 +75,13 @@ describe('Performance Under Load Integration Tests', () => {
 
       const tasks = [];
       for (let i = 0; i < 50; i++) {
-        tasks.push(swarm.orchestrateTask({
-          task: `Stress test task ${i}`,
-          strategy: 'parallel',
-          maxAgents: 5,
-        }));
+        tasks.push(
+          swarm.orchestrateTask({
+            task: `Stress test task ${i}`,
+            strategy: 'parallel',
+            maxAgents: 5
+          })
+        );
       }
 
       const taskResults = await Promise.all(tasks);
@@ -100,7 +104,7 @@ describe('Performance Under Load Integration Tests', () => {
       expect(resourceStats.cpuUsage).to.be.lessThan(80); // Under 80% CPU
     });
 
-    it('should maintain response times under heavy load', async function() {
+    it('should maintain response times under heavy load', async function () {
       this.timeout(30000);
 
       swarm = new RuvSwarm();
@@ -109,13 +113,15 @@ describe('Performance Under Load Integration Tests', () => {
         maxAgents: 50,
         performance: {
           targetResponseTime: 100, // 100ms target
-          autoOptimize: true,
-        },
+          autoOptimize: true
+        }
       });
 
       // Create worker agents
       const agents = await Promise.all(
-        Array(30).fill().map(() => swarm.spawnAgent({ type: 'coder' })),
+        Array(30)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'coder' }))
       );
 
       // Measure response times under increasing load
@@ -130,10 +136,12 @@ describe('Performance Under Load Integration Tests', () => {
 
         // Send concurrent requests
         for (let i = 0; i < load; i++) {
-          requests.push(swarm.executeAgentTask(
-            agents[i % agents.length].id,
-            { task: 'Quick computation', complexity: 'low' },
-          ));
+          requests.push(
+            swarm.executeAgentTask(agents[i % agents.length].id, {
+              task: 'Quick computation',
+              complexity: 'low'
+            })
+          );
         }
 
         const results = await Promise.all(requests);
@@ -143,7 +151,7 @@ describe('Performance Under Load Integration Tests', () => {
           avgResponseTime: metrics.averageTimePerOperation,
           p95ResponseTime: metrics.percentile95,
           p99ResponseTime: metrics.percentile99,
-          successRate: results.filter(r => r.success).length / results.length,
+          successRate: results.filter(r => r.success).length / results.length
         };
       }
 
@@ -159,7 +167,7 @@ describe('Performance Under Load Integration Tests', () => {
       });
     });
 
-    it('should scale dynamically based on load', async function() {
+    it('should scale dynamically based on load', async function () {
       this.timeout(30000);
 
       swarm = new RuvSwarm();
@@ -172,23 +180,25 @@ describe('Performance Under Load Integration Tests', () => {
           maxAgents: 50,
           scaleUpThreshold: 0.8,
           scaleDownThreshold: 0.3,
-          cooldownPeriod: 2000,
-        },
+          cooldownPeriod: 2000
+        }
       });
 
       // Monitor scaling events
       const scalingEvents = [];
-      swarm.on('scaling', (event) => scalingEvents.push(event));
+      swarm.on('scaling', event => scalingEvents.push(event));
 
       // Start with baseline load
       let currentLoad = 10;
-      const loadGenerator = setInterval(async() => {
+      const loadGenerator = setInterval(async () => {
         const tasks = [];
         for (let i = 0; i < currentLoad; i++) {
-          tasks.push(swarm.orchestrateTask({
-            task: 'Dynamic load task',
-            duration: 500, // 500ms tasks
-          }));
+          tasks.push(
+            swarm.orchestrateTask({
+              task: 'Dynamic load task',
+              duration: 500 // 500ms tasks
+            })
+          );
         }
         await Promise.all(tasks);
       }, 1000);
@@ -223,7 +233,7 @@ describe('Performance Under Load Integration Tests', () => {
   });
 
   describe('Memory Usage Optimization', () => {
-    it('should maintain stable memory under sustained load', async function() {
+    it('should maintain stable memory under sustained load', async function () {
       this.timeout(45000);
 
       swarm = new RuvSwarm();
@@ -233,8 +243,8 @@ describe('Performance Under Load Integration Tests', () => {
         memory: {
           monitoring: true,
           gcInterval: 2000,
-          maxHeapUsage: 512 * 1024 * 1024, // 512MB
-        },
+          maxHeapUsage: 512 * 1024 * 1024 // 512MB
+        }
       });
 
       // Track memory over time
@@ -244,13 +254,15 @@ describe('Performance Under Load Integration Tests', () => {
           timestamp: Date.now(),
           heapUsed: process.memoryUsage().heapUsed,
           external: process.memoryUsage().external,
-          rss: process.memoryUsage().rss,
+          rss: process.memoryUsage().rss
         });
       }, 1000);
 
       // Create agents
       const agents = await Promise.all(
-        Array(20).fill().map(() => swarm.spawnAgent({ type: 'coder' })),
+        Array(20)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'coder' }))
       );
 
       // Sustained workload for 30 seconds
@@ -260,11 +272,13 @@ describe('Performance Under Load Integration Tests', () => {
       while (Date.now() - startTime < 30000) {
         // Create tasks with varying memory requirements
         for (let i = 0; i < 5; i++) {
-          workloadTasks.push(swarm.orchestrateTask({
-            task: 'Memory test task',
-            data: Buffer.alloc(Math.random() * 1024 * 1024), // 0-1MB random data
-            strategy: 'parallel',
-          }));
+          workloadTasks.push(
+            swarm.orchestrateTask({
+              task: 'Memory test task',
+              data: Buffer.alloc(Math.random() * 1024 * 1024), // 0-1MB random data
+              strategy: 'parallel'
+            })
+          );
         }
 
         // Process in batches
@@ -280,7 +294,8 @@ describe('Performance Under Load Integration Tests', () => {
       clearInterval(memoryInterval);
 
       // Analyze memory usage
-      const avgMemory = memorySnapshots.reduce((sum, s) => sum + s.heapUsed, 0) / memorySnapshots.length;
+      const avgMemory =
+        memorySnapshots.reduce((sum, s) => sum + s.heapUsed, 0) / memorySnapshots.length;
       const maxMemory = Math.max(...memorySnapshots.map(s => s.heapUsed));
       const minMemory = Math.min(...memorySnapshots.map(s => s.heapUsed));
       const memoryVariance = maxMemory - minMemory;
@@ -301,7 +316,7 @@ describe('Performance Under Load Integration Tests', () => {
       expect(avgSecondHalf).to.be.lessThan(avgFirstHalf * 1.2);
     });
 
-    it('should efficiently handle large data processing', async function() {
+    it('should efficiently handle large data processing', async function () {
       this.timeout(30000);
 
       swarm = new RuvSwarm();
@@ -310,15 +325,15 @@ describe('Performance Under Load Integration Tests', () => {
         maxAgents: 10,
         streaming: {
           enabled: true,
-          chunkSize: 1024 * 1024, // 1MB chunks
-        },
+          chunkSize: 1024 * 1024 // 1MB chunks
+        }
       });
 
       // Create specialized agents
       const agents = await Promise.all([
         swarm.spawnAgent({ type: 'coder', specialization: 'data-processing' }),
         swarm.spawnAgent({ type: 'analyst', specialization: 'aggregation' }),
-        swarm.spawnAgent({ type: 'optimizer', specialization: 'compression' }),
+        swarm.spawnAgent({ type: 'optimizer', specialization: 'compression' })
       ]);
 
       // Process large dataset
@@ -329,15 +344,17 @@ describe('Performance Under Load Integration Tests', () => {
 
       const processingTasks = [];
       for (let i = 0; i < chunks; i++) {
-        processingTasks.push(swarm.orchestrateTask({
-          task: 'Process data chunk',
-          data: {
-            chunkId: i,
-            size: largeDataSize / chunks,
-            operation: 'transform',
-          },
-          streaming: true,
-        }));
+        processingTasks.push(
+          swarm.orchestrateTask({
+            task: 'Process data chunk',
+            data: {
+              chunkId: i,
+              size: largeDataSize / chunks,
+              operation: 'transform'
+            },
+            streaming: true
+          })
+        );
       }
 
       const results = await Promise.all(processingTasks);
@@ -361,7 +378,7 @@ describe('Performance Under Load Integration Tests', () => {
   });
 
   describe('Concurrent Operation Performance', () => {
-    it('should handle mixed workload efficiently', async function() {
+    it('should handle mixed workload efficiently', async function () {
       this.timeout(30000);
 
       swarm = new RuvSwarm();
@@ -370,17 +387,27 @@ describe('Performance Under Load Integration Tests', () => {
         maxAgents: 30,
         workloadBalancing: {
           enabled: true,
-          strategy: 'weighted-round-robin',
-        },
+          strategy: 'weighted-round-robin'
+        }
       });
 
       // Create diverse agent pool
       const agents = await Promise.all([
-        ...Array(10).fill().map(() => swarm.spawnAgent({ type: 'coder', weight: 3 })),
-        ...Array(5).fill().map(() => swarm.spawnAgent({ type: 'researcher', weight: 2 })),
-        ...Array(5).fill().map(() => swarm.spawnAgent({ type: 'analyst', weight: 2 })),
-        ...Array(5).fill().map(() => swarm.spawnAgent({ type: 'optimizer', weight: 1 })),
-        ...Array(5).fill().map(() => swarm.spawnAgent({ type: 'tester', weight: 1 })),
+        ...Array(10)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'coder', weight: 3 })),
+        ...Array(5)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'researcher', weight: 2 })),
+        ...Array(5)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'analyst', weight: 2 })),
+        ...Array(5)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'optimizer', weight: 1 })),
+        ...Array(5)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'tester', weight: 1 }))
       ]);
 
       // Define mixed workload
@@ -389,7 +416,7 @@ describe('Performance Under Load Integration Tests', () => {
         { type: 'research', duration: 500, frequency: 0.2 },
         { type: 'analysis', duration: 300, frequency: 0.2 },
         { type: 'optimization', duration: 1000, frequency: 0.1 },
-        { type: 'testing', duration: 400, frequency: 0.1 },
+        { type: 'testing', duration: 400, frequency: 0.1 }
       ];
 
       // Generate mixed tasks
@@ -411,12 +438,14 @@ describe('Performance Under Load Integration Tests', () => {
           }
         }
 
-        tasks.push(swarm.orchestrateTask({
-          task: `${selectedWorkload.type} task ${i}`,
-          type: selectedWorkload.type,
-          estimatedDuration: selectedWorkload.duration,
-          affinityType: selectedWorkload.type.replace('ing', 'er'),
-        }));
+        tasks.push(
+          swarm.orchestrateTask({
+            task: `${selectedWorkload.type} task ${i}`,
+            type: selectedWorkload.type,
+            estimatedDuration: selectedWorkload.duration,
+            affinityType: selectedWorkload.type.replace('ing', 'er')
+          })
+        );
       }
 
       const results = await Promise.all(tasks);
@@ -428,7 +457,7 @@ describe('Performance Under Load Integration Tests', () => {
         resultsByType[w.type] = {
           count: 0,
           successful: 0,
-          totalTime: 0,
+          totalTime: 0
         };
       });
 
@@ -461,7 +490,7 @@ describe('Performance Under Load Integration Tests', () => {
       expect(metrics.successRate).to.be.at.least(0.95);
     });
 
-    it('should optimize throughput with pipelining', async function() {
+    it('should optimize throughput with pipelining', async function () {
       this.timeout(30000);
 
       swarm = new RuvSwarm();
@@ -471,12 +500,12 @@ describe('Performance Under Load Integration Tests', () => {
           { name: 'input', agents: 3 },
           { name: 'processing', agents: 5 },
           { name: 'analysis', agents: 3 },
-          { name: 'output', agents: 2 },
+          { name: 'output', agents: 2 }
         ],
         pipelining: {
           enabled: true,
-          bufferSize: 10,
-        },
+          bufferSize: 10
+        }
       });
 
       // Create pipeline stages
@@ -485,8 +514,8 @@ describe('Performance Under Load Integration Tests', () => {
           { type: 'researcher', count: 3 },
           { type: 'coder', count: 5 },
           { type: 'analyst', count: 3 },
-          { type: 'optimizer', count: 2 },
-        ],
+          { type: 'optimizer', count: 2 }
+        ]
       });
 
       // Track throughput
@@ -497,7 +526,7 @@ describe('Performance Under Load Integration Tests', () => {
 
       // Feed items into pipeline
       const totalItems = 100;
-      const feedInterval = setInterval(async() => {
+      const feedInterval = setInterval(async () => {
         if (processedItems >= totalItems) {
           clearInterval(feedInterval);
           return;
@@ -509,7 +538,7 @@ describe('Performance Under Load Integration Tests', () => {
           pipeline.process({
             id: `item-${processedItems + i}`,
             data: `Processing item ${processedItems + i}`,
-            complexity: Math.random() > 0.5 ? 'high' : 'low',
+            complexity: Math.random() > 0.5 ? 'high' : 'low'
           });
         }
       }, 100);
@@ -544,7 +573,7 @@ describe('Performance Under Load Integration Tests', () => {
   });
 
   describe('Resource Cleanup Verification', () => {
-    it('should clean up all resources after stress test', async function() {
+    it('should clean up all resources after stress test', async function () {
       this.timeout(30000);
 
       // Baseline measurements
@@ -558,22 +587,26 @@ describe('Performance Under Load Integration Tests', () => {
         maxAgents: 50,
         cleanup: {
           aggressive: true,
-          trackLeaks: true,
-        },
+          trackLeaks: true
+        }
       });
 
       // Stress test
       const agents = await Promise.all(
-        Array(50).fill().map(() => swarm.spawnAgent({ type: 'coder' })),
+        Array(50)
+          .fill()
+          .map(() => swarm.spawnAgent({ type: 'coder' }))
       );
 
       // Execute many tasks
       const tasks = [];
       for (let i = 0; i < 100; i++) {
-        tasks.push(swarm.orchestrateTask({
-          task: `Cleanup test task ${i}`,
-          timeout: 5000,
-        }));
+        tasks.push(
+          swarm.orchestrateTask({
+            task: `Cleanup test task ${i}`,
+            timeout: 5000
+          })
+        );
       }
 
       await Promise.all(tasks);

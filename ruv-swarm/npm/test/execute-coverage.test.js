@@ -31,7 +31,7 @@ try {
   const swarm = await ruv.createSwarm({
     name: 'test-swarm',
     topology: 'mesh',
-    maxAgents: 5,
+    maxAgents: 5
   });
   console.log(`  ✓ Swarm created: ${swarm.name}`);
 
@@ -46,14 +46,13 @@ try {
   // Test orchestration
   const orchestration = await swarm.orchestrate({
     task: 'complex-analysis',
-    agents: 3,
+    agents: 3
   });
   console.log(`  ✓ Orchestration: ${orchestration.id}`);
 
   // Test status
   const status = await swarm.getStatus();
   console.log(`  ✓ Status: ${status.agentCount} agents`);
-
 } catch (error) {
   console.log(`  ⚠️  Mock mode: ${error.message}`);
 }
@@ -82,14 +81,13 @@ try {
   const neuralAgent = new NeuralAgent({
     id: 'test-agent',
     type: 'researcher',
-    model: 'transformer',
+    model: 'transformer'
   });
   console.log('  ✓ NeuralAgent created');
 
   // Test initialization
   await neuralAgent.initialize();
   console.log('  ✓ NeuralAgent initialized');
-
 } catch (error) {
   console.log(`  ⚠️  NeuralAgent: ${error.message}`);
 }
@@ -107,7 +105,7 @@ try {
     id: 'test-123',
     name: 'Test Swarm',
     topology: 'mesh',
-    state: { agents: 3 },
+    state: { agents: 3 }
   });
   console.log('  ✓ Swarm saved');
 
@@ -119,7 +117,7 @@ try {
     id: 'agent-1',
     swarmId: 'test-123',
     type: 'researcher',
-    state: { tasks: 5 },
+    state: { tasks: 5 }
   });
   console.log('  ✓ Agent saved');
 
@@ -131,7 +129,7 @@ try {
     id: 'task-1',
     swarmId: 'test-123',
     type: 'analysis',
-    status: 'completed',
+    status: 'completed'
   });
   console.log('  ✓ Task saved');
 
@@ -147,7 +145,6 @@ try {
 
   await persistence.close();
   console.log('  ✓ Persistence closed');
-
 } catch (error) {
   console.log(`  ⚠️  Persistence: ${error.message}`);
 }
@@ -164,14 +161,13 @@ try {
   const network = await manager.createNetwork({
     layers: [10, 20, 10],
     activation: 'relu',
-    outputActivation: 'softmax',
+    outputActivation: 'softmax'
   });
   console.log('  ✓ Network created');
 
   // List models
   const models = manager.listModels();
   console.log(`  ✓ Models: ${models.join(', ')}`);
-
 } catch (error) {
   console.log(`  ⚠️  NeuralNetworkManager: ${error.message}`);
 }
@@ -188,7 +184,6 @@ try {
 
   const simd = loader.hasSIMDSupport();
   console.log(`  ✓ SIMD supported: ${simd}`);
-
 } catch (error) {
   console.log(`  ⚠️  WasmLoader: ${error.message}`);
 }
@@ -203,10 +198,9 @@ try {
 
   const swarm = await enhanced.createSwarm({
     topology: 'hierarchical',
-    enableNeuralAgents: true,
+    enableNeuralAgents: true
   });
   console.log('  ✓ Enhanced swarm created');
-
 } catch (error) {
   console.log(`  ⚠️  RuvSwarmEnhanced: ${error.message}`);
 }
@@ -225,16 +219,15 @@ try {
   const transformer = new models.TransformerModel({
     dModel: 512,
     nHeads: 8,
-    nLayers: 6,
+    nLayers: 6
   });
   console.log('  ✓ TransformerModel created');
 
   const cnn = new models.CNNModel({
     inputChannels: 3,
-    outputClasses: 10,
+    outputClasses: 10
   });
   console.log('  ✓ CNNModel created');
-
 } catch (error) {
   console.log(`  ⚠️  Neural models: ${error.message}`);
 }
@@ -261,7 +254,6 @@ try {
 
   const duration = perf.formatDuration(1500);
   console.log(`  ✓ Format duration: ${duration}`);
-
 } catch (error) {
   console.log(`  ⚠️  Performance: ${error.message}`);
 }

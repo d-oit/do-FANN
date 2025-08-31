@@ -22,8 +22,8 @@ class RuvSwarmHooks {
       metrics: {
         tokensSaved: 0,
         tasksCompleted: 0,
-        patternsImproved: 0,
-      },
+        patternsImproved: 0
+      }
     };
 
     // Initialize persistence layer for cross-agent memory
@@ -45,73 +45,73 @@ class RuvSwarmHooks {
   }
 
   /**
-     * Main hook handler - routes to specific hook implementations
-     */
+   * Main hook handler - routes to specific hook implementations
+   */
   async handleHook(hookType, args) {
     try {
       switch (hookType) {
-      // Pre-operation hooks
-      case 'pre-edit':
-        return await this.preEditHook(args);
-      case 'pre-bash':
-        return await this.preBashHook(args);
-      case 'pre-task':
-        return await this.preTaskHook(args);
-      case 'pre-search':
-        return await this.preSearchHook(args);
-      case 'pre-mcp':
-        return await this.preMcpHook(args);
+        // Pre-operation hooks
+        case 'pre-edit':
+          return await this.preEditHook(args);
+        case 'pre-bash':
+          return await this.preBashHook(args);
+        case 'pre-task':
+          return await this.preTaskHook(args);
+        case 'pre-search':
+          return await this.preSearchHook(args);
+        case 'pre-mcp':
+          return await this.preMcpHook(args);
 
         // Post-operation hooks
-      case 'post-edit':
-        return await this.postEditHook(args);
-      case 'post-bash':
-        return await this.postBashHook(args);
-      case 'post-task':
-        return await this.postTaskHook(args);
-      case 'post-search':
-        return await this.postSearchHook(args);
-      case 'post-web-search':
-        return await this.postWebSearchHook(args);
-      case 'post-web-fetch':
-        return await this.postWebFetchHook(args);
+        case 'post-edit':
+          return await this.postEditHook(args);
+        case 'post-bash':
+          return await this.postBashHook(args);
+        case 'post-task':
+          return await this.postTaskHook(args);
+        case 'post-search':
+          return await this.postSearchHook(args);
+        case 'post-web-search':
+          return await this.postWebSearchHook(args);
+        case 'post-web-fetch':
+          return await this.postWebFetchHook(args);
 
         // MCP-specific hooks
-      case 'mcp-swarm-initialized':
-        return await this.mcpSwarmInitializedHook(args);
-      case 'mcp-agent-spawned':
-        return await this.mcpAgentSpawnedHook(args);
-      case 'mcp-task-orchestrated':
-        return await this.mcpTaskOrchestratedHook(args);
-      case 'mcp-neural-trained':
-        return await this.mcpNeuralTrainedHook(args);
+        case 'mcp-swarm-initialized':
+          return await this.mcpSwarmInitializedHook(args);
+        case 'mcp-agent-spawned':
+          return await this.mcpAgentSpawnedHook(args);
+        case 'mcp-task-orchestrated':
+          return await this.mcpTaskOrchestratedHook(args);
+        case 'mcp-neural-trained':
+          return await this.mcpNeuralTrainedHook(args);
 
         // System hooks
-      case 'notification':
-        return await this.notificationHook(args);
-      case 'session-end':
-        return await this.sessionEndHook(args);
-      case 'session-restore':
-        return await this.sessionRestoreHook(args);
-      case 'agent-complete':
-        return await this.agentCompleteHook(args);
+        case 'notification':
+          return await this.notificationHook(args);
+        case 'session-end':
+          return await this.sessionEndHook(args);
+        case 'session-restore':
+          return await this.sessionRestoreHook(args);
+        case 'agent-complete':
+          return await this.agentCompleteHook(args);
 
-      default:
-        return { continue: true, reason: `Unknown hook type: ${hookType}` };
+        default:
+          return { continue: true, reason: `Unknown hook type: ${hookType}` };
       }
     } catch (error) {
       console.error(`Hook error (${hookType}):`, error.message);
       return {
         continue: true,
         error: error.message,
-        fallback: 'Hook error - continuing with default behavior',
+        fallback: 'Hook error - continuing with default behavior'
       };
     }
   }
 
   /**
-     * Pre-search hook - Prepare cache and optimize search
-     */
+   * Pre-search hook - Prepare cache and optimize search
+   */
   async preSearchHook(args) {
     const { pattern } = args;
 
@@ -122,25 +122,26 @@ class RuvSwarmHooks {
 
     // Check cache for similar patterns
     const cachedResult = this.sessionData.searchCache.get(pattern);
-    if (cachedResult && Date.now() - cachedResult.timestamp < 300000) { // 5 min cache
+    if (cachedResult && Date.now() - cachedResult.timestamp < 300000) {
+      // 5 min cache
       return {
         continue: true,
         cached: true,
         cacheHit: cachedResult.files.length,
-        metadata: { pattern, cached: true },
+        metadata: { pattern, cached: true }
       };
     }
 
     return {
       continue: true,
       reason: 'Search prepared',
-      metadata: { pattern, cacheReady: true },
+      metadata: { pattern, cacheReady: true }
     };
   }
 
   /**
-     * Pre-MCP hook - Validate MCP tool state
-     */
+   * Pre-MCP hook - Validate MCP tool state
+   */
   async preMcpHook(args) {
     const { tool, params } = args;
 
@@ -154,7 +155,7 @@ class RuvSwarmHooks {
         return {
           continue: true,
           warning: 'Swarm not initialized - will be created automatically',
-          autoInit: true,
+          autoInit: true
         };
       }
     }
@@ -164,19 +165,19 @@ class RuvSwarmHooks {
       type: 'mcp',
       tool,
       params: toolParams,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     });
 
     return {
       continue: true,
       reason: 'MCP tool validated',
-      metadata: { tool, state: 'ready' },
+      metadata: { tool, state: 'ready' }
     };
   }
 
   /**
-     * Pre-edit hook - Ensure coordination before file modifications
-     */
+   * Pre-edit hook - Ensure coordination before file modifications
+   */
   async preEditHook(args) {
     const { file } = args;
 
@@ -190,7 +191,7 @@ class RuvSwarmHooks {
       return {
         continue: false,
         reason: 'Swarm not initialized - run mcp__ruv-swarm__swarm_init first',
-        suggestion: 'Initialize swarm with appropriate topology',
+        suggestion: 'Initialize swarm with appropriate topology'
       };
     }
 
@@ -202,7 +203,7 @@ class RuvSwarmHooks {
       type: 'edit',
       file,
       agent: agent.id,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     });
 
     return {
@@ -212,14 +213,14 @@ class RuvSwarmHooks {
         agent_id: agent.id,
         agent_type: agentType,
         cognitive_pattern: agent.pattern,
-        readiness: agent.readiness,
-      },
+        readiness: agent.readiness
+      }
     };
   }
 
   /**
-     * Pre-task hook - Auto-spawn agents and optimize topology
-     */
+   * Pre-task hook - Auto-spawn agents and optimize topology
+   */
   async preTaskHook(args) {
     const { description, autoSpawnAgents, optimizeTopology } = args;
 
@@ -244,20 +245,20 @@ class RuvSwarmHooks {
         complexity,
         topology,
         agentsReady: true,
-        estimatedDuration: complexity.estimatedMinutes * 60000,
-      },
+        estimatedDuration: complexity.estimatedMinutes * 60000
+      }
     };
   }
 
   /**
-     * Post-edit hook - Format and learn from edits
-     */
+   * Post-edit hook - Format and learn from edits
+   */
   async postEditHook(args) {
     const { file, autoFormat, trainPatterns, updateGraph } = args;
     const result = {
       continue: true,
       formatted: false,
-      training: null,
+      training: null
     };
 
     // Auto-format if requested
@@ -286,8 +287,8 @@ class RuvSwarmHooks {
   }
 
   /**
-     * Post-task hook - Analyze performance and update coordination
-     */
+   * Post-task hook - Analyze performance and update coordination
+   */
   async postTaskHook(args) {
     const { taskId, analyzePerformance, updateCoordination } = args;
 
@@ -295,7 +296,7 @@ class RuvSwarmHooks {
       taskId,
       completionTime: Date.now() - (this.sessionData.taskStartTimes?.get(taskId) || Date.now()),
       agentsUsed: this.sessionData.taskAgents?.get(taskId) || [],
-      success: true,
+      success: true
     };
 
     // Analyze performance
@@ -303,7 +304,7 @@ class RuvSwarmHooks {
       performance.analysis = {
         efficiency: this.calculateEfficiency(performance),
         bottlenecks: this.identifyBottlenecks(performance),
-        improvements: this.suggestImprovements(performance),
+        improvements: this.suggestImprovements(performance)
       };
     }
 
@@ -317,13 +318,13 @@ class RuvSwarmHooks {
     return {
       continue: true,
       performance,
-      metadata: { taskId, optimized: true },
+      metadata: { taskId, optimized: true }
     };
   }
 
   /**
-     * Post-web-search hook - Analyze results and update knowledge
-     */
+   * Post-web-search hook - Analyze results and update knowledge
+   */
   async postWebSearchHook(args) {
     const { query, updateKnowledge } = args;
 
@@ -349,21 +350,21 @@ class RuvSwarmHooks {
       metadata: {
         query,
         patternsExtracted: patterns.length,
-        knowledgeUpdated: updateKnowledge,
-      },
+        knowledgeUpdated: updateKnowledge
+      }
     };
   }
 
   /**
-     * Post-web-fetch hook - Extract patterns and cache content
-     */
+   * Post-web-fetch hook - Extract patterns and cache content
+   */
   async postWebFetchHook(args) {
     const { url, extractPatterns, cacheContent } = args;
 
     const result = {
       continue: true,
       patterns: [],
-      cached: false,
+      cached: false
     };
 
     // Extract patterns from URL
@@ -378,7 +379,7 @@ class RuvSwarmHooks {
       }
       this.sessionData.contentCache.set(url, {
         timestamp: Date.now(),
-        patterns: result.patterns,
+        patterns: result.patterns
       });
       result.cached = true;
     }
@@ -387,8 +388,8 @@ class RuvSwarmHooks {
   }
 
   /**
-     * Notification hook - Handle notifications with swarm status
-     */
+   * Notification hook - Handle notifications with swarm status
+   */
   async notificationHook(args) {
     const { message, level, withSwarmStatus, sendTelemetry, type, context, agentId } = args;
 
@@ -398,7 +399,7 @@ class RuvSwarmHooks {
       type: type || 'general',
       context: context || {},
       agentId: agentId || null,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
 
     // Add swarm status if requested
@@ -407,7 +408,7 @@ class RuvSwarmHooks {
       notification.swarmStatus = {
         agents: status.agents?.size || 0,
         activeTasks: status.activeTasks || 0,
-        health: status.health || 'unknown',
+        health: status.health || 'unknown'
       };
     }
 
@@ -428,13 +429,13 @@ class RuvSwarmHooks {
     return {
       continue: true,
       notification,
-      handled: true,
+      handled: true
     };
   }
 
   /**
-     * Pre-bash hook - Validate commands before execution
-     */
+   * Pre-bash hook - Validate commands before execution
+   */
   async preBashHook(args) {
     const { command } = args;
 
@@ -444,7 +445,7 @@ class RuvSwarmHooks {
       return {
         continue: false,
         reason: safetyCheck.reason,
-        riskLevel: safetyCheck.riskLevel,
+        riskLevel: safetyCheck.riskLevel
       };
     }
 
@@ -459,14 +460,14 @@ class RuvSwarmHooks {
       reason: 'Command validated and resources available',
       metadata: {
         estimatedDuration: resources.duration,
-        requiresAgent: resources.requiresAgent,
-      },
+        requiresAgent: resources.requiresAgent
+      }
     };
   }
 
   /**
-     * MCP swarm initialized hook - Persist configuration
-     */
+   * MCP swarm initialized hook - Persist configuration
+   */
   async mcpSwarmInitializedHook(args) {
     const { swarmId, topology, persistConfig, enableMonitoring } = args;
 
@@ -475,7 +476,7 @@ class RuvSwarmHooks {
       id: swarmId,
       topology,
       initialized: Date.now(),
-      monitoring: enableMonitoring,
+      monitoring: enableMonitoring
     };
 
     // Persist configuration
@@ -484,7 +485,7 @@ class RuvSwarmHooks {
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
         path.join(configDir, 'swarm-config.json'),
-        JSON.stringify(swarmConfig, null, 2),
+        JSON.stringify(swarmConfig, null, 2)
       );
     }
 
@@ -493,20 +494,20 @@ class RuvSwarmHooks {
       this.sessionData.monitoring = {
         swarmId,
         startTime: Date.now(),
-        events: [],
+        events: []
       };
     }
 
     return {
       continue: true,
       reason: 'Swarm initialized and configured',
-      metadata: swarmConfig,
+      metadata: swarmConfig
     };
   }
 
   /**
-     * MCP agent spawned hook - Update roster and train
-     */
+   * MCP agent spawned hook - Update roster and train
+   */
   async mcpAgentSpawnedHook(args) {
     const { agentId, type, updateRoster, trainSpecialization } = args;
 
@@ -517,7 +518,7 @@ class RuvSwarmHooks {
         type,
         specialization: this.getSpecializationForType(type),
         spawned: Date.now(),
-        performance: { tasks: 0, successRate: 1.0 },
+        performance: { tasks: 0, successRate: 1.0 }
       };
 
       this.sessionData.agents.set(agentId, agent);
@@ -534,7 +535,7 @@ class RuvSwarmHooks {
         agentId,
         type,
         patterns: this.generateSpecializationPatterns(type),
-        confidence: 0.9 + Math.random() * 0.1,
+        confidence: 0.9 + Math.random() * 0.1
       };
 
       this.sessionData.learnings.push(training);
@@ -544,13 +545,13 @@ class RuvSwarmHooks {
       continue: true,
       agentId,
       type,
-      specialized: true,
+      specialized: true
     };
   }
 
   /**
-     * MCP task orchestrated hook - Monitor and optimize
-     */
+   * MCP task orchestrated hook - Monitor and optimize
+   */
   async mcpTaskOrchestratedHook(args) {
     const { taskId, monitorProgress, optimizeDistribution } = args;
 
@@ -570,7 +571,7 @@ class RuvSwarmHooks {
       this.sessionData.taskMonitoring.set(taskId, {
         checkpoints: [],
         resources: [],
-        bottlenecks: [],
+        bottlenecks: []
       });
     }
 
@@ -580,26 +581,26 @@ class RuvSwarmHooks {
         taskId,
         strategy: 'load-balanced',
         agentAllocation: this.optimizeAgentAllocation(taskId),
-        parallelization: this.calculateParallelization(taskId),
+        parallelization: this.calculateParallelization(taskId)
       };
 
       return {
         continue: true,
         taskId,
-        optimization,
+        optimization
       };
     }
 
     return {
       continue: true,
       taskId,
-      monitoring: monitorProgress,
+      monitoring: monitorProgress
     };
   }
 
   /**
-     * MCP neural trained hook - Save improvements
-     */
+   * MCP neural trained hook - Save improvements
+   */
   async mcpNeuralTrainedHook(args) {
     const { improvement, saveWeights, updatePatterns } = args;
 
@@ -607,7 +608,7 @@ class RuvSwarmHooks {
       continue: true,
       improvement: parseFloat(improvement),
       saved: false,
-      patternsUpdated: false,
+      patternsUpdated: false
     };
 
     // Save neural weights
@@ -619,12 +620,12 @@ class RuvSwarmHooks {
         timestamp: Date.now(),
         improvement,
         weights: this.generateMockWeights(),
-        version: this.sessionData.learnings.length,
+        version: this.sessionData.learnings.length
       };
 
       await fs.writeFile(
         path.join(weightsDir, `weights-${Date.now()}.json`),
-        JSON.stringify(weightData, null, 2),
+        JSON.stringify(weightData, null, 2)
       );
 
       result.saved = true;
@@ -638,7 +639,7 @@ class RuvSwarmHooks {
         timestamp: Date.now(),
         improvement,
         patterns: ['convergent', 'divergent', 'lateral'],
-        confidence: 0.85 + parseFloat(improvement),
+        confidence: 0.85 + parseFloat(improvement)
       };
 
       this.sessionData.learnings.push(patternUpdate);
@@ -649,8 +650,8 @@ class RuvSwarmHooks {
   }
 
   /**
-     * Agent complete hook - Commit to git with detailed report
-     */
+   * Agent complete hook - Commit to git with detailed report
+   */
   async agentCompleteHook(args) {
     const { agent, prompt, output, commitToGit, generateReport, pushToGithub } = args;
 
@@ -682,7 +683,7 @@ ${prompt || 'No prompt available'}
 \`\`\`
 
 ## Output Summary
-${output ? `### Key Accomplishments\n${ this.extractKeyPoints(output)}` : 'No output captured'}
+${output ? `### Key Accomplishments\n${this.extractKeyPoints(output)}` : 'No output captured'}
 
 ## Performance Metrics
 - **Total Operations**: ${this.sessionData.operations.length}
@@ -728,7 +729,7 @@ Agent: ${agentName}
 Timestamp: ${timestamp}
 
 ## Task Summary
-${prompt ? `${prompt.split('\n')[0].substring(0, 100) }...` : 'No task description'}
+${prompt ? `${prompt.split('\n')[0].substring(0, 100)}...` : 'No task description'}
 
 ## Achievements
 ${this.extractBulletPoints(output)}
@@ -762,7 +763,6 @@ EOF
           } else {
             console.log('ℹ️ No changes to commit');
           }
-
         } catch (gitError) {
           console.error('Git operation failed:', gitError.message);
         }
@@ -774,7 +774,7 @@ EOF
         hasReport: generateReport,
         hasCommit: commitToGit,
         operationCount: this.sessionData.operations.length,
-        duration: Date.now() - this.sessionData.startTime,
+        duration: Date.now() - this.sessionData.startTime
       });
 
       return {
@@ -783,21 +783,20 @@ EOF
         reportGenerated: generateReport,
         reportPath: reportPath ? path.relative(process.cwd(), reportPath) : null,
         committed: commitToGit,
-        duration: this.formatDuration(Date.now() - this.sessionData.startTime),
+        duration: this.formatDuration(Date.now() - this.sessionData.startTime)
       };
-
     } catch (error) {
       console.error('Agent complete hook error:', error);
       return {
         continue: true,
-        error: error.message,
+        error: error.message
       };
     }
   }
 
   /**
-     * Extract key points from output
-     */
+   * Extract key points from output
+   */
   extractKeyPoints(output) {
     const lines = output.split('\n').filter(l => l.trim());
     const keyPoints = [];
@@ -818,8 +817,8 @@ EOF
   }
 
   /**
-     * Extract bullet points for commit message
-     */
+   * Extract bullet points for commit message
+   */
   extractBulletPoints(output) {
     if (!output) {
       return '- No specific achievements captured';
@@ -834,11 +833,11 @@ EOF
   }
 
   /**
-     * Get count of modified files
-     */
+   * Get count of modified files
+   */
   getModifiedFilesCount() {
     const fileOps = this.sessionData.operations.filter(op =>
-      ['edit', 'write', 'create'].includes(op.type),
+      ['edit', 'write', 'create'].includes(op.type)
     );
 
     const uniqueFiles = new Set(fileOps.map(op => op.file).filter(Boolean));
@@ -846,11 +845,11 @@ EOF
   }
 
   /**
-     * Get list of modified files
-     */
+   * Get list of modified files
+   */
   getModifiedFilesList() {
     const fileOps = this.sessionData.operations.filter(op =>
-      ['edit', 'write', 'create'].includes(op.type),
+      ['edit', 'write', 'create'].includes(op.type)
     );
 
     const fileMap = new Map();
@@ -873,8 +872,8 @@ EOF
   }
 
   /**
-     * Session restore hook - Load previous state
-     */
+   * Session restore hook - Load previous state
+   */
   async sessionRestoreHook(args) {
     const { loadMemory, loadAgents } = args;
 
@@ -883,8 +882,8 @@ EOF
       restored: {
         memory: false,
         agents: false,
-        metrics: false,
-      },
+        metrics: false
+      }
     };
 
     try {
@@ -893,7 +892,12 @@ EOF
       // Load memory state
       if (loadMemory) {
         const memoryPath = path.join(sessionDir, 'memory-state.json');
-        if (await fs.access(memoryPath).then(() => true).catch(() => false)) {
+        if (
+          await fs
+            .access(memoryPath)
+            .then(() => true)
+            .catch(() => false)
+        ) {
           const memory = JSON.parse(await fs.readFile(memoryPath, 'utf-8'));
           this.sessionData = { ...this.sessionData, ...memory };
           result.restored.memory = true;
@@ -903,7 +907,12 @@ EOF
       // Load agent roster
       if (loadAgents) {
         const rosterPath = path.join(sessionDir, 'agent-roster.json');
-        if (await fs.access(rosterPath).then(() => true).catch(() => false)) {
+        if (
+          await fs
+            .access(rosterPath)
+            .then(() => true)
+            .catch(() => false)
+        ) {
           const roster = JSON.parse(await fs.readFile(rosterPath, 'utf-8'));
           roster.forEach(agent => {
             this.sessionData.agents.set(agent.id, agent);
@@ -914,12 +923,16 @@ EOF
 
       // Load metrics
       const metricsPath = path.join(sessionDir, 'session-metrics.json');
-      if (await fs.access(metricsPath).then(() => true).catch(() => false)) {
+      if (
+        await fs
+          .access(metricsPath)
+          .then(() => true)
+          .catch(() => false)
+      ) {
         const metrics = JSON.parse(await fs.readFile(metricsPath, 'utf-8'));
         this.sessionData.metrics = { ...this.sessionData.metrics, ...metrics };
         result.restored.metrics = true;
       }
-
     } catch (error) {
       console.error('Session restore error:', error.message);
     }
@@ -928,8 +941,8 @@ EOF
   }
 
   /**
-     * Session end hook - Generate summary and persist state
-     */
+   * Session end hook - Generate summary and persist state
+   */
   async sessionEndHook(args) {
     const { generateSummary, saveMemory, exportMetrics } = args;
     const sessionDir = path.join(process.cwd(), '.claude', 'sessions');
@@ -974,8 +987,8 @@ EOF
       summary: {
         duration: Date.now() - this.sessionData.startTime,
         operations: this.sessionData.operations.length,
-        improvements: this.sessionData.metrics.patternsImproved,
-      },
+        improvements: this.sessionData.metrics.patternsImproved
+      }
     };
   }
 
@@ -997,7 +1010,7 @@ EOF
       '.yml': 'analyst',
       '.toml': 'analyst',
       '.xml': 'analyst',
-      '.sql': 'analyst',
+      '.sql': 'analyst'
     };
     return mapping[extension] || 'coordinator';
   }
@@ -1006,7 +1019,10 @@ EOF
     try {
       // Check if swarm is initialized via file or global state
       const statusFile = path.join(process.cwd(), '.ruv-swarm', 'status.json');
-      const exists = await fs.access(statusFile).then(() => true).catch(() => false);
+      const exists = await fs
+        .access(statusFile)
+        .then(() => true)
+        .catch(() => false);
 
       if (exists) {
         const status = JSON.parse(await fs.readFile(statusFile, 'utf-8'));
@@ -1029,7 +1045,7 @@ EOF
         type,
         pattern: this.getCognitivePattern(type),
         readiness: 0.95,
-        created: Date.now(),
+        created: Date.now()
       };
       this.sessionData.agents.set(type, agent);
     }
@@ -1044,7 +1060,7 @@ EOF
       analyst: 'critical',
       coordinator: 'systems',
       architect: 'abstract',
-      optimizer: 'lateral',
+      optimizer: 'lateral'
     };
     return patterns[agentType] || 'balanced';
   }
@@ -1060,7 +1076,7 @@ EOF
       '.md': 'prettier --write --prose-wrap always',
       '.py': 'black',
       '.go': 'gofmt -w',
-      '.rs': 'rustfmt',
+      '.rs': 'rustfmt'
     };
 
     const formatter = formatters[ext];
@@ -1086,14 +1102,14 @@ EOF
       timestamp: Date.now(),
       improvement,
       confidence,
-      pattern: `edit_pattern_${ path.extname(filePath)}`,
+      pattern: `edit_pattern_${path.extname(filePath)}`
     });
 
     return {
       pattern_updated: true,
       improvement: improvement.toFixed(3),
       confidence: confidence.toFixed(2),
-      total_examples: this.sessionData.learnings.length,
+      total_examples: this.sessionData.learnings.length
     };
   }
 
@@ -1103,7 +1119,7 @@ EOF
       /curl.*\|\s*bash/,
       /wget.*\|\s*sh/,
       /eval\s*\(/,
-      />\/dev\/null\s+2>&1/,
+      />\/dev\/null\s+2>&1/
     ];
 
     for (const pattern of dangerousPatterns) {
@@ -1111,7 +1127,7 @@ EOF
         return {
           safe: false,
           reason: 'Command contains potentially dangerous pattern',
-          riskLevel: 'high',
+          riskLevel: 'high'
         };
       }
     }
@@ -1123,8 +1139,8 @@ EOF
     const resourceMap = {
       'npm test': { duration: 30000, requiresAgent: true, agentType: 'coordinator' },
       'npm run build': { duration: 60000, requiresAgent: true, agentType: 'optimizer' },
-      'git': { duration: 1000, requiresAgent: false },
-      'ls': { duration: 100, requiresAgent: false },
+      git: { duration: 1000, requiresAgent: false },
+      ls: { duration: 100, requiresAgent: false }
     };
 
     for (const [pattern, resources] of Object.entries(resourceMap)) {
@@ -1152,14 +1168,21 @@ Token Reduction: ${this.sessionData.metrics.tokensSaved} tokens
 - Neural Improvements: ${this.sessionData.metrics.patternsImproved}
 
 ## Operations Breakdown
-${this.sessionData.operations.slice(-10).map(op =>
-    `- ${new Date(op.timestamp).toLocaleTimeString()}: ${op.type} on ${op.file} (${op.agent})`,
-  ).join('\n')}
+${this.sessionData.operations
+  .slice(-10)
+  .map(
+    op => `- ${new Date(op.timestamp).toLocaleTimeString()}: ${op.type} on ${op.file} (${op.agent})`
+  )
+  .join('\n')}
 
 ## Learning Highlights
-${this.sessionData.learnings.slice(-5).map(l =>
-    `- Pattern "${l.pattern}" improved by ${(l.improvement * 100).toFixed(1)}% (confidence: ${l.confidence})`,
-  ).join('\n')}
+${this.sessionData.learnings
+  .slice(-5)
+  .map(
+    l =>
+      `- Pattern "${l.pattern}" improved by ${(l.improvement * 100).toFixed(1)}% (confidence: ${l.confidence})`
+  )
+  .join('\n')}
 
 ## Performance Metrics
 - Average Operation Time: ${(duration / this.sessionData.operations.length / 1000).toFixed(1)}s
@@ -1175,7 +1198,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       operations: this.sessionData.operations,
       learnings: this.sessionData.learnings,
       metrics: this.sessionData.metrics,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
   }
 
@@ -1186,23 +1209,30 @@ ${this.sessionData.learnings.slice(-5).map(l =>
         duration_ms: duration,
         operations_per_minute: (this.sessionData.operations.length / (duration / 60000)).toFixed(1),
         tokens_saved: this.sessionData.metrics.tokensSaved,
-        efficiency_score: (this.sessionData.metrics.tokensSaved / this.sessionData.operations.length).toFixed(1),
+        efficiency_score: (
+          this.sessionData.metrics.tokensSaved / this.sessionData.operations.length
+        ).toFixed(1)
       },
       learning: {
         patterns_improved: this.sessionData.metrics.patternsImproved,
-        average_improvement: (this.sessionData.learnings.reduce((acc, l) => acc + l.improvement, 0) / this.sessionData.learnings.length).toFixed(3),
-        confidence_average: (this.sessionData.learnings.reduce((acc, l) => acc + l.confidence, 0) / this.sessionData.learnings.length).toFixed(2),
+        average_improvement: (
+          this.sessionData.learnings.reduce((acc, l) => acc + l.improvement, 0) /
+          this.sessionData.learnings.length
+        ).toFixed(3),
+        confidence_average: (
+          this.sessionData.learnings.reduce((acc, l) => acc + l.confidence, 0) /
+          this.sessionData.learnings.length
+        ).toFixed(2)
       },
       agents: {
         total_spawned: this.sessionData.agents.size,
         by_type: Object.fromEntries(
-          Array.from(this.sessionData.agents.values())
-            .reduce((acc, agent) => {
-              acc.set(agent.type, (acc.get(agent.type) || 0) + 1);
-              return acc;
-            }, new Map()),
-        ),
-      },
+          Array.from(this.sessionData.agents.values()).reduce((acc, agent) => {
+            acc.set(agent.type, (acc.get(agent.type) || 0) + 1);
+            return acc;
+          }, new Map())
+        )
+      }
     };
   }
 
@@ -1217,7 +1247,6 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       return `${minutes}m ${seconds % 60}s`;
     }
     return `${seconds}s`;
-
   }
 
   // Additional helper methods for optimization
@@ -1226,7 +1255,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     const keywords = {
       simple: ['fix', 'update', 'change', 'modify', 'rename'],
       medium: ['implement', 'create', 'add', 'integrate', 'refactor'],
-      complex: ['architect', 'design', 'optimize', 'migrate', 'scale'],
+      complex: ['architect', 'design', 'optimize', 'migrate', 'scale']
     };
 
     const desc = description.toLowerCase();
@@ -1257,7 +1286,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       score,
       estimatedMinutes,
       requiresResearch: desc.includes('research') || desc.includes('analyze'),
-      requiresTesting: desc.includes('test') || desc.includes('verify'),
+      requiresTesting: desc.includes('test') || desc.includes('verify')
     };
   }
 
@@ -1265,7 +1294,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     const topologyMap = {
       simple: 'star', // Centralized for simple tasks
       medium: 'mesh', // Flexible for medium complexity
-      complex: 'hierarchical', // Structured for complex tasks
+      complex: 'hierarchical' // Structured for complex tasks
     };
 
     return topologyMap[complexity.level] || 'mesh';
@@ -1305,7 +1334,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     if (!this.sessionData.knowledgeGraph) {
       this.sessionData.knowledgeGraph = {
         nodes: new Map(),
-        edges: [],
+        edges: []
       };
     }
 
@@ -1318,7 +1347,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
         id: nodeId,
         type: this.getFileType(file),
         operations: [],
-        lastModified: Date.now(),
+        lastModified: Date.now()
       });
     }
 
@@ -1326,22 +1355,23 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     node.operations.push({
       type: operation,
       timestamp: Date.now(),
-      agent: this.getCurrentAgent(),
+      agent: this.getCurrentAgent()
     });
     node.lastModified = Date.now();
 
     // Add edges for related files
     const relatedFiles = await this.findRelatedFiles(file);
     relatedFiles.forEach(related => {
-      if (!graph.edges.find(e =>
-        (e.from === nodeId && e.to === related) ||
-                (e.from === related && e.to === nodeId),
-      )) {
+      if (
+        !graph.edges.find(
+          e => (e.from === nodeId && e.to === related) || (e.from === related && e.to === nodeId)
+        )
+      ) {
         graph.edges.push({
           from: nodeId,
           to: related,
           type: 'related',
-          weight: 1,
+          weight: 1
         });
       }
     });
@@ -1352,16 +1382,23 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     const efficiencyScore = Math.max(0, Math.min(1, baselineTime / performance.completionTime));
 
     // Adjust for agent utilization
-    const agentUtilization = performance.agentsUsed.length > 0 ?
-      0.8 + (0.2 * Math.min(1, 3 / performance.agentsUsed.length)) : 0.5;
+    const agentUtilization =
+      performance.agentsUsed.length > 0
+        ? 0.8 + 0.2 * Math.min(1, 3 / performance.agentsUsed.length)
+        : 0.5;
 
     return {
       score: (efficiencyScore * agentUtilization).toFixed(2),
       timeEfficiency: efficiencyScore.toFixed(2),
       agentEfficiency: agentUtilization.toFixed(2),
-      rating: efficiencyScore > 0.8 ? 'excellent' :
-        efficiencyScore > 0.6 ? 'good' :
-          efficiencyScore > 0.4 ? 'fair' : 'needs improvement',
+      rating:
+        efficiencyScore > 0.8
+          ? 'excellent'
+          : efficiencyScore > 0.6
+            ? 'good'
+            : efficiencyScore > 0.4
+              ? 'fair'
+              : 'needs improvement'
     };
   }
 
@@ -1369,12 +1406,13 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     const bottlenecks = [];
 
     // Time-based bottlenecks
-    if (performance.completionTime > 300000) { // > 5 minutes
+    if (performance.completionTime > 300000) {
+      // > 5 minutes
       bottlenecks.push({
         type: 'time',
         severity: 'high',
         description: 'Task took longer than expected',
-        recommendation: 'Consider breaking into smaller subtasks',
+        recommendation: 'Consider breaking into smaller subtasks'
       });
     }
 
@@ -1384,7 +1422,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
         type: 'coordination',
         severity: 'medium',
         description: 'Single agent used for complex task',
-        recommendation: 'Spawn specialized agents for parallel work',
+        recommendation: 'Spawn specialized agents for parallel work'
       });
     }
 
@@ -1394,7 +1432,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
         type: 'operations',
         severity: 'medium',
         description: 'High number of operations',
-        recommendation: 'Optimize operation batching',
+        recommendation: 'Optimize operation batching'
       });
     }
 
@@ -1410,7 +1448,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       improvements.push({
         area: 'execution_time',
         suggestion: 'Use parallel task execution',
-        expectedImprovement: '30-50% time reduction',
+        expectedImprovement: '30-50% time reduction'
       });
     }
 
@@ -1419,7 +1457,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       improvements.push({
         area: 'agent_coordination',
         suggestion: 'Implement specialized agent patterns',
-        expectedImprovement: '20-30% efficiency gain',
+        expectedImprovement: '20-30% efficiency gain'
       });
     }
 
@@ -1428,7 +1466,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       improvements.push({
         area: 'learning',
         suggestion: 'Enable neural pattern training',
-        expectedImprovement: 'Cumulative performance gains',
+        expectedImprovement: 'Cumulative performance gains'
       });
     }
 
@@ -1443,7 +1481,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       this.sessionData.coordinationStrategy = {
         current: 'balanced',
         history: [],
-        adjustments: 0,
+        adjustments: 0
       };
     }
 
@@ -1451,7 +1489,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     strategy.history.push({
       timestamp: Date.now(),
       efficiency: efficiency.score,
-      strategy: strategy.current,
+      strategy: strategy.current
     });
 
     // Adjust strategy if needed
@@ -1494,7 +1532,12 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     // Load existing knowledge base
     let kb = {};
     try {
-      if (await fs.access(kbPath).then(() => true).catch(() => false)) {
+      if (
+        await fs
+          .access(kbPath)
+          .then(() => true)
+          .catch(() => false)
+      ) {
         kb = JSON.parse(await fs.readFile(kbPath, 'utf-8'));
       }
     } catch (_error) {
@@ -1509,7 +1552,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       kb.searches.push({
         query: data.query,
         patterns: data.patterns,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       });
 
       // Update pattern frequency
@@ -1574,7 +1617,12 @@ ${this.sessionData.learnings.slice(-5).map(l =>
   async getSwarmStatus() {
     try {
       const statusPath = path.join(process.cwd(), '.ruv-swarm', 'status.json');
-      if (await fs.access(statusPath).then(() => true).catch(() => false)) {
+      if (
+        await fs
+          .access(statusPath)
+          .then(() => true)
+          .catch(() => false)
+      ) {
         return JSON.parse(await fs.readFile(statusPath, 'utf-8'));
       }
     } catch (_error) {
@@ -1583,10 +1631,10 @@ ${this.sessionData.learnings.slice(-5).map(l =>
 
     return {
       agents: this.sessionData.agents,
-      activeTasks: this.sessionData.operations.filter(op =>
-        Date.now() - op.timestamp < 300000, // Last 5 minutes
+      activeTasks: this.sessionData.operations.filter(
+        op => Date.now() - op.timestamp < 300000 // Last 5 minutes
       ).length,
-      health: 'operational',
+      health: 'operational'
     };
   }
 
@@ -1600,11 +1648,13 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       data,
       timestamp: Date.now(),
       sessionId: this.sessionData.sessionId || 'unknown',
-      version: '1.0.0',
+      version: '1.0.0'
     };
 
     // Async write without blocking
-    fs.appendFile(telemetryPath, `${JSON.stringify(telemetryEvent) }\n`).catch(() => { /* intentionally empty */ });
+    fs.appendFile(telemetryPath, `${JSON.stringify(telemetryEvent)}\n`).catch(() => {
+      /* intentionally empty */
+    });
   }
 
   // Helper methods for other functionality
@@ -1616,7 +1666,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       analyst: ['metrics', 'performance', 'data-visualization'],
       architect: ['system-design', 'api-design', 'database-schema'],
       coordinator: ['task-planning', 'resource-allocation', 'progress-tracking'],
-      optimizer: ['performance-tuning', 'algorithm-optimization', 'resource-usage'],
+      optimizer: ['performance-tuning', 'algorithm-optimization', 'resource-usage']
     };
     return specializations[type] || ['general'];
   }
@@ -1628,7 +1678,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       analyst: ['statistical-analysis', 'trend-detection', 'anomaly-detection'],
       architect: ['layered-architecture', 'microservices', 'event-driven'],
       coordinator: ['dependency-tracking', 'parallel-execution', 'milestone-planning'],
-      optimizer: ['bottleneck-identification', 'caching-strategies', 'lazy-loading'],
+      optimizer: ['bottleneck-identification', 'caching-strategies', 'lazy-loading']
     };
     return patterns[type] || ['adaptive-learning'];
   }
@@ -1637,11 +1687,28 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     // Generate mock neural network weights for demonstration
     return {
       layers: [
-        { neurons: 128, weights: Array(128).fill(0).map(() => Math.random() - 0.5) },
-        { neurons: 64, weights: Array(64).fill(0).map(() => Math.random() - 0.5) },
-        { neurons: 32, weights: Array(32).fill(0).map(() => Math.random() - 0.5) },
+        {
+          neurons: 128,
+          weights: Array(128)
+            .fill(0)
+            .map(() => Math.random() - 0.5)
+        },
+        {
+          neurons: 64,
+          weights: Array(64)
+            .fill(0)
+            .map(() => Math.random() - 0.5)
+        },
+        {
+          neurons: 32,
+          weights: Array(32)
+            .fill(0)
+            .map(() => Math.random() - 0.5)
+        }
       ],
-      biases: Array(224).fill(0).map(() => Math.random() - 0.5),
+      biases: Array(224)
+        .fill(0)
+        .map(() => Math.random() - 0.5)
     };
   }
 
@@ -1652,9 +1719,8 @@ ${this.sessionData.learnings.slice(-5).map(l =>
 
     agents.forEach(agent => {
       // Allocate based on agent type and current load
-      const load = this.sessionData.operations.filter(op =>
-        op.agent === agent.id &&
-                Date.now() - op.timestamp < 60000,
+      const load = this.sessionData.operations.filter(
+        op => op.agent === agent.id && Date.now() - op.timestamp < 60000
       ).length;
 
       allocation[agent.id] = {
@@ -1662,7 +1728,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
         type: agent.type,
         currentLoad: load,
         capacity: Math.max(0, 10 - load), // Max 10 concurrent ops
-        priority: load < 5 ? 'high' : 'normal',
+        priority: load < 5 ? 'high' : 'normal'
       };
     });
 
@@ -1677,7 +1743,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     return {
       factor: Math.min(agentCount, Math.ceil(complexity.score * 1.5)),
       strategy: agentCount > 3 ? 'distributed' : 'local',
-      maxConcurrency: Math.min(agentCount * 2, 10),
+      maxConcurrency: Math.min(agentCount * 2, 10)
     };
   }
 
@@ -1693,7 +1759,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
       '.yaml': 'config',
       '.yml': 'config',
       '.md': 'documentation',
-      '.txt': 'text',
+      '.txt': 'text'
     };
     return typeMap[ext] || 'unknown';
   }
@@ -1760,7 +1826,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
         context: notification.context,
         timestamp: notification.timestamp,
         source: 'hook-system',
-        sessionId: this.getSessionId(),
+        sessionId: this.getSessionId()
       });
 
       console.log(`📝 Notification stored in database: ${memoryKey}`);
@@ -1806,7 +1872,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
           results,
           learnings,
           completedAt: Date.now(),
-          source: 'agent-completion',
+          source: 'agent-completion'
         });
 
         // Update agent status in database
@@ -1825,7 +1891,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
         taskId,
         results,
         learnings,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
       agent.status = 'completed';
     }
@@ -1833,7 +1899,7 @@ ${this.sessionData.learnings.slice(-5).map(l =>
     return {
       continue: true,
       stored: true,
-      agent: agentId,
+      agent: agentId
     };
   }
 

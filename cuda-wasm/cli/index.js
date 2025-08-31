@@ -4,8 +4,7 @@ const { Command } = require('commander');
 const chalk = require('chalk').default || require('chalk');
 const fs = require('fs').promises;
 const path = require('path');
-const semver = require('semver');
-const { transpileCuda, analyzeKernel, benchmark, getVersion } = require('../dist');
+const { transpileCuda, analyzeKernel, benchmark } = require('../dist');
 
 // Simple spinner replacement for ora
 const createSpinner = (text) => ({
@@ -39,9 +38,6 @@ program
     const spinner = createSpinner('🚀 Transpiling CUDA code...').start();
     
     try {
-      // Read input file
-      const cudaCode = await fs.readFile(input, 'utf8');
-      
       // Transpile code
       const result = transpileCuda(input, {
         output: options.output,
@@ -84,7 +80,6 @@ program
     const spinner = createSpinner('🔍 Analyzing CUDA kernel...').start();
     
     try {
-      const cudaCode = await fs.readFile(input, 'utf8');
       const analysis = analyzeKernel(input);
       
       spinner.succeed(chalk.green('✓ Analysis complete'));
@@ -121,7 +116,6 @@ program
     const spinner = createSpinner('⚡ Running benchmarks...').start();
     
     try {
-      const cudaCode = await fs.readFile(input, 'utf8');
       const iterations = parseInt(options.iterations);
       
       // Run benchmarks

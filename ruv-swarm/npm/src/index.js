@@ -20,7 +20,8 @@ let wasmInstance = null;
 class WASMLoader {
   constructor(options = {}) {
     this.useSIMD = options.useSIMD && this.detectSIMDSupport();
-    this.wasmPath = options.wasmPath || path.join(new URL('.', import.meta.url).pathname, '..', 'wasm');
+    this.wasmPath =
+      options.wasmPath || path.join(new URL('.', import.meta.url).pathname, '..', 'wasm');
     this.debug = options.debug || false;
   }
 
@@ -30,10 +31,8 @@ class WASMLoader {
       if (typeof WebAssembly !== 'undefined' && WebAssembly.validate) {
         // Test SIMD instruction
         const simdTest = new Uint8Array([
-          0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
-          0x01, 0x05, 0x01, 0x60, 0x00, 0x01, 0x7b, 0x03,
-          0x02, 0x01, 0x00, 0x0a, 0x0a, 0x01, 0x08, 0x00,
-          0x41, 0x00, 0xfd, 0x0f, 0x26, 0x0b,
+          0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x01, 0x60, 0x00, 0x01, 0x7b,
+          0x03, 0x02, 0x01, 0x00, 0x0a, 0x0a, 0x01, 0x08, 0x00, 0x41, 0x00, 0xfd, 0x0f, 0x26, 0x0b
         ]);
         return WebAssembly.validate(simdTest);
       }
@@ -81,8 +80,8 @@ class WASMLoader {
       const imports = {
         // Add any required imports here
         env: {
-          memory: new WebAssembly.Memory({ initial: 256, maximum: 4096 }),
-        },
+          memory: new WebAssembly.Memory({ initial: 256, maximum: 4096 })
+        }
       };
 
       const result = await WebAssembly.instantiate(wasmBuffer, imports);
@@ -183,7 +182,7 @@ class RuvSwarm {
       console.log('Runtime features:', {
         simd: features.simd_available,
         threads: features.threads_available,
-        memoryLimit: features.memory_limit,
+        memoryLimit: features.memory_limit
       });
     }
 
@@ -204,7 +203,7 @@ class RuvSwarm {
     return {
       simdAvailable: features.simd_available,
       threadsAvailable: features.threads_available,
-      memoryLimit: features.memory_limit,
+      memoryLimit: features.memory_limit
     };
   }
 
@@ -261,14 +260,14 @@ class SwarmWrapper {
   }
 
   async spawn(config) {
-    return await this._retryOperation(async() => {
+    return await this._retryOperation(async () => {
       const agent = await this._swarm.spawn(config);
       return new AgentWrapper(agent, this._options);
     });
   }
 
   async orchestrate(task) {
-    return await this._retryOperation(async() => {
+    return await this._retryOperation(async () => {
       return await this._swarm.orchestrate(task);
     });
   }
@@ -342,7 +341,7 @@ class AgentWrapper {
 }
 
 // Re-export utility functions
-const consoleLog = (message) => {
+const consoleLog = message => {
   if (wasmInstance && wasmInstance.exports.console_log) {
     wasmInstance.exports.console_log(message);
   } else {
@@ -350,7 +349,7 @@ const consoleLog = (message) => {
   }
 };
 
-const consoleError = (message) => {
+const consoleError = message => {
   if (wasmInstance && wasmInstance.exports.console_error) {
     wasmInstance.exports.console_error(message);
   } else {
@@ -358,7 +357,7 @@ const consoleError = (message) => {
   }
 };
 
-const consoleWarn = (message) => {
+const consoleWarn = message => {
   if (wasmInstance && wasmInstance.exports.console_warn) {
     wasmInstance.exports.console_warn(message);
   } else {
@@ -366,7 +365,7 @@ const consoleWarn = (message) => {
   }
 };
 
-const formatJsError = (error) => {
+const formatJsError = error => {
   if (wasmInstance && wasmInstance.exports.format_js_error) {
     return wasmInstance.exports.format_js_error(error);
   }
@@ -379,7 +378,7 @@ import {
   NeuralAgentFactory,
   NeuralNetwork,
   COGNITIVE_PATTERNS,
-  AGENT_COGNITIVE_PROFILES,
+  AGENT_COGNITIVE_PROFILES
 } from './neural-agent.js';
 
 // Import DAA service for comprehensive agent management
@@ -401,5 +400,5 @@ export {
   AGENT_COGNITIVE_PROFILES,
   // DAA service exports
   DAAService,
-  daaService,
+  daaService
 };

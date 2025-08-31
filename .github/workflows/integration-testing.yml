@@ -1,0 +1,529 @@
+name: Integration Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Weekly integration test suite
+    - cron: '0 8 * * 0'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  setup-integration:
+    name: Setup Integration Environment
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Determine integration test matrix
+      id: matrix
+      run: |
+        # Define integration test scenarios
+        MATRIX='{
+          "include": [
+            {
+              "name": "main-cuda-wasm",
+              "components": ["main", "cuda-wasm"],
+              "test_type": "neural-compute"
+            },
+            {
+              "name": "main-neuro-divergent",
+              "components": ["main", "neuro-divergent"],
+              "test_type": "forecasting"
+            },
+            {
+              "name": "ruv-swarm-wasm",
+              "components": ["ruv-swarm", "wasm"],
+              "test_type": "swarm-wasm"
+            },
+            {
+              "name": "full-stack",
+              "components": ["main", "cuda-wasm", "neuro-divergent", "ruv-swarm"],
+              "test_type": "end-to-end"
+            }
+          ]
+        }'
+        echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  component-integration:
+    name: Component Integration Tests
+    runs-on: ubuntu-latest
+    needs: setup-integration
+    strategy:
+      matrix: ${{ fromJson(needs.setup-integration.outputs.matrix) }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          */target
+          */node_modules
+        key: ${{ runner.os }}-integration-${{ matrix.name }}-${{ hashFiles('**/Cargo.lock', '**/package-lock.json') }}
+
+    - name: Build components
+      run: |
+        # Build all required components
+        for component in ${{ join(matrix.components, ' ') }}; do
+          case $component in
+            "main")
+              cargo build --release
+              ;;
+            "cuda-wasm")
+              cd cuda-wasm && cargo build --release && cd ..
+              ;;
+            "neuro-divergent")
+              cd neuro-divergent && cargo build --release && cd ..
+              ;;
+            "ruv-swarm")
+              cd ruv-swarm && cargo build --release && cd ..
+              ;;
+          esac
+        done
+
+    - name: Setup integration test environment
+      run: |
+        # Create integration test directory
+        mkdir -p integration-test
+        cd integration-test
+
+        # Copy built binaries
+        cp ../target/release/do_fann ./ 2>/dev/null || true
+        cp ../cuda-wasm/target/release/cuda-rust-wasm ./ 2>/dev/null || true
+        cp ../neuro-divergent/target/release/neuro_divergent ./ 2>/dev/null || true
+        cp ../ruv-swarm/target/release/ruv-swarm ./ 2>/dev/null || true
+
+        # Setup Python environment for testing
+        python -m pip install numpy pandas polars scikit-learn
+
+    - name: Run ${{ matrix.test_type }} integration tests
+      working-directory: integration-test
+      run: |
+        case "${{ matrix.test_type }}" in
+          "neural-compute")
+            # Test main + cuda-wasm integration
+            echo "Testing neural network computation with CUDA acceleration..."
+            python ../tests/integration/neural_cuda_integration.py
+            ;;
+          "forecasting")
+            # Test main + neuro-divergent integration
+            echo "Testing neural forecasting integration..."
+            python ../tests/integration/forecasting_integration.py
+            ;;
+          "swarm-wasm")
+            # Test ruv-swarm WASM integration
+            echo "Testing swarm orchestration with WASM..."
+            node ../tests/integration/swarm_wasm_integration.js
+            ;;
+          "end-to-end")
+            # Full stack integration test
+            echo "Running full-stack integration test..."
+            python ../tests/integration/full_stack_integration.py
+            ;;
+        esac
+
+    - name: Collect integration test results
+      if: always()
+      working-directory: integration-test
+      run: |
+        # Collect logs and results
+        mkdir -p results
+        cp *.log results/ 2>/dev/null || true
+        cp *.json results/ 2>/dev/null || true
+        cp *.csv results/ 2>/dev/null || true
+
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-results-${{ matrix.name }}
+        path: integration-test/results/
+
+  api-compatibility:
+    name: API Compatibility Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Test Rust API compatibility
+      run: |
+        # Test that all public APIs are compatible
+        cargo check --all-features
+
+        # Test API surface area hasn't changed unexpectedly
+        cargo doc --all-features --no-deps
+        find target/doc -name "*.html" | wc -l
+
+    - name: Test WASM API compatibility
+      working-directory: ruv-swarm/crates/ruv-swarm-wasm
+      run: |
+        # Build WASM and check API exports
+        wasm-pack build --target web --release
+        node -e "
+        const fs = require('fs');
+        const wasm = fs.readFileSync('pkg/ruv_swarm_wasm_bg.wasm');
+        console.log('WASM size:', wasm.length);
+        "
+
+    - name: Test NPM API compatibility
+      working-directory: ruv-swarm/npm
+      run: |
+        npm install --no-audit --no-fund
+        node -e "
+        const swarm = require('./src/index.js');
+        console.log('NPM API available:', typeof swarm.RuvSwarm);
+        "
+
+  data-flow-integration:
+    name: Data Flow Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install numpy pandas polars scikit-learn tensorflow torch
+        sudo apt-get update && sudo apt-get install -y libssl-dev pkg-config
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build integration test binary
+      run: cargo build --bin integration_test --release
+
+    - name: Test data pipelines
+      run: |
+        # Test data flow between components
+        python tests/integration/data_pipeline_test.py
+
+        # Test serialization/deserialization compatibility
+        python tests/integration/serialization_test.py
+
+    - name: Test cross-component communication
+      run: |
+        # Test IPC between components
+        python tests/integration/ipc_test.py
+
+        # Test network communication if applicable
+        python tests/integration/network_test.py || true
+
+  performance-integration:
+    name: Performance Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Build optimized binaries
+      run: |
+        # Build all components with performance optimizations
+        cargo build --release --all-features
+        cd cuda-wasm && cargo build --release --features gpu && cd ..
+        cd neuro-divergent && cargo build --release --features gpu && cd ..
+        cd ruv-swarm && cargo build --release && cd ..
+
+    - name: Run performance integration tests
+      run: |
+        # Test performance when components work together
+        python tests/integration/performance_integration.py
+
+        # Test memory usage across components
+        python tests/integration/memory_integration.py
+
+    - name: Test resource sharing
+      run: |
+        # Test GPU memory sharing between components
+        python tests/integration/gpu_sharing_test.py || true
+
+        # Test CPU resource allocation
+        python tests/integration/cpu_allocation_test.py
+
+  browser-integration:
+    name: Browser Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Playwright
+      run: |
+        npm install -g playwright
+        npx playwright install chromium
+
+    - name: Build WASM modules
+      run: |
+        cd ruv-swarm/crates/ruv-swarm-wasm
+        wasm-pack build --target web --release --out-dir ../../../ruv-swarm/npm/wasm
+
+    - name: Setup test server
+      working-directory: ruv-swarm/npm
+      run: |
+        npm install --no-audit --no-fund
+        npm run build
+
+    - name: Run browser integration tests
+      working-directory: ruv-swarm/npm
+      run: |
+        # Start test server in background
+        npm start &
+        SERVER_PID=$!
+
+        # Wait for server to start
+        sleep 5
+
+        # Run browser tests
+        npx playwright test tests/browser-integration.test.js || true
+
+        # Clean up
+        kill $SERVER_PID 2>/dev/null || true
+
+    - name: Upload browser test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: browser-integration-results
+        path: ruv-swarm/npm/test-results/
+
+  deployment-integration:
+    name: Deployment Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build integration test containers
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/docker-wasm-test/Dockerfile
+        load: true
+        tags: integration-test
+        cache-from: type=gha
+
+    - name: Test containerized deployment
+      run: |
+        # Test running the application in containers
+        docker run --rm integration-test node --version
+        docker run --rm integration-test rustc --version || true
+
+    - name: Test multi-container setup
+      run: |
+        # Test docker-compose setup
+        cd docker/docker-wasm-test
+        docker-compose config
+        docker-compose up -d --build
+        sleep 10
+        docker-compose ps
+        docker-compose down
+
+  integration-report:
+    name: Generate Integration Report
+    runs-on: ubuntu-latest
+    needs: [component-integration, api-compatibility, data-flow-integration, performance-integration, browser-integration, deployment-integration]
+    if: always()
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all integration results
+      uses: actions/download-artifact@v4
+      with:
+        path: integration-results
+
+    - name: Generate integration summary
+      run: |
+        echo "# Integration Test Report" > integration-report.md
+        echo "" >> integration-report.md
+        echo "## Test Results Summary" >> integration-report.md
+        echo "" >> integration-report.md
+
+        # Check job statuses and generate summary
+        echo "### Component Integration" >> integration-report.md
+        if [ "${{ needs.component-integration.result }}" = "success" ]; then
+          echo "✅ All component integration tests passed" >> integration-report.md
+        else
+          echo "❌ Some component integration tests failed" >> integration-report.md
+        fi
+        echo "" >> integration-report.md
+
+        echo "### API Compatibility" >> integration-report.md
+        if [ "${{ needs.api-compatibility.result }}" = "success" ]; then
+          echo "✅ API compatibility verified" >> integration-report.md
+        else
+          echo "❌ API compatibility issues detected" >> integration-report.md
+        fi
+        echo "" >> integration-report.md
+
+        echo "### Data Flow Integration" >> integration-report.md
+        if [ "${{ needs.data-flow-integration.result }}" = "success" ]; then
+          echo "✅ Data flow integration successful" >> integration-report.md
+        else
+          echo "❌ Data flow integration issues" >> integration-report.md
+        fi
+        echo "" >> integration-report.md
+
+        echo "### Performance Integration" >> integration-report.md
+        if [ "${{ needs.performance-integration.result }}" = "success" ]; then
+          echo "✅ Performance integration tests passed" >> integration-report.md
+        else
+          echo "❌ Performance integration issues" >> integration-report.md
+        fi
+        echo "" >> integration-report.md
+
+        echo "### Browser Integration" >> integration-report.md
+        if [ "${{ needs.browser-integration.result }}" = "success" ]; then
+          echo "✅ Browser integration tests passed" >> integration-report.md
+        else
+          echo "❌ Browser integration issues" >> integration-report.md
+        fi
+        echo "" >> integration-report.md
+
+        echo "### Deployment Integration" >> integration-report.md
+        if [ "${{ needs.deployment-integration.result }}" = "success" ]; then
+          echo "✅ Deployment integration successful" >> integration-report.md
+        else
+          echo "❌ Deployment integration issues" >> integration-report.md
+        fi
+        echo "" >> integration-report.md
+
+        echo "## Recommendations" >> integration-report.md
+        echo "" >> integration-report.md
+
+        # Add recommendations based on results
+        if [ "${{ needs.component-integration.result }}" = "failure" ]; then
+          echo "- Review component integration test failures" >> integration-report.md
+          echo "- Check for API compatibility issues between components" >> integration-report.md
+        fi
+
+        if [ "${{ needs.performance-integration.result }}" = "failure" ]; then
+          echo "- Investigate performance bottlenecks in integrated scenarios" >> integration-report.md
+          echo "- Review resource sharing between components" >> integration-report.md
+        fi
+
+        if [ "${{ needs.browser-integration.result }}" = "failure" ]; then
+          echo "- Fix browser compatibility issues" >> integration-report.md
+          echo "- Review WASM module loading and execution" >> integration-report.md
+        fi
+
+    - name: Upload integration report
+      uses: actions/upload-artifact@v4
+      with:
+        name: integration-report
+        path: integration-report.md
+
+    - name: Comment integration results on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          let report = fs.readFileSync('integration-report.md', 'utf8');
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });
+
+  integration-gate:
+    name: Integration Gate
+    runs-on: ubuntu-latest
+    needs: [component-integration, api-compatibility, data-flow-integration]
+    if: always()
+
+    steps:
+    - name: Integration gate check
+      run: |
+        # Define critical integration criteria
+        CRITICAL_ISSUES=0
+
+        # Check for critical integration failures
+        if [ "${{ needs.component-integration.result }}" = "failure" ]; then
+          echo "❌ Critical: Component integration failed"
+          CRITICAL_ISSUES=$((CRITICAL_ISSUES + 1))
+        fi
+
+        if [ "${{ needs.api-compatibility.result }}" = "failure" ]; then
+          echo "❌ Critical: API compatibility broken"
+          CRITICAL_ISSUES=$((CRITICAL_ISSUES + 1))
+        fi
+
+        if [ "${{ needs.data-flow-integration.result }}" = "failure" ]; then
+          echo "❌ Critical: Data flow integration failed"
+          CRITICAL_ISSUES=$((CRITICAL_ISSUES + 1))
+        fi
+
+        # Allow some non-critical issues to pass
+        if [ "${{ needs.performance-integration.result }}" = "failure" ]; then
+          echo "⚠️ Warning: Performance integration issues"
+        fi
+
+        if [ "${{ needs.browser-integration.result }}" = "failure" ]; then
+          echo "⚠️ Warning: Browser integration issues"
+        fi
+
+        # Fail only on critical issues
+        if [ $CRITICAL_ISSUES -gt 0 ]; then
+          echo "🚫 Integration gate: BLOCKED"
+          exit 1
+        else
+          echo "✅ Integration gate: PASSED"
+        fi

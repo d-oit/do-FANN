@@ -15,12 +15,12 @@ jest.mock('fs', () => ({
     writeFile: jest.fn(),
     access: jest.fn(),
     mkdir: jest.fn(),
-    readdir: jest.fn(),
-  },
+    readdir: jest.fn()
+  }
 }));
 
 jest.mock('child_process', () => ({
-  execSync: jest.fn(),
+  execSync: jest.fn()
 }));
 
 // Import the module to test
@@ -52,46 +52,46 @@ describe('RuvSwarmHooks', () => {
       expect(newHooks.sessionData.metrics).toEqual({
         tokensSaved: 0,
         tasksCompleted: 0,
-        patternsImproved: 0,
+        patternsImproved: 0
       });
     });
   });
 
   describe('handleHook', () => {
-    it('should route pre-edit hook correctly', async() => {
+    it('should route pre-edit hook correctly', async () => {
       hooks.preEditHook = jest.fn().mockResolvedValue({ continue: true });
       const result = await hooks.handleHook('pre-edit', { file: 'test.js' });
       expect(hooks.preEditHook).toHaveBeenCalledWith({ file: 'test.js' });
       expect(result).toEqual({ continue: true });
     });
 
-    it('should route post-edit hook correctly', async() => {
+    it('should route post-edit hook correctly', async () => {
       hooks.postEditHook = jest.fn().mockResolvedValue({ success: true });
       const result = await hooks.handleHook('post-edit', { file: 'test.js' });
       expect(hooks.postEditHook).toHaveBeenCalledWith({ file: 'test.js' });
       expect(result).toEqual({ success: true });
     });
 
-    it('should handle unknown hook types', async() => {
+    it('should handle unknown hook types', async () => {
       const result = await hooks.handleHook('unknown-hook', {});
       expect(result).toEqual({
         continue: true,
-        reason: 'Hook type not implemented: unknown-hook',
+        reason: 'Hook type not implemented: unknown-hook'
       });
     });
 
-    it('should handle errors gracefully', async() => {
+    it('should handle errors gracefully', async () => {
       hooks.preEditHook = jest.fn().mockRejectedValue(new Error('Test error'));
       const result = await hooks.handleHook('pre-edit', {});
       expect(result).toEqual({
         continue: true,
-        error: 'Test error',
+        error: 'Test error'
       });
     });
   });
 
   describe('preEditHook', () => {
-    it('should auto-assign agent for JavaScript files', async() => {
+    it('should auto-assign agent for JavaScript files', async () => {
       const args = { file: '/path/to/test.js', autoAssignAgent: true };
       mockExecSync.mockReturnValue('{"id": "agent-123"}');
 
@@ -101,11 +101,11 @@ describe('RuvSwarmHooks', () => {
       expect(result.assignedAgent).toBeDefined();
       expect(mockExecSync).toHaveBeenCalledWith(
         expect.stringContaining('ruv-swarm agent spawn'),
-        expect.any(Object),
+        expect.any(Object)
       );
     });
 
-    it('should skip agent assignment when disabled', async() => {
+    it('should skip agent assignment when disabled', async () => {
       const args = { file: '/path/to/test.js', autoAssignAgent: false };
 
       const result = await hooks.preEditHook(args);
@@ -115,14 +115,14 @@ describe('RuvSwarmHooks', () => {
       expect(mockExecSync).not.toHaveBeenCalled();
     });
 
-    it('should handle file type detection correctly', async() => {
+    it('should handle file type detection correctly', async () => {
       const testCases = [
         { file: 'test.js', expectedType: 'js' },
         { file: 'test.ts', expectedType: 'ts' },
         { file: 'test.py', expectedType: 'py' },
         { file: 'test.rs', expectedType: 'rs' },
         { file: 'test.go', expectedType: 'go' },
-        { file: 'test.unknown', expectedType: null },
+        { file: 'test.unknown', expectedType: null }
       ];
 
       for (const { file, expectedType } of testCases) {
@@ -135,7 +135,7 @@ describe('RuvSwarmHooks', () => {
   });
 
   describe('postEditHook', () => {
-    it('should format JavaScript files', async() => {
+    it('should format JavaScript files', async () => {
       const args = { file: '/path/to/test.js', autoFormat: true };
       mockFs.access.mockResolvedValue(undefined); // File exists
       mockExecSync.mockReturnValue('');
@@ -146,11 +146,11 @@ describe('RuvSwarmHooks', () => {
       expect(result.formatted).toBe(true);
       expect(mockExecSync).toHaveBeenCalledWith(
         expect.stringContaining('prettier'),
-        expect.any(Object),
+        expect.any(Object)
       );
     });
 
-    it('should skip formatting when disabled', async() => {
+    it('should skip formatting when disabled', async () => {
       const args = { file: '/path/to/test.js', autoFormat: false };
 
       const result = await hooks.postEditHook(args);
@@ -160,11 +160,11 @@ describe('RuvSwarmHooks', () => {
       expect(mockExecSync).not.toHaveBeenCalled();
     });
 
-    it('should store operation in memory when key provided', async() => {
+    it('should store operation in memory when key provided', async () => {
       const args = {
         file: '/path/to/test.js',
         memoryKey: 'test/operation',
-        trainNeural: false,
+        trainNeural: false
       };
       mockExecSync.mockReturnValue('{"stored": true}');
 
@@ -173,13 +173,13 @@ describe('RuvSwarmHooks', () => {
       expect(result.memoryStored).toBe(true);
       expect(mockExecSync).toHaveBeenCalledWith(
         expect.stringContaining('memory store'),
-        expect.any(Object),
+        expect.any(Object)
       );
     });
   });
 
   describe('preTaskHook', () => {
-    it('should analyze task complexity', async() => {
+    it('should analyze task complexity', async () => {
       const args = { description: 'Complex refactoring task' };
 
       const result = await hooks.preTaskHook(args);
@@ -189,10 +189,10 @@ describe('RuvSwarmHooks', () => {
       expect(result.complexity.score).toBeGreaterThan(5);
     });
 
-    it('should auto-spawn agents for complex tasks', async() => {
+    it('should auto-spawn agents for complex tasks', async () => {
       const args = {
         description: 'Build complete authentication system with JWT',
-        autoSpawnAgents: true,
+        autoSpawnAgents: true
       };
       mockExecSync.mockReturnValue('{"id": "swarm-123"}');
 
@@ -202,10 +202,10 @@ describe('RuvSwarmHooks', () => {
       expect(result.agentsSpawned).toBeGreaterThan(0);
     });
 
-    it('should restore session when sessionId provided', async() => {
+    it('should restore session when sessionId provided', async () => {
       const args = {
         description: 'Continue task',
-        sessionId: 'session-123',
+        sessionId: 'session-123'
       };
       mockExecSync.mockReturnValue('{"restored": true}');
 
@@ -216,14 +216,14 @@ describe('RuvSwarmHooks', () => {
   });
 
   describe('postTaskHook', () => {
-    it('should analyze performance when enabled', async() => {
+    it('should analyze performance when enabled', async () => {
       const args = {
         taskId: 'task-123',
-        analyzePerformance: true,
+        analyzePerformance: true
       };
       hooks.sessionData.operations = [
         { type: 'edit', timestamp: Date.now() - 1000 },
-        { type: 'edit', timestamp: Date.now() - 500 },
+        { type: 'edit', timestamp: Date.now() - 500 }
       ];
 
       const result = await hooks.postTaskHook(args);
@@ -233,10 +233,10 @@ describe('RuvSwarmHooks', () => {
       expect(result.performance.totalOperations).toBe(2);
     });
 
-    it('should generate report when requested', async() => {
+    it('should generate report when requested', async () => {
       const args = {
         taskId: 'task-123',
-        generateReport: true,
+        generateReport: true
       };
       mockFs.writeFile.mockResolvedValue(undefined);
 
@@ -248,7 +248,7 @@ describe('RuvSwarmHooks', () => {
   });
 
   describe('preBashHook', () => {
-    it('should validate safe commands', async() => {
+    it('should validate safe commands', async () => {
       const args = { command: 'npm install express' };
 
       const result = await hooks.preBashHook(args);
@@ -257,11 +257,11 @@ describe('RuvSwarmHooks', () => {
       expect(result.validated).toBe(true);
     });
 
-    it('should block dangerous commands', async() => {
+    it('should block dangerous commands', async () => {
       const dangerousCommands = [
         'rm -rf /',
         'dd if=/dev/zero of=/dev/sda',
-        'fork() { fork|fork& }; fork',
+        'fork() { fork|fork& }; fork'
       ];
 
       for (const command of dangerousCommands) {
@@ -271,10 +271,10 @@ describe('RuvSwarmHooks', () => {
       }
     });
 
-    it('should optimize package installations', async() => {
+    it('should optimize package installations', async () => {
       const args = {
         command: 'npm install express body-parser cors',
-        optimizeInstalls: true,
+        optimizeInstalls: true
       };
 
       const result = await hooks.preBashHook(args);
@@ -285,12 +285,12 @@ describe('RuvSwarmHooks', () => {
   });
 
   describe('sessionEndHook', () => {
-    it('should export metrics when requested', async() => {
+    it('should export metrics when requested', async () => {
       const args = { exportMetrics: true };
       hooks.sessionData.metrics = {
         tokensSaved: 1500,
         tasksCompleted: 5,
-        patternsImproved: 3,
+        patternsImproved: 3
       };
       mockFs.writeFile.mockResolvedValue(undefined);
 
@@ -299,16 +299,16 @@ describe('RuvSwarmHooks', () => {
       expect(result.metricsExported).toBe(true);
       expect(mockFs.writeFile).toHaveBeenCalledWith(
         expect.stringContaining('metrics.json'),
-        expect.any(String),
+        expect.any(String)
       );
     });
 
-    it('should generate summary when requested', async() => {
+    it('should generate summary when requested', async () => {
       const args = { generateSummary: true };
       hooks.sessionData.operations = [
         { type: 'edit', file: 'test1.js' },
         { type: 'edit', file: 'test2.js' },
-        { type: 'bash', command: 'npm test' },
+        { type: 'bash', command: 'npm test' }
       ];
 
       const result = await hooks.sessionEndHook(args);
@@ -318,7 +318,7 @@ describe('RuvSwarmHooks', () => {
       expect(result.summary.fileEdits).toBe(2);
     });
 
-    it('should persist session state', async() => {
+    it('should persist session state', async () => {
       const args = { persistState: true };
       mockExecSync.mockReturnValue('{"persisted": true}');
 
@@ -327,7 +327,7 @@ describe('RuvSwarmHooks', () => {
       expect(result.statePersisted).toBe(true);
       expect(mockExecSync).toHaveBeenCalledWith(
         expect.stringContaining('memory store'),
-        expect.any(Object),
+        expect.any(Object)
       );
     });
   });
@@ -348,7 +348,7 @@ describe('RuvSwarmHooks', () => {
           { file: 'test.c', expected: 'c' },
           { file: 'test.rb', expected: 'rb' },
           { file: 'test.php', expected: 'php' },
-          { file: 'test.unknown', expected: null },
+          { file: 'test.unknown', expected: null }
         ];
 
         for (const { file, expected } of testCases) {
@@ -363,18 +363,18 @@ describe('RuvSwarmHooks', () => {
           {
             description: 'Fix typo',
             expectedScore: 1,
-            expectedLevel: 'simple',
+            expectedLevel: 'simple'
           },
           {
             description: 'Implement authentication system',
             expectedScore: 8,
-            expectedLevel: 'complex',
+            expectedLevel: 'complex'
           },
           {
             description: 'Refactor database schema and optimize queries',
             expectedScore: 7,
-            expectedLevel: 'complex',
-          },
+            expectedLevel: 'complex'
+          }
         ];
 
         for (const { description, expectedScore, expectedLevel } of testCases) {
@@ -387,26 +387,26 @@ describe('RuvSwarmHooks', () => {
   });
 
   describe('error handling', () => {
-    it('should handle file system errors gracefully', async() => {
+    it('should handle file system errors gracefully', async () => {
       mockFs.access.mockRejectedValue(new Error('File not found'));
 
       const result = await hooks.postEditHook({
         file: 'nonexistent.js',
-        autoFormat: true,
+        autoFormat: true
       });
 
       expect(result.continue).toBe(true);
       expect(result.formatted).toBeUndefined();
     });
 
-    it('should handle command execution errors', async() => {
+    it('should handle command execution errors', async () => {
       mockExecSync.mockImplementation(() => {
         throw new Error('Command failed');
       });
 
       const result = await hooks.preEditHook({
         file: 'test.js',
-        autoAssignAgent: true,
+        autoAssignAgent: true
       });
 
       expect(result.continue).toBe(true);
@@ -415,11 +415,11 @@ describe('RuvSwarmHooks', () => {
   });
 
   describe('integration scenarios', () => {
-    it('should handle complete edit workflow', async() => {
+    it('should handle complete edit workflow', async () => {
       // Pre-edit
       const preResult = await hooks.preEditHook({
         file: 'test.js',
-        autoAssignAgent: true,
+        autoAssignAgent: true
       });
       expect(preResult.continue).toBe(true);
 
@@ -427,7 +427,7 @@ describe('RuvSwarmHooks', () => {
       hooks.sessionData.operations.push({
         type: 'edit',
         file: 'test.js',
-        timestamp: Date.now(),
+        timestamp: Date.now()
       });
 
       // Post-edit
@@ -435,16 +435,16 @@ describe('RuvSwarmHooks', () => {
         file: 'test.js',
         autoFormat: true,
         trainNeural: true,
-        memoryKey: 'edits/test',
+        memoryKey: 'edits/test'
       });
       expect(postResult.continue).toBe(true);
     });
 
-    it('should handle complete task workflow', async() => {
+    it('should handle complete task workflow', async () => {
       // Pre-task
       const preResult = await hooks.preTaskHook({
         description: 'Build REST API with authentication',
-        autoSpawnAgents: true,
+        autoSpawnAgents: true
       });
       expect(preResult.continue).toBe(true);
 
@@ -452,7 +452,7 @@ describe('RuvSwarmHooks', () => {
       for (let i = 0; i < 5; i++) {
         hooks.sessionData.operations.push({
           type: 'edit',
-          timestamp: Date.now() + i * 100,
+          timestamp: Date.now() + i * 100
         });
       }
 
@@ -460,7 +460,7 @@ describe('RuvSwarmHooks', () => {
       const postResult = await hooks.postTaskHook({
         taskId: 'task-123',
         analyzePerformance: true,
-        generateReport: true,
+        generateReport: true
       });
       expect(postResult.continue).toBe(true);
     });

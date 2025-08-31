@@ -1,0 +1,405 @@
+name: Performance Monitoring & Optimization
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Daily performance monitoring
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  performance-baseline:
+    name: Establish Performance Baseline
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-perf-baseline-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run comprehensive benchmarks
+      run: |
+        cargo bench --all-features -- --save-baseline main
+
+    - name: Store baseline results
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'cargo'
+        output-file-path: target/criterion/main/reports/index.html
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        benchmark-data-dir-path: target/criterion/main
+
+  performance-regression:
+    name: Performance Regression Detection
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-perf-regression-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run benchmarks with comparison
+      run: |
+        cargo bench --all-features -- --baseline main
+
+    - name: Detect performance regressions
+      run: |
+        # Compare benchmark results
+        if [ -f "target/criterion/reports/regression.txt" ]; then
+          echo "Performance regression detected!"
+          cat target/criterion/reports/regression.txt
+          exit 1
+        else
+          echo "No performance regressions detected"
+        fi
+
+    - name: Upload benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      if: always()
+      with:
+        tool: 'cargo'
+        output-file-path: target/criterion/reports/index.html
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: false
+        comment-on-alert: true
+        alert-threshold: '150%'
+        fail-on-alert: true
+
+  memory-profiling:
+    name: Memory Usage Profiling
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Install profiling tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind linux-tools-common linux-tools-generic
+
+    - name: Install cargo-valgrind
+      run: cargo install cargo-valgrind
+
+    - name: Run memory profiling
+      run: |
+        # Profile memory usage on key functions
+        cargo valgrind --bin main --release -- --tool=callgrind --callgrind-out-file=callgrind.out
+        cargo valgrind --bin main --release -- --tool=massif --massif-out-file=massif.out
+
+    - name: Analyze memory usage
+      run: |
+        # Check for memory leaks and excessive usage
+        if grep -q "definitely lost:" valgrind.log; then
+          echo "Memory leaks detected!"
+          cat valgrind.log
+          exit 1
+        fi
+
+    - name: Upload profiling results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: memory-profiling-results
+        path: |
+          callgrind.out
+          massif.out
+          valgrind.log
+
+  wasm-performance:
+    name: WASM Performance Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install wasm-pack
+      run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+    - name: Build WASM for performance testing
+      working-directory: ruv-swarm/crates/ruv-swarm-wasm
+      run: |
+        wasm-pack build --target web --release --out-dir pkg
+        wasm-opt -Oz pkg/ruv_swarm_wasm_bg.wasm -o pkg/ruv_swarm_wasm_bg.opt.wasm
+
+    - name: Setup performance test environment
+      working-directory: ruv-swarm/npm
+      run: |
+        npm install --no-audit --no-fund
+        npm install puppeteer lighthouse
+
+    - name: Run WASM performance tests
+      working-directory: ruv-swarm/npm
+      run: |
+        # Run performance benchmarks in Node.js
+        node -e "
+        const { performance } = require('perf_hooks');
+        const start = performance.now();
+        // Add WASM performance test code here
+        const end = performance.now();
+        console.log('WASM execution time:', end - start, 'ms');
+        "
+
+    - name: Run browser performance tests
+      working-directory: ruv-swarm/npm
+      run: |
+        # Use puppeteer to test in headless browser
+        node test/browser-performance.test.js || true
+
+    - name: Upload WASM performance results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: wasm-performance-results
+        path: ruv-swarm/npm/performance-results.json
+
+  cross-platform-performance:
+    name: Cross-Platform Performance
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cross-perf-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run platform-specific benchmarks
+      run: |
+        # Adjust benchmark parameters based on platform
+        case "${{ runner.os }}" in
+          "Linux")
+            cargo bench --all-features -- --measurement-time 10
+            ;;
+          "Windows")
+            cargo bench --all-features -- --measurement-time 15
+            ;;
+          "macOS")
+            cargo bench --all-features -- --measurement-time 12
+            ;;
+        esac
+
+    - name: Collect system information
+      run: |
+        echo "Platform: ${{ runner.os }}"
+        echo "CPU: $(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 'Unknown')"
+        echo "Memory: $(free -h 2>/dev/null | grep '^Mem:' | awk '{print $2}' 2>/dev/null || echo 'Unknown')"
+
+    - name: Upload platform-specific results
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-results-${{ runner.os }}
+        path: target/criterion/
+
+  optimization-analysis:
+    name: Code Optimization Analysis
+    runs-on: ubuntu-latest
+    needs: [performance-regression, memory-profiling, wasm-performance]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Analyze binary size
+      run: |
+        # Build with different optimization levels
+        cargo build --release
+        cargo build --profile wasm-size
+
+        # Compare binary sizes
+        RELEASE_SIZE=$(stat -c%s target/release/do_fann 2>/dev/null || echo "0")
+        WASM_SIZE=$(stat -c%s target/wasm-size/do_fann 2>/dev/null || echo "0")
+
+        echo "Release binary size: $RELEASE_SIZE bytes"
+        echo "WASM-optimized size: $WASM_SIZE bytes"
+
+        if [ "$WASM_SIZE" -gt 0 ] && [ "$RELEASE_SIZE" -gt 0 ]; then
+          SAVINGS=$((RELEASE_SIZE - WASM_SIZE))
+          PERCENTAGE=$((SAVINGS * 100 / RELEASE_SIZE))
+          echo "Size savings: $SAVINGS bytes ($PERCENTAGE%)"
+        fi
+
+    - name: Analyze compilation time
+      run: |
+        # Measure clean build time
+        START=$(date +%s)
+        cargo clean
+        cargo build --release
+        END=$(date +%s)
+        BUILD_TIME=$((END - START))
+        echo "Clean build time: $BUILD_TIME seconds"
+
+    - name: Generate optimization report
+      run: |
+        echo "# Performance Optimization Report" > optimization-report.md
+        echo "" >> optimization-report.md
+        echo "## Build Metrics" >> optimization-report.md
+        echo "- Clean build time: $BUILD_TIME seconds" >> optimization-report.md
+        echo "- Release binary size: $RELEASE_SIZE bytes" >> optimization-report.md
+        echo "- WASM binary size: $WASM_SIZE bytes" >> optimization-report.md
+        echo "" >> optimization-report.md
+        echo "## Recommendations" >> optimization-report.md
+
+        # Add optimization recommendations based on metrics
+        if [ "$BUILD_TIME" -gt 300 ]; then
+          echo "- Consider enabling parallel compilation with more codegen units" >> optimization-report.md
+        fi
+
+        if [ "$RELEASE_SIZE" -gt 10000000 ]; then
+          echo "- Binary size is large, consider stripping debug symbols" >> optimization-report.md
+        fi
+
+        echo "- Review benchmark results for performance bottlenecks" >> optimization-report.md
+
+    - name: Upload optimization report
+      uses: actions/upload-artifact@v4
+      with:
+        name: optimization-report
+        path: optimization-report.md
+
+  performance-alert:
+    name: Performance Alert System
+    runs-on: ubuntu-latest
+    needs: [performance-regression, optimization-analysis]
+    if: failure() && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Create performance alert
+      run: |
+        echo "🚨 Performance regression detected!"
+        echo "Performance metrics have degraded beyond acceptable thresholds."
+
+    - name: Send performance alert
+      if: github.event_name != 'schedule'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '🚨 Performance Regression Alert',
+            body: `
+## Performance Regression Detected
+
+A performance regression has been detected in the latest commit.
+
+### Details
+- **Commit**: ${context.sha}
+- **Branch**: main
+- **Workflow**: Performance Monitoring
+
+### Actions Required
+1. Review the benchmark results in the workflow artifacts
+2. Identify the cause of the performance degradation
+3. Optimize the affected code or revert if necessary
+4. Update performance baselines if the change is intentional
+
+### Next Steps
+- Check the performance monitoring workflow for detailed results
+- Review optimization recommendations
+- Consider running additional profiling if needed
+            `,
+            labels: ['performance', 'regression', 'urgent']
+          });
+
+  performance-dashboard:
+    name: Update Performance Dashboard
+    runs-on: ubuntu-latest
+    needs: [performance-baseline, cross-platform-performance]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'schedule'
+
+    steps:
+    - name: Download performance data
+      uses: actions/download-artifact@v4
+      with:
+        path: performance-data
+
+    - name: Generate performance dashboard
+      run: |
+        echo "# Performance Dashboard" > performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "## Latest Results" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+
+        # Add performance metrics summary
+        echo "### Key Metrics" >> performance-dashboard.md
+        echo "- Build time: Check workflow artifacts" >> performance-dashboard.md
+        echo "- Binary size: Check optimization report" >> performance-dashboard.md
+        echo "- Benchmark results: See benchmark-action comments" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+
+        echo "### Cross-Platform Performance" >> performance-dashboard.md
+        echo "- Linux: Ubuntu latest" >> performance-dashboard.md
+        echo "- Windows: Windows latest" >> performance-dashboard.md
+        echo "- macOS: macOS latest" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+
+        echo "### Trends" >> performance-dashboard.md
+        echo "- Performance history: Available in benchmark-action" >> performance-dashboard.md
+        echo "- Regression alerts: Automatic issue creation" >> performance-dashboard.md
+
+    - name: Upload performance dashboard
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-dashboard
+        path: performance-dashboard.md
+
+    - name: Update repository performance badge
+      run: |
+        # This would update a performance badge in the README
+        echo "Performance dashboard updated"

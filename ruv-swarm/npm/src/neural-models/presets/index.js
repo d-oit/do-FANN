@@ -5,7 +5,11 @@
 
 import { nlpPresets, getNLPPreset, availableNLPPresets } from './nlp.js';
 import { visionPresets, getVisionPreset, availableVisionPresets } from './vision.js';
-import { timeSeriesPresets, getTimeSeriesPreset, availableTimeSeriesPresets } from './timeseries.js';
+import {
+  timeSeriesPresets,
+  getTimeSeriesPreset,
+  availableTimeSeriesPresets
+} from './timeseries.js';
 import { graphPresets, getGraphPreset, availableGraphPresets } from './graph.js';
 
 // Combined presets object
@@ -13,23 +17,18 @@ export const NEURAL_PRESETS = {
   nlp: nlpPresets,
   vision: visionPresets,
   timeseries: timeSeriesPresets,
-  graph: graphPresets,
+  graph: graphPresets
 };
 
 // Category-specific getters
-export {
-  getNLPPreset,
-  getVisionPreset,
-  getTimeSeriesPreset,
-  getGraphPreset,
-};
+export { getNLPPreset, getVisionPreset, getTimeSeriesPreset, getGraphPreset };
 
 // Available presets lists
 export {
   availableNLPPresets,
   availableVisionPresets,
   availableTimeSeriesPresets,
-  availableGraphPresets,
+  availableGraphPresets
 };
 
 // Universal preset getter function
@@ -38,27 +37,31 @@ export const getPreset = (category, presetName) => {
     nlp: getNLPPreset,
     vision: getVisionPreset,
     timeseries: getTimeSeriesPreset,
-    graph: getGraphPreset,
+    graph: getGraphPreset
   };
 
   if (!categoryMap[category]) {
-    throw new Error(`Unknown preset category: ${category}. Available categories: ${Object.keys(categoryMap).join(', ')}`);
+    throw new Error(
+      `Unknown preset category: ${category}. Available categories: ${Object.keys(categoryMap).join(', ')}`
+    );
   }
 
   return categoryMap[category](presetName);
 };
 
 // Get all presets for a category
-export const getCategoryPresets = (category) => {
+export const getCategoryPresets = category => {
   const categoryMap = {
     nlp: nlpPresets,
     vision: visionPresets,
     timeseries: timeSeriesPresets,
-    graph: graphPresets,
+    graph: graphPresets
   };
 
   if (!categoryMap[category]) {
-    throw new Error(`Unknown preset category: ${category}. Available categories: ${Object.keys(categoryMap).join(', ')}`);
+    throw new Error(
+      `Unknown preset category: ${category}. Available categories: ${Object.keys(categoryMap).join(', ')}`
+    );
   }
 
   return categoryMap[category];
@@ -70,12 +73,12 @@ export const getAllPresetNames = () => {
     nlp: availableNLPPresets,
     vision: availableVisionPresets,
     timeseries: availableTimeSeriesPresets,
-    graph: availableGraphPresets,
+    graph: availableGraphPresets
   };
 };
 
 // Search presets by use case
-export const searchPresetsByUseCase = (searchTerm) => {
+export const searchPresetsByUseCase = searchTerm => {
   const results = [];
   const searchLower = searchTerm.toLowerCase();
 
@@ -89,7 +92,7 @@ export const searchPresetsByUseCase = (searchTerm) => {
         results.push({
           category,
           presetName,
-          preset,
+          preset
         });
       }
     });
@@ -99,7 +102,7 @@ export const searchPresetsByUseCase = (searchTerm) => {
 };
 
 // Search presets by accuracy range
-export const searchPresetsByAccuracy = (minAccuracy) => {
+export const searchPresetsByAccuracy = minAccuracy => {
   const results = [];
 
   Object.entries(NEURAL_PRESETS).forEach(([category, presets]) => {
@@ -114,7 +117,7 @@ export const searchPresetsByAccuracy = (minAccuracy) => {
             category,
             presetName,
             preset,
-            accuracy: minAcc,
+            accuracy: minAcc
           });
         }
       }
@@ -125,7 +128,7 @@ export const searchPresetsByAccuracy = (minAccuracy) => {
 };
 
 // Search presets by inference time
-export const searchPresetsByInferenceTime = (maxTimeMs) => {
+export const searchPresetsByInferenceTime = maxTimeMs => {
   const results = [];
 
   Object.entries(NEURAL_PRESETS).forEach(([category, presets]) => {
@@ -140,7 +143,7 @@ export const searchPresetsByInferenceTime = (maxTimeMs) => {
             category,
             presetName,
             preset,
-            inferenceTime: timeMs,
+            inferenceTime: timeMs
           });
         }
       }
@@ -160,14 +163,14 @@ export const getPresetStatistics = () => {
       '90-100%': 0,
       '80-89%': 0,
       '70-79%': 0,
-      'below-70%': 0,
+      'below-70%': 0
     },
     inferenceTimeRanges: {
       'under-10ms': 0,
       '10-50ms': 0,
       '50-100ms': 0,
-      'over-100ms': 0,
-    },
+      'over-100ms': 0
+    }
   };
 
   Object.entries(NEURAL_PRESETS).forEach(([category, presets]) => {
@@ -221,7 +224,7 @@ export const PRESET_CATEGORIES = {
   NLP: 'nlp',
   VISION: 'vision',
   TIME_SERIES: 'timeseries',
-  GRAPH: 'graph',
+  GRAPH: 'graph'
 };
 
 // Export model types used in presets
@@ -233,12 +236,20 @@ export const PRESET_MODEL_TYPES = [
   'autoencoder',
   'gnn',
   'resnet',
-  'vae',
+  'vae'
 ];
 
 // Utility function to validate preset configuration
-export const validatePresetConfig = (preset) => {
-  const requiredFields = ['name', 'description', 'model', 'config', 'training', 'performance', 'useCase'];
+export const validatePresetConfig = preset => {
+  const requiredFields = [
+    'name',
+    'description',
+    'model',
+    'config',
+    'training',
+    'performance',
+    'useCase'
+  ];
   const missingFields = requiredFields.filter(field => !preset[field]);
 
   if (missingFields.length > 0) {
@@ -246,11 +257,18 @@ export const validatePresetConfig = (preset) => {
   }
 
   // Validate performance fields
-  const requiredPerformanceFields = ['expectedAccuracy', 'inferenceTime', 'memoryUsage', 'trainingTime'];
+  const requiredPerformanceFields = [
+    'expectedAccuracy',
+    'inferenceTime',
+    'memoryUsage',
+    'trainingTime'
+  ];
   const missingPerfFields = requiredPerformanceFields.filter(field => !preset.performance[field]);
 
   if (missingPerfFields.length > 0) {
-    throw new Error(`Preset performance validation failed. Missing fields: ${missingPerfFields.join(', ')}`);
+    throw new Error(
+      `Preset performance validation failed. Missing fields: ${missingPerfFields.join(', ')}`
+    );
   }
 
   return true;
@@ -258,18 +276,18 @@ export const validatePresetConfig = (preset) => {
 
 // Export default preset recommendations by use case
 export const DEFAULT_RECOMMENDATIONS = {
-  'chatbot': { category: 'nlp', preset: 'conversational_ai' },
-  'sentiment_analysis': { category: 'nlp', preset: 'sentiment_analysis_social' },
-  'object_detection': { category: 'vision', preset: 'object_detection_realtime' },
-  'face_recognition': { category: 'vision', preset: 'facial_recognition_secure' },
-  'stock_prediction': { category: 'timeseries', preset: 'stock_market_prediction' },
-  'weather_forecast': { category: 'timeseries', preset: 'weather_forecasting' },
-  'fraud_detection': { category: 'graph', preset: 'fraud_detection_financial' },
-  'recommendation': { category: 'graph', preset: 'recommendation_engine' },
+  chatbot: { category: 'nlp', preset: 'conversational_ai' },
+  sentiment_analysis: { category: 'nlp', preset: 'sentiment_analysis_social' },
+  object_detection: { category: 'vision', preset: 'object_detection_realtime' },
+  face_recognition: { category: 'vision', preset: 'facial_recognition_secure' },
+  stock_prediction: { category: 'timeseries', preset: 'stock_market_prediction' },
+  weather_forecast: { category: 'timeseries', preset: 'weather_forecasting' },
+  fraud_detection: { category: 'graph', preset: 'fraud_detection_financial' },
+  recommendation: { category: 'graph', preset: 'recommendation_engine' }
 };
 
 // Get recommended preset for a use case
-export const getRecommendedPreset = (useCase) => {
+export const getRecommendedPreset = useCase => {
   const recommendation = DEFAULT_RECOMMENDATIONS[useCase.toLowerCase()];
   if (!recommendation) {
     return null;

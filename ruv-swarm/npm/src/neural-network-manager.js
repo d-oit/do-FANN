@@ -10,12 +10,12 @@ import {
   getCategoryPresets,
   searchPresetsByUseCase,
   getRecommendedPreset,
-  validatePresetConfig,
+  validatePresetConfig
 } from './neural-models/presets/index.js';
 import {
   COMPLETE_NEURAL_PRESETS,
   CognitivePatternSelector,
-  NeuralAdaptationEngine,
+  NeuralAdaptationEngine
 } from './neural-models/neural-presets-complete.js';
 import { CognitivePatternEvolution } from './cognitive-pattern-evolution.js';
 import { MetaLearningFramework } from './meta-learning-framework.js';
@@ -52,87 +52,87 @@ class NeuralNetworkManager {
         layers: [128, 256, 512, 256, 128],
         activation: 'relu',
         output_activation: 'sigmoid',
-        dropout: 0.3,
+        dropout: 0.3
       },
       nlp_processor: {
         layers: [512, 1024, 512, 256],
         activation: 'gelu',
         output_activation: 'softmax',
-        dropout: 0.4,
+        dropout: 0.4
       },
       reinforcement_learner: {
         layers: [64, 128, 128, 64],
         activation: 'tanh',
         output_activation: 'linear',
-        dropout: 0.2,
+        dropout: 0.2
       },
       pattern_recognizer: {
         layers: [256, 512, 1024, 512, 256],
         activation: 'relu',
         output_activation: 'sigmoid',
-        dropout: 0.35,
+        dropout: 0.35
       },
       time_series_analyzer: {
         layers: [128, 256, 256, 128],
         activation: 'lstm',
         output_activation: 'linear',
-        dropout: 0.25,
+        dropout: 0.25
       },
       transformer_nlp: {
         modelType: 'transformer',
         preset: 'base',
         dimensions: 512,
         heads: 8,
-        layers: 6,
+        layers: 6
       },
       cnn_vision: {
         modelType: 'cnn',
         preset: 'cifar10',
         inputShape: [32, 32, 3],
-        outputSize: 10,
+        outputSize: 10
       },
       gru_sequence: {
         modelType: 'gru',
         preset: 'text_classification',
         hiddenSize: 256,
         numLayers: 2,
-        bidirectional: true,
+        bidirectional: true
       },
       autoencoder_compress: {
         modelType: 'autoencoder',
         preset: 'mnist_compress',
         bottleneckSize: 32,
-        variational: false,
+        variational: false
       },
       gnn_social: {
         modelType: 'gnn',
         preset: 'social_network',
         nodeDimensions: 128,
-        numLayers: 3,
+        numLayers: 3
       },
       resnet_classifier: {
         modelType: 'resnet',
         preset: 'resnet18',
         inputDimensions: 784,
-        outputDimensions: 10,
+        outputDimensions: 10
       },
       vae_generator: {
         modelType: 'vae',
         preset: 'mnist_vae',
         latentDimensions: 20,
-        betaKL: 1.0,
+        betaKL: 1.0
       },
       lstm_sequence: {
         modelType: 'lstm',
         preset: 'sentiment_analysis',
         hiddenSize: 256,
         numLayers: 2,
-        bidirectional: true,
+        bidirectional: true
       },
       // Special template for preset-based models
       preset_model: {
         modelType: 'preset', // Will be overridden by actual model type
-        usePreset: true,
+        usePreset: true
       },
 
       // Advanced neural architectures (27+ models)
@@ -141,165 +141,165 @@ class NeuralNetworkManager {
         preset: 'multi_head_attention',
         heads: 8,
         dimensions: 512,
-        dropoutRate: 0.1,
+        dropoutRate: 0.1
       },
       diffusion_model: {
         modelType: 'diffusion',
         preset: 'denoising_diffusion',
         timesteps: 1000,
-        betaSchedule: 'cosine',
+        betaSchedule: 'cosine'
       },
       neural_ode: {
         modelType: 'neural_ode',
         preset: 'continuous_dynamics',
         solverMethod: 'dopri5',
-        tolerance: 1e-6,
+        tolerance: 1e-6
       },
       capsule_network: {
         modelType: 'capsnet',
         preset: 'dynamic_routing',
         primaryCaps: 32,
-        digitCaps: 10,
+        digitCaps: 10
       },
       spiking_neural: {
         modelType: 'snn',
         preset: 'leaky_integrate_fire',
         neuronModel: 'lif',
-        threshold: 1.0,
+        threshold: 1.0
       },
       graph_attention: {
         modelType: 'gat',
         preset: 'multi_head_gat',
         attentionHeads: 8,
-        hiddenUnits: 256,
+        hiddenUnits: 256
       },
       neural_turing: {
         modelType: 'ntm',
         preset: 'differentiable_memory',
         memorySize: [128, 20],
-        controllerSize: 100,
+        controllerSize: 100
       },
       memory_network: {
         modelType: 'memnn',
         preset: 'end_to_end_memory',
         memorySlots: 100,
-        hops: 3,
+        hops: 3
       },
       neural_cellular: {
         modelType: 'nca',
         preset: 'growing_patterns',
         channels: 16,
-        updateRule: 'sobel',
+        updateRule: 'sobel'
       },
       hypernetwork: {
         modelType: 'hypernet',
         preset: 'weight_generation',
         hyperDim: 512,
-        targetLayers: ['conv1', 'conv2'],
+        targetLayers: ['conv1', 'conv2']
       },
       meta_learning: {
         modelType: 'maml',
         preset: 'few_shot_learning',
         innerLR: 0.01,
         outerLR: 0.001,
-        innerSteps: 5,
+        innerSteps: 5
       },
       neural_architecture_search: {
         modelType: 'nas',
         preset: 'differentiable_nas',
         searchSpace: 'mobile_search_space',
-        epochs: 50,
+        epochs: 50
       },
       mixture_of_experts: {
         modelType: 'moe',
         preset: 'sparse_expert_routing',
         numExperts: 8,
-        expertCapacity: 2,
+        expertCapacity: 2
       },
       neural_radiance_field: {
         modelType: 'nerf',
         preset: '3d_scene_reconstruction',
         positionEncoding: 10,
-        directionEncoding: 4,
+        directionEncoding: 4
       },
       wavenet_audio: {
         modelType: 'wavenet',
         preset: 'speech_synthesis',
         dilationChannels: 32,
-        residualChannels: 32,
+        residualChannels: 32
       },
       pointnet_3d: {
         modelType: 'pointnet',
         preset: 'point_cloud_classification',
         pointFeatures: 3,
-        globalFeatures: 1024,
+        globalFeatures: 1024
       },
       neural_baby_ai: {
         modelType: 'baby_ai',
         preset: 'instruction_following',
         vocabSize: 100,
-        instructionLength: 20,
+        instructionLength: 20
       },
       world_model: {
         modelType: 'world_model',
         preset: 'environment_prediction',
         visionModel: 'vae',
-        memoryModel: 'mdn_rnn',
+        memoryModel: 'mdn_rnn'
       },
       flow_based: {
         modelType: 'normalizing_flow',
         preset: 'density_estimation',
         flowType: 'real_nvp',
-        couplingLayers: 8,
+        couplingLayers: 8
       },
       energy_based: {
         modelType: 'ebm',
         preset: 'contrastive_divergence',
         energyFunction: 'mlp',
-        samplingSteps: 100,
+        samplingSteps: 100
       },
       neural_processes: {
         modelType: 'neural_process',
         preset: 'function_approximation',
         latentDim: 128,
-        contextPoints: 10,
+        contextPoints: 10
       },
       set_transformer: {
         modelType: 'set_transformer',
         preset: 'permutation_invariant',
         inducingPoints: 32,
-        dimensions: 128,
+        dimensions: 128
       },
       neural_implicit: {
         modelType: 'neural_implicit',
         preset: 'coordinate_networks',
         coordinateDim: 2,
-        hiddenLayers: 8,
+        hiddenLayers: 8
       },
       evolutionary_neural: {
         modelType: 'evolutionary_nn',
         preset: 'neuroevolution',
         populationSize: 50,
-        mutationRate: 0.1,
+        mutationRate: 0.1
       },
       quantum_neural: {
         modelType: 'qnn',
         preset: 'variational_quantum',
         qubits: 4,
-        layers: 6,
+        layers: 6
       },
       optical_neural: {
         modelType: 'onn',
         preset: 'photonic_computation',
         wavelengths: 16,
-        modulators: 'mach_zehnder',
+        modulators: 'mach_zehnder'
       },
       neuromorphic: {
         modelType: 'neuromorphic',
         preset: 'event_driven',
         spikeEncoding: 'rate',
-        synapticModel: 'stdp',
-      },
+        synapticModel: 'stdp'
+      }
     };
 
     // Store instances of new neural models
@@ -332,12 +332,7 @@ class NeuralNetworkManager {
       return this.createSimulatedNetwork(agentId, config);
     }
 
-    const {
-      layers = null,
-      activation = 'relu',
-      learningRate = 0.001,
-      optimizer = 'adam',
-    } = config;
+    const { layers = null, activation = 'relu', learningRate = 0.001, optimizer = 'adam' } = config;
 
     // Use template or custom layers
     const networkConfig = layers ? { layers, activation } : this.templates[template];
@@ -350,8 +345,8 @@ class NeuralNetworkManager {
           layers: networkConfig.layers,
           activation: networkConfig.activation,
           learning_rate: learningRate,
-          optimizer,
-        }),
+          optimizer
+        })
       );
 
       const network = new NeuralNetwork(networkId, agentId, networkConfig, neuralModule);
@@ -380,7 +375,7 @@ class NeuralNetworkManager {
     // Merge template config with custom config
     const config = {
       ...templateConfig,
-      ...customConfig,
+      ...customConfig
     };
 
     // Select cognitive patterns based on model type and task
@@ -388,13 +383,13 @@ class NeuralNetworkManager {
       requiresCreativity: customConfig.requiresCreativity || false,
       requiresPrecision: customConfig.requiresPrecision || false,
       requiresAdaptation: customConfig.requiresAdaptation || false,
-      complexity: customConfig.complexity || 'medium',
+      complexity: customConfig.complexity || 'medium'
     };
 
     const cognitivePatterns = this.cognitivePatternSelector.selectPatternsForPreset(
       config.modelType,
       template,
-      taskContext,
+      taskContext
     );
 
     config.cognitivePatterns = cognitivePatterns;
@@ -428,10 +423,12 @@ class NeuralNetworkManager {
         modelType: config.modelType,
         cognitivePatterns: cognitivePatterns || [],
         adaptationHistory: [],
-        collaborationScore: 0,
+        collaborationScore: 0
       });
 
-      console.log(`Created ${config.modelType} neural network for agent ${agentId} with enhanced cognitive capabilities`);
+      console.log(
+        `Created ${config.modelType} neural network for agent ${agentId} with enhanced cognitive capabilities`
+      );
 
       return wrappedModel;
     } catch (error) {
@@ -452,7 +449,7 @@ class NeuralNetworkManager {
       learningRate = 0.001,
       freezeLayers = [],
       enableCognitiveEvolution = true,
-      enableMetaLearning = true,
+      enableMetaLearning = true
     } = options;
 
     // Apply cognitive pattern evolution during training
@@ -467,7 +464,12 @@ class NeuralNetworkManager {
     }
 
     // Enhanced training with adaptive optimization
-    const result = await network.train(trainingData, { epochs, batchSize, learningRate, freezeLayers });
+    const result = await network.train(trainingData, {
+      epochs,
+      batchSize,
+      learningRate,
+      freezeLayers
+    });
 
     // Update performance metrics
     const metrics = this.performanceMetrics.get(agentId);
@@ -479,7 +481,7 @@ class NeuralNetworkManager {
         accuracy: result.accuracy || 0,
         cognitivePatterns: metrics.cognitivePatterns,
         performance: result,
-        insights: [],
+        insights: []
       };
 
       metrics.adaptationHistory.push(adaptationResult);
@@ -497,7 +499,7 @@ class NeuralNetworkManager {
       syncInterval = 30000,
       privacyLevel = 'high',
       enableKnowledgeSharing = true,
-      enableCrossAgentEvolution = true,
+      enableCrossAgentEvolution = true
     } = options;
 
     const networks = agentIds.map(id => this.neuralNetworks.get(id)).filter(n => n);
@@ -517,7 +519,9 @@ class NeuralNetworkManager {
       active: true,
       knowledgeGraph: new Map(),
       evolutionTracker: new Map(),
-      coordinationMatrix: new Array(agentIds.length).fill(0).map(() => new Array(agentIds.length).fill(0)),
+      coordinationMatrix: new Array(agentIds.length)
+        .fill(0)
+        .map(() => new Array(agentIds.length).fill(0))
     };
 
     // Initialize neural coordination protocol
@@ -578,21 +582,21 @@ class NeuralNetworkManager {
     let differentialPrivacy = false;
 
     switch (privacyLevel) {
-    case 'high':
-      noise = 0.01;
-      differentialPrivacy = true;
-      break;
-    case 'medium':
-      noise = 0.005;
-      break;
-    case 'low':
-      noise = 0.001;
-      break;
+      case 'high':
+        noise = 0.01;
+        differentialPrivacy = true;
+        break;
+      case 'medium':
+        noise = 0.005;
+        break;
+      case 'low':
+        noise = 0.001;
+        break;
     }
 
     // Cognitive-weighted gradient aggregation
     gradients.forEach((grad, index) => {
-      const weight = cognitiveWeights[index] || (1 / gradients.length);
+      const weight = cognitiveWeights[index] || 1 / gradients.length;
 
       Object.entries(grad).forEach(([key, value]) => {
         if (!aggregated[key]) {
@@ -680,7 +684,9 @@ class NeuralNetworkManager {
       validatePresetConfig(preset);
 
       console.log(`Creating ${agentId} from preset: ${preset.name}`);
-      console.log(`Expected performance: ${preset.performance.expectedAccuracy} accuracy in ${preset.performance.inferenceTime}`);
+      console.log(
+        `Expected performance: ${preset.performance.expectedAccuracy} accuracy in ${preset.performance.inferenceTime}`
+      );
 
       // Merge preset config with custom overrides
       const config = {
@@ -693,8 +699,8 @@ class NeuralNetworkManager {
           name: preset.name,
           description: preset.description,
           useCase: preset.useCase,
-          performance: preset.performance,
-        },
+          performance: preset.performance
+        }
       };
 
       return this.createAdvancedNeuralModel(agentId, 'preset_model', config);
@@ -718,7 +724,9 @@ class NeuralNetworkManager {
     }
 
     console.log(`Creating ${agentId} from complete preset: ${preset.name}`);
-    console.log(`Expected performance: ${preset.performance.expectedAccuracy} accuracy in ${preset.performance.inferenceTime}`);
+    console.log(
+      `Expected performance: ${preset.performance.expectedAccuracy} accuracy in ${preset.performance.inferenceTime}`
+    );
     console.log(`Cognitive patterns: ${preset.cognitivePatterns.join(', ')}`);
 
     // Get optimized cognitive patterns
@@ -727,13 +735,13 @@ class NeuralNetworkManager {
       requiresPrecision: customConfig.requiresPrecision || false,
       requiresAdaptation: customConfig.requiresAdaptation || false,
       complexity: customConfig.complexity || 'medium',
-      cognitivePreference: customConfig.cognitivePreference,
+      cognitivePreference: customConfig.cognitivePreference
     };
 
     const cognitivePatterns = this.cognitivePatternSelector.selectPatternsForPreset(
       preset.model,
       presetName,
-      taskContext,
+      taskContext
     );
 
     // Merge preset config with custom overrides
@@ -749,8 +757,8 @@ class NeuralNetworkManager {
         description: preset.description,
         useCase: preset.useCase,
         performance: preset.performance,
-        cognitivePatterns: preset.cognitivePatterns,
-      },
+        cognitivePatterns: preset.cognitivePatterns
+      }
     };
 
     // Select appropriate template based on model type
@@ -783,7 +791,7 @@ class NeuralNetworkManager {
       normalizing_flow: 'flow_based',
       ebm: 'energy_based',
       neural_process: 'neural_processes',
-      set_transformer: 'set_transformer',
+      set_transformer: 'set_transformer'
     };
 
     const template = templateMap[preset.model] || 'preset_model';
@@ -814,7 +822,7 @@ class NeuralNetworkManager {
         agentId,
         bestMatch.category,
         bestMatch.presetName,
-        customConfig,
+        customConfig
       );
     }
 
@@ -822,7 +830,7 @@ class NeuralNetworkManager {
       agentId,
       recommendedPreset.category,
       recommendedPreset.presetName,
-      customConfig,
+      customConfig
     );
   }
 
@@ -863,7 +871,7 @@ class NeuralNetworkManager {
     Object.entries(NEURAL_PRESETS).forEach(([category, presets]) => {
       summary[category] = {
         count: Object.keys(presets).length,
-        presets: Object.keys(presets),
+        presets: Object.keys(presets)
       };
     });
     return summary;
@@ -904,7 +912,12 @@ class NeuralNetworkManager {
     this.neuralModels.delete(agentId);
 
     // Create new network with preset and restored cognitive capabilities
-    const newNetwork = await this.createAgentFromPreset(agentId, category, presetName, customConfig);
+    const newNetwork = await this.createAgentFromPreset(
+      agentId,
+      category,
+      presetName,
+      customConfig
+    );
 
     // Restore cognitive evolution and meta-learning state
     await this.cognitiveEvolution.restoreHistory(agentId, cognitiveHistory);
@@ -927,7 +940,7 @@ class NeuralNetworkManager {
           config.agentId,
           config.category,
           config.presetName,
-          config.customConfig || {},
+          config.customConfig || {}
         );
         results.push({ agentId: config.agentId, success: true, agent });
       } catch (error) {
@@ -989,7 +1002,7 @@ class NeuralNetworkManager {
       patterns: await this.cognitiveEvolution.extractPatterns(agentId),
       experiences: await this.metaLearning.extractExperiences(agentId),
       performance: network.getMetrics(),
-      specializations: await this.identifySpecializations(agentId),
+      specializations: await this.identifySpecializations(agentId)
     };
 
     return knowledge;
@@ -1046,7 +1059,7 @@ class NeuralNetworkManager {
         specializations.push({
           domain: this.inferDomainFromTraining(adaptation),
           confidence: adaptation.trainingResult.accuracy,
-          timestamp: adaptation.timestamp,
+          timestamp: adaptation.timestamp
         });
       }
     }
@@ -1121,7 +1134,9 @@ class NeuralNetworkManager {
     const specializationSimilarity = this.calculateSpecializationSimilarity(knowledgeA, knowledgeB);
 
     // Weighted combination
-    return (structuralSimilarity * 0.4 + performanceSimilarity * 0.3 + specializationSimilarity * 0.3);
+    return (
+      structuralSimilarity * 0.4 + performanceSimilarity * 0.3 + specializationSimilarity * 0.3
+    );
   }
 
   /**
@@ -1196,7 +1211,7 @@ class NeuralNetworkManager {
    * @param {Object} session - Collaborative session
    */
   startKnowledgeDistillation(session) {
-    const distillationFunction = async() => {
+    const distillationFunction = async () => {
       if (!session.active) {
         return;
       }
@@ -1214,7 +1229,6 @@ class NeuralNetworkManager {
         }
 
         console.log(`Knowledge distillation completed for session ${session.id}`);
-
       } catch (error) {
         console.error('Knowledge distillation failed:', error);
       }
@@ -1240,7 +1254,7 @@ class NeuralNetworkManager {
         const metrics = network.getMetrics();
         agentPerformances.push({
           agentId,
-          performance: metrics.accuracy || 0,
+          performance: metrics.accuracy || 0
         });
       }
     }
@@ -1278,11 +1292,10 @@ class NeuralNetworkManager {
       const alpha = 0.7; // Weight for distillation loss vs hard target loss
 
       // Apply knowledge distillation (simplified)
-      const distillationResult = await this.applyKnowledgeDistillation(
-        student,
-        teacherKnowledge,
-        { temperature: distillationTemperature, alpha },
-      );
+      const distillationResult = await this.applyKnowledgeDistillation(student, teacherKnowledge, {
+        temperature: distillationTemperature,
+        alpha
+      });
 
       // Update collaboration matrix
       const teacherIdx = session.agentIds.indexOf(teacherAgentId);
@@ -1291,9 +1304,11 @@ class NeuralNetworkManager {
       if (teacherIdx >= 0 && studentIdx >= 0) {
         session.coordinationMatrix[studentIdx][teacherIdx] += distillationResult.improvement;
       }
-
     } catch (error) {
-      console.error(`Knowledge distillation failed between ${teacherAgentId} and ${studentAgentId}:`, error);
+      console.error(
+        `Knowledge distillation failed between ${teacherAgentId} and ${studentAgentId}:`,
+        error
+      );
     }
   }
 
@@ -1326,7 +1341,7 @@ class NeuralNetworkManager {
    * @param {Object} session - Collaborative session
    */
   startNeuralCoordination(session) {
-    const coordinationFunction = async() => {
+    const coordinationFunction = async () => {
       if (!session.active) {
         return;
       }
@@ -1342,7 +1357,6 @@ class NeuralNetworkManager {
         await this.applyCoordinationResults(session);
 
         console.log(`Neural coordination completed for session ${session.id}`);
-
       } catch (error) {
         console.error('Neural coordination failed:', error);
       }
@@ -1461,7 +1475,6 @@ class NeuralNetworkManager {
       });
 
       agent.setWeights(adjustedWeights);
-
     } catch (error) {
       console.error('Failed to apply weight adjustments:', error);
     }
@@ -1486,7 +1499,7 @@ class NeuralNetworkManager {
       strength,
       type,
       agentA,
-      agentB,
+      agentB
     });
 
     // Keep only recent interactions (last 100)
@@ -1538,7 +1551,7 @@ class NeuralNetworkManager {
       modelTypes[modelType] = {
         count: Object.keys(presets).length,
         presets: Object.keys(presets),
-        description: Object.values(presets)[0]?.description || 'Neural model type',
+        description: Object.values(presets)[0]?.description || 'Neural model type'
       };
     });
 
@@ -1556,7 +1569,7 @@ class NeuralNetworkManager {
       metaLearning: this.metaLearning.getStatistics(),
       coordination: this.coordinationProtocol.getStatistics(),
       performance: {},
-      collaborations: 0,
+      collaborations: 0
     };
 
     // Count model types
@@ -1572,13 +1585,13 @@ class NeuralNetworkManager {
             count: 0,
             avgAccuracy: 0,
             avgCollaborationScore: 0,
-            totalAdaptations: 0,
+            totalAdaptations: 0
           };
         }
 
         const perf = stats.performance[modelType];
         perf.count++;
-        perf.avgAccuracy += (network.getMetrics().accuracy || 0);
+        perf.avgAccuracy += network.getMetrics().accuracy || 0;
         perf.avgCollaborationScore += metrics.collaborationScore;
         perf.totalAdaptations += metrics.adaptationHistory.length;
       }
@@ -1611,7 +1624,7 @@ class NeuralNetwork {
       accuracy: 0,
       loss: 1.0,
       epochs_trained: 0,
-      total_samples: 0,
+      total_samples: 0
     };
   }
 
@@ -1641,7 +1654,7 @@ class NeuralNetwork {
             this.networkId,
             JSON.stringify(batch),
             learningRate,
-            JSON.stringify(freezeLayers),
+            JSON.stringify(freezeLayers)
           );
 
           epochLoss += loss;
@@ -1690,11 +1703,11 @@ class NeuralNetwork {
         layers: this.config.layers,
         parameters: this.config.layers.reduce((acc, size, i) => {
           if (i > 0) {
-            return acc + (this.config.layers[i - 1] * size);
+            return acc + this.config.layers[i - 1] * size;
           }
           return acc;
-        }, 0),
-      },
+        }, 0)
+      }
     };
   }
 
@@ -1734,7 +1747,7 @@ class SimulatedNeuralNetwork {
       accuracy: 0.5 + Math.random() * 0.3,
       loss: 0.5 + Math.random() * 0.5,
       epochs_trained: 0,
-      total_samples: 0,
+      total_samples: 0
     };
   }
 
@@ -1775,7 +1788,7 @@ class SimulatedNeuralNetwork {
     // Simulated gradients
     return {
       layer_0: Math.random() * 0.1,
-      layer_1: Math.random() * 0.1,
+      layer_1: Math.random() * 0.1
     };
   }
 
@@ -1790,8 +1803,8 @@ class SimulatedNeuralNetwork {
       training_history: this.trainingHistory,
       network_info: {
         layers: this.config.layers || [128, 64, 32],
-        parameters: 10000, // Simulated parameter count
-      },
+        parameters: 10000 // Simulated parameter count
+      }
     };
   }
 
@@ -1808,30 +1821,30 @@ class SimulatedNeuralNetwork {
 
 // Neural Network Templates for quick configuration
 const NeuralNetworkTemplates = {
-  getTemplate: (templateName) => {
+  getTemplate: templateName => {
     const templates = {
       deep_analyzer: {
         layers: [128, 256, 512, 256, 128],
         activation: 'relu',
         output_activation: 'sigmoid',
-        dropout: 0.3,
+        dropout: 0.3
       },
       nlp_processor: {
         layers: [512, 1024, 512, 256],
         activation: 'gelu',
         output_activation: 'softmax',
-        dropout: 0.4,
+        dropout: 0.4
       },
       reinforcement_learner: {
         layers: [64, 128, 128, 64],
         activation: 'tanh',
         output_activation: 'linear',
-        dropout: 0.2,
-      },
+        dropout: 0.2
+      }
     };
 
     return templates[templateName] || templates.deep_analyzer;
-  },
+  }
 };
 
 // Advanced Neural Network wrapper for new model types

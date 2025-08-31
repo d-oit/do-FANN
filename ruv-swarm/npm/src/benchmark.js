@@ -17,7 +17,7 @@ class BenchmarkCLI {
       this.ruvSwarm = await RuvSwarm.initialize({
         enableNeuralNetworks: true,
         enableForecasting: true,
-        loadingStrategy: 'progressive',
+        loadingStrategy: 'progressive'
       });
     }
     return this.ruvSwarm;
@@ -44,10 +44,10 @@ class BenchmarkCLI {
         system: {
           platform: process.platform,
           arch: process.arch,
-          nodeVersion: process.version,
-        },
+          nodeVersion: process.version
+        }
       },
-      benchmarks: {},
+      benchmarks: {}
     };
 
     try {
@@ -60,7 +60,7 @@ class BenchmarkCLI {
       results.benchmarks.wasmLoading = {
         time: wasmTime,
         target: 100,
-        status: wasmTime < 100 ? 'PASS' : 'SLOW',
+        status: wasmTime < 100 ? 'PASS' : 'SLOW'
       };
       console.log(`   ✅ ${wasmTime}ms (target: <100ms)`);
 
@@ -81,7 +81,7 @@ class BenchmarkCLI {
         min: Math.min(...swarmTimes),
         max: Math.max(...swarmTimes),
         target: 10,
-        status: avgSwarmTime < 10 ? 'PASS' : 'SLOW',
+        status: avgSwarmTime < 10 ? 'PASS' : 'SLOW'
       };
       console.log(`\n   ✅ Average: ${avgSwarmTime.toFixed(1)}ms (target: <10ms)`);
 
@@ -99,7 +99,7 @@ class BenchmarkCLI {
         times: agentTimes,
         average: avgAgentTime,
         target: 5,
-        status: avgAgentTime < 5 ? 'PASS' : 'SLOW',
+        status: avgAgentTime < 5 ? 'PASS' : 'SLOW'
       };
       console.log(`   ✅ Average: ${avgAgentTime.toFixed(1)}ms (target: <5ms)`);
 
@@ -119,9 +119,11 @@ class BenchmarkCLI {
           average: avgNeuralTime,
           throughput: 1000 / avgNeuralTime,
           target: 50,
-          status: avgNeuralTime < 50 ? 'PASS' : 'SLOW',
+          status: avgNeuralTime < 50 ? 'PASS' : 'SLOW'
         };
-        console.log(`   ✅ Average: ${avgNeuralTime.toFixed(1)}ms, ${(1000 / avgNeuralTime).toFixed(0)} ops/sec`);
+        console.log(
+          `   ✅ Average: ${avgNeuralTime.toFixed(1)}ms, ${(1000 / avgNeuralTime).toFixed(0)} ops/sec`
+        );
       }
 
       // 5. Memory Usage Benchmark
@@ -132,9 +134,11 @@ class BenchmarkCLI {
         heapTotal: memUsage.heapTotal,
         external: memUsage.external,
         rss: memUsage.rss,
-        efficiency: ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(1),
+        efficiency: ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(1)
       };
-      console.log(`   ✅ Heap: ${(memUsage.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(memUsage.heapTotal / 1024 / 1024).toFixed(1)}MB`);
+      console.log(
+        `   ✅ Heap: ${(memUsage.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(memUsage.heapTotal / 1024 / 1024).toFixed(1)}MB`
+      );
 
       // 6. Overall Performance Score
       const scores = [];
@@ -168,14 +172,18 @@ class BenchmarkCLI {
         await fs.writeFile(outputFile, JSON.stringify(results, null, 2));
         console.log(`\n💾 Results saved to: ${outputFile}`);
       } else {
-        const defaultPath = path.join(process.cwd(), '.ruv-swarm', 'benchmarks', `benchmark-${Date.now()}.json`);
+        const defaultPath = path.join(
+          process.cwd(),
+          '.ruv-swarm',
+          'benchmarks',
+          `benchmark-${Date.now()}.json`
+        );
         await fs.mkdir(path.dirname(defaultPath), { recursive: true });
         await fs.writeFile(defaultPath, JSON.stringify(results, null, 2));
         console.log(`\n💾 Results saved to: ${path.relative(process.cwd(), defaultPath)}`);
       }
 
       console.log('\n✅ Benchmark Complete!');
-
     } catch (error) {
       console.error('❌ Benchmark failed:', error.message);
       process.exit(1);
@@ -210,13 +218,15 @@ class BenchmarkCLI {
       console.log('📈 Overall Performance:');
       console.log(`  File 1: ${score1.toFixed(1)}%`);
       console.log(`  File 2: ${score2.toFixed(1)}%`);
-      console.log(`  Change: ${scoreDiff > 0 ? '+' : ''}${scoreDiff.toFixed(1)}% ${scoreDiff > 0 ? '📈' : scoreDiff < 0 ? '📉' : '➡️'}`);
+      console.log(
+        `  Change: ${scoreDiff > 0 ? '+' : ''}${scoreDiff.toFixed(1)}% ${scoreDiff > 0 ? '📈' : scoreDiff < 0 ? '📉' : '➡️'}`
+      );
       console.log('');
 
       // Compare individual benchmarks
       const benchmarks = new Set([
         ...Object.keys(results1.benchmarks || {}),
-        ...Object.keys(results2.benchmarks || {}),
+        ...Object.keys(results2.benchmarks || {})
       ]);
 
       for (const benchmark of benchmarks) {
@@ -228,12 +238,15 @@ class BenchmarkCLI {
 
           if (bench1.average !== undefined && bench2.average !== undefined) {
             const diff = bench2.average - bench1.average;
-            const percentChange = ((diff / bench1.average) * 100);
-            console.log(`  Average: ${bench1.average.toFixed(1)}ms → ${bench2.average.toFixed(1)}ms (${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}%)`);
+            const percentChange = (diff / bench1.average) * 100;
+            console.log(
+              `  Average: ${bench1.average.toFixed(1)}ms → ${bench2.average.toFixed(1)}ms (${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}%)`
+            );
           }
 
           if (bench1.status && bench2.status) {
-            const statusChange = bench1.status === bench2.status ? '=' : bench1.status === 'PASS' ? '📉' : '📈';
+            const statusChange =
+              bench1.status === bench2.status ? '=' : bench1.status === 'PASS' ? '📉' : '📈';
             console.log(`  Status: ${bench1.status} → ${bench2.status} ${statusChange}`);
           }
           console.log('');
@@ -249,7 +262,6 @@ class BenchmarkCLI {
       } else {
         console.log('  ➡️  Performance is stable');
       }
-
     } catch (error) {
       console.error('❌ Comparison failed:', error.message);
       process.exit(1);

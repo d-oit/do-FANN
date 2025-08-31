@@ -11,7 +11,9 @@ import path from 'path';
  * WASM module integrity verification
  */
 export class WasmIntegrityVerifier {
-  constructor(hashesPath = path.join(new URL('.', import.meta.url).pathname, '..', 'wasm', 'checksums.json')) {
+  constructor(
+    hashesPath = path.join(new URL('.', import.meta.url).pathname, '..', 'wasm', 'checksums.json')
+  ) {
     this.hashesPath = hashesPath;
     this.knownHashes = new Map();
     this.initialized = false;
@@ -119,7 +121,7 @@ export class CommandSanitizer {
     const dangerousPatterns = [
       /[;&|`$(){}[\]<>]/, // Shell metacharacters
       /\.\./, // Path traversal
-      /^-/, // Argument injection
+      /^-/ // Argument injection
     ];
 
     for (const pattern of dangerousPatterns) {
@@ -157,14 +159,14 @@ export class DependencyVerifier {
         '..',
         'node_modules',
         packageName,
-        'package.json',
+        'package.json'
       );
 
       const packageData = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
 
       if (packageData.version !== expectedVersion) {
         throw new SecurityError(
-          `Package version mismatch for ${packageName}: expected ${expectedVersion}, got ${packageData.version}`,
+          `Package version mismatch for ${packageName}: expected ${expectedVersion}, got ${packageData.version}`
         );
       }
 
@@ -205,7 +207,7 @@ export function createSecurityMiddleware() {
 
     async verifyDependency(packageName, version) {
       return await DependencyVerifier.verifyNpmPackage(packageName, version);
-    },
+    }
   };
 }
 
@@ -214,5 +216,5 @@ export default {
   CommandSanitizer,
   DependencyVerifier,
   SecurityError,
-  createSecurityMiddleware,
+  createSecurityMiddleware
 };

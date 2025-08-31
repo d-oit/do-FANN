@@ -30,7 +30,7 @@ export class ConnectionDiagnostics {
       timestamp,
       details,
       memoryUsage: process.memoryUsage(),
-      cpuUsage: process.cpuUsage(),
+      cpuUsage: process.cpuUsage()
     };
 
     this.connectionHistory.push(entry);
@@ -42,7 +42,7 @@ export class ConnectionDiagnostics {
     if (event === 'established') {
       this.activeConnections.set(connectionId, {
         startTime: Date.now(),
-        ...details,
+        ...details
       });
     } else if (event === 'closed' || event === 'failed') {
       const conn = this.activeConnections.get(connectionId);
@@ -73,7 +73,7 @@ export class ConnectionDiagnostics {
       eventCounts: events,
       activeConnections: this.activeConnections.size,
       recentFailures,
-      failureRate: failures.length / this.connectionHistory.length,
+      failureRate: failures.length / this.connectionHistory.length
     };
   }
 
@@ -101,14 +101,15 @@ export class ConnectionDiagnostics {
     const memoryAtFailure = failures.map(f => ({
       timestamp: f.timestamp,
       heapUsed: f.memoryUsage.heapUsed / (1024 * 1024), // MB
-      external: f.memoryUsage.external / (1024 * 1024), // MB
+      external: f.memoryUsage.external / (1024 * 1024) // MB
     }));
 
     return {
       errorTypes,
       hourlyFailures,
       memoryAtFailure,
-      avgMemoryAtFailure: memoryAtFailure.reduce((sum, m) => sum + m.heapUsed, 0) / memoryAtFailure.length,
+      avgMemoryAtFailure:
+        memoryAtFailure.reduce((sum, m) => sum + m.heapUsed, 0) / memoryAtFailure.length
     };
   }
 
@@ -123,7 +124,7 @@ export class ConnectionDiagnostics {
       nodeVersion: process.version,
       uptime: process.uptime(),
       memoryUsage: process.memoryUsage(),
-      cpuUsage: process.cpuUsage(),
+      cpuUsage: process.cpuUsage()
     };
 
     const report = {
@@ -131,12 +132,12 @@ export class ConnectionDiagnostics {
       system: systemInfo,
       connections: summary,
       patterns,
-      recommendations: this.generateRecommendations(summary, patterns),
+      recommendations: this.generateRecommendations(summary, patterns)
     };
 
     this.logger.info('Diagnostic report generated', {
       failureRate: summary.failureRate,
-      activeConnections: summary.activeConnections,
+      activeConnections: summary.activeConnections
     });
 
     return report;
@@ -153,7 +154,7 @@ export class ConnectionDiagnostics {
       recommendations.push({
         severity: 'high',
         issue: 'High connection failure rate',
-        suggestion: 'Check network stability and MCP server configuration',
+        suggestion: 'Check network stability and MCP server configuration'
       });
     }
 
@@ -162,7 +163,7 @@ export class ConnectionDiagnostics {
       recommendations.push({
         severity: 'medium',
         issue: 'High memory usage during failures',
-        suggestion: 'Consider increasing memory limits or optimizing memory usage',
+        suggestion: 'Consider increasing memory limits or optimizing memory usage'
       });
     }
 
@@ -172,7 +173,7 @@ export class ConnectionDiagnostics {
         recommendations.push({
           severity: 'medium',
           issue: `Recurring error: ${error}`,
-          suggestion: `Investigate root cause of: ${error}`,
+          suggestion: `Investigate root cause of: ${error}`
         });
       }
     });
@@ -189,10 +190,10 @@ export class PerformanceDiagnostics {
     this.logger = logger || loggingConfig.getLogger('diagnostics', { level: 'DEBUG' });
     this.operations = new Map();
     this.thresholds = {
-      'swarm_init': 1000, // 1 second
-      'agent_spawn': 500, // 500ms
-      'task_orchestrate': 2000, // 2 seconds
-      'neural_train': 5000, // 5 seconds
+      swarm_init: 1000, // 1 second
+      agent_spawn: 500, // 500ms
+      task_orchestrate: 2000, // 2 seconds
+      neural_train: 5000 // 5 seconds
     };
   }
 
@@ -205,7 +206,7 @@ export class PerformanceDiagnostics {
       name,
       startTime: performance.now(),
       startMemory: process.memoryUsage(),
-      metadata,
+      metadata
     });
     return id;
   }
@@ -230,9 +231,9 @@ export class PerformanceDiagnostics {
       success,
       memoryDelta: {
         heapUsed: endMemory.heapUsed - operation.startMemory.heapUsed,
-        external: endMemory.external - operation.startMemory.external,
+        external: endMemory.external - operation.startMemory.external
       },
-      aboveThreshold: duration > (this.thresholds[operation.name] || 1000),
+      aboveThreshold: duration > (this.thresholds[operation.name] || 1000)
     };
 
     this.operations.delete(id);
@@ -241,7 +242,7 @@ export class PerformanceDiagnostics {
       this.logger.warn('Operation exceeded threshold', {
         operation: operation.name,
         duration,
-        threshold: this.thresholds[operation.name],
+        threshold: this.thresholds[operation.name]
       });
     }
 
@@ -283,7 +284,7 @@ export class SystemDiagnostics {
       memory: process.memoryUsage(),
       cpu: process.cpuUsage(),
       handles: process._getActiveHandles?.().length || 0,
-      requests: process._getActiveRequests?.().length || 0,
+      requests: process._getActiveRequests?.().length || 0
     };
 
     this.samples.push(sample);
@@ -306,15 +307,16 @@ export class SystemDiagnostics {
       const sample = this.collectSample();
 
       // Check for anomalies
-      if (sample.memory.heapUsed > 500 * 1024 * 1024) { // 500MB
+      if (sample.memory.heapUsed > 500 * 1024 * 1024) {
+        // 500MB
         this.logger.warn('High memory usage detected', {
-          heapUsed: `${(sample.memory.heapUsed / 1024 / 1024).toFixed(2)} MB`,
+          heapUsed: `${(sample.memory.heapUsed / 1024 / 1024).toFixed(2)} MB`
         });
       }
 
       if (sample.handles > 100) {
         this.logger.warn('High number of active handles', {
-          handles: sample.handles,
+          handles: sample.handles
         });
       }
     }, interval);
@@ -342,7 +344,8 @@ export class SystemDiagnostics {
     }
 
     const latest = this.samples[this.samples.length - 1];
-    const avgMemory = this.samples.reduce((sum, s) => sum + s.memory.heapUsed, 0) / this.samples.length;
+    const avgMemory =
+      this.samples.reduce((sum, s) => sum + s.memory.heapUsed, 0) / this.samples.length;
 
     let status = 'healthy';
     const issues = [];
@@ -369,8 +372,8 @@ export class SystemDiagnostics {
         currentMemory: `${(latest.memory.heapUsed / 1024 / 1024).toFixed(2)} MB`,
         avgMemory: `${(avgMemory / 1024 / 1024).toFixed(2)} MB`,
         handles: latest.handles,
-        requests: latest.requests,
-      },
+        requests: latest.requests
+      }
     };
   }
 }
@@ -410,10 +413,10 @@ export class DiagnosticsManager {
       timestamp: new Date().toISOString(),
       connection: this.connection.generateReport(),
       performance: {
-        slowOperations: this.performance.getSlowOperations(),
+        slowOperations: this.performance.getSlowOperations()
       },
       system: this.system.getSystemHealth(),
-      logs: await this.collectRecentLogs(),
+      logs: await this.collectRecentLogs()
     };
 
     if (outputPath) {
@@ -433,7 +436,7 @@ export class DiagnosticsManager {
     // For now, return a placeholder
     return {
       message: 'Log collection would read from log files',
-      logsEnabled: process.env.LOG_TO_FILE === 'true',
+      logsEnabled: process.env.LOG_TO_FILE === 'true'
     };
   }
 
@@ -458,8 +461,8 @@ export class DiagnosticsManager {
       summary: {
         total: tests.length,
         passed: tests.filter(t => t.success).length,
-        failed: tests.filter(t => !t.success).length,
-      },
+        failed: tests.filter(t => !t.success).length
+      }
     };
   }
 
@@ -472,13 +475,13 @@ export class DiagnosticsManager {
       return {
         name: 'Memory Allocation',
         success: true,
-        allocated: `${((end - start) / 1024 / 1024).toFixed(2)} MB`,
+        allocated: `${((end - start) / 1024 / 1024).toFixed(2)} MB`
       };
     } catch (error) {
       return {
         name: 'Memory Allocation',
         success: false,
-        error: error.message,
+        error: error.message
       };
     }
   }
@@ -493,13 +496,13 @@ export class DiagnosticsManager {
       return {
         name: 'File System Access',
         success: true,
-        path: testPath,
+        path: testPath
       };
     } catch (error) {
       return {
         name: 'File System Access',
         success: false,
-        error: error.message,
+        error: error.message
       };
     }
   }
@@ -514,13 +517,13 @@ export class DiagnosticsManager {
         name: 'WASM Module Check',
         success: exists,
         path: wasmPath,
-        exists,
+        exists
       };
     } catch (error) {
       return {
         name: 'WASM Module Check',
         success: false,
-        error: error.message,
+        error: error.message
       };
     }
   }

@@ -24,13 +24,13 @@ const testResults = {
   mcpTools: {
     tested: 0,
     passed: 0,
-    failed: [],
+    failed: []
   },
   daaTools: {
     tested: 0,
     passed: 0,
-    failed: [],
-  },
+    failed: []
+  }
 };
 
 // MCP Tools to test (the ones that were failing)
@@ -39,20 +39,20 @@ const mcpToolsToTest = [
     name: 'neural_train',
     command: 'neural',
     args: ['train', '--iterations', '3', '--learning-rate', '0.01', '--model-type', 'feedforward'],
-    expectedOutput: 'Training Complete',
+    expectedOutput: 'Training Complete'
   },
   {
     name: 'swarm_monitor',
     command: 'monitor',
     args: ['2'],
-    expectedOutput: 'Monitoring swarm',
+    expectedOutput: 'Monitoring swarm'
   },
   {
     name: 'swarm_status',
     command: 'status',
     args: ['--verbose'],
-    expectedOutput: 'swarms loaded',
-  },
+    expectedOutput: 'swarms loaded'
+  }
 ];
 
 // DAA functionality tests (testing integration)
@@ -61,26 +61,26 @@ const daaToolsToTest = [
     name: 'daa_init_test',
     command: 'init',
     args: ['mesh', '3', '--claude'],
-    expectedOutput: 'swarm initialized',
+    expectedOutput: 'swarm initialized'
   },
   {
     name: 'daa_agent_spawn',
     command: 'spawn',
     args: ['researcher', 'DAA-Test-Agent'],
-    expectedOutput: 'Spawned agent',
-  },
+    expectedOutput: 'Spawned agent'
+  }
 ];
 
 /**
  * Run a single test with timeout and error handling
  */
 async function runTest(testName, command, args, expectedOutput, timeout = 30000) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     console.log(`\n🧪 Testing ${testName}...`);
 
     const child = spawn('npx', ['ruv-swarm', command, ...args], {
       cwd: join(__dirname, '..'),
-      stdio: ['pipe', 'pipe', 'pipe'],
+      stdio: ['pipe', 'pipe', 'pipe']
     });
 
     let stdout = '';
@@ -97,20 +97,20 @@ async function runTest(testName, command, args, expectedOutput, timeout = 30000)
           success: false,
           error: `Timeout after ${timeout}ms`,
           stdout,
-          stderr,
+          stderr
         });
       }
     }, timeout);
 
-    child.stdout.on('data', (data) => {
+    child.stdout.on('data', data => {
       stdout += data.toString();
     });
 
-    child.stderr.on('data', (data) => {
+    child.stderr.on('data', data => {
       stderr += data.toString();
     });
 
-    child.on('close', (code) => {
+    child.on('close', code => {
       if (!completed) {
         completed = true;
         clearTimeout(timer);
@@ -131,12 +131,12 @@ async function runTest(testName, command, args, expectedOutput, timeout = 30000)
           error: success ? null : `Expected "${expectedOutput}" in output, got exit code ${code}`,
           stdout,
           stderr,
-          exitCode: code,
+          exitCode: code
         });
       }
     });
 
-    child.on('error', (error) => {
+    child.on('error', error => {
       if (!completed) {
         completed = true;
         clearTimeout(timer);
@@ -145,7 +145,7 @@ async function runTest(testName, command, args, expectedOutput, timeout = 30000)
           success: false,
           error: error.message,
           stdout,
-          stderr,
+          stderr
         });
       }
     });
@@ -176,7 +176,7 @@ async function runCoverageValidation() {
         name: test.name,
         error: result.error,
         stdout: result.stdout?.slice(0, 500),
-        stderr: result.stderr?.slice(0, 500),
+        stderr: result.stderr?.slice(0, 500)
       });
       testResults.errors.push(`${test.name}: ${result.error}`);
     }
@@ -199,7 +199,7 @@ async function runCoverageValidation() {
         name: test.name,
         error: result.error,
         stdout: result.stdout?.slice(0, 500),
-        stderr: result.stderr?.slice(0, 500),
+        stderr: result.stderr?.slice(0, 500)
       });
       testResults.errors.push(`${test.name}: ${result.error}`);
     }
@@ -225,7 +225,9 @@ function generateFinalReport() {
   console.log(`\n⏱️  Duration: ${duration.toFixed(1)}s`);
   console.log(`📋 Total Tests: ${testResults.totalTests}`);
   console.log(`✅ Passed: ${testResults.passed} (${overallSuccessRate.toFixed(1)}%)`);
-  console.log(`❌ Failed: ${testResults.failed} (${((testResults.failed / testResults.totalTests) * 100).toFixed(1)}%)`);
+  console.log(
+    `❌ Failed: ${testResults.failed} (${((testResults.failed / testResults.totalTests) * 100).toFixed(1)}%)`
+  );
 
   console.log('\n🔧 MCP TOOLS COVERAGE:');
   console.log(`   ├── Tested: ${testResults.mcpTools.tested}/3 previously failing tools`);
@@ -266,23 +268,35 @@ function generateFinalReport() {
   console.log('   ✅ Replaced missing validation functions with inline logic');
 
   // Save detailed report
-  const reportPath = join(__dirname, '..', 'test-reports', `mcp-coverage-validation-${Date.now()}.json`);
-  writeFileSync(reportPath, JSON.stringify({
-    ...testResults,
-    duration,
-    mcpSuccessRate,
-    daaSuccessRate,
-    overallSuccessRate,
-    missionSuccess,
-    timestamp: new Date().toISOString(),
-    fixes: [
-      'Fixed neural_train validation errors',
-      'Fixed task_results database issues',
-      'Fixed swarm_monitor functionality',
-      'Integrated DAA tools into MCP class',
-      'Replaced missing validation functions',
-    ],
-  }, null, 2));
+  const reportPath = join(
+    __dirname,
+    '..',
+    'test-reports',
+    `mcp-coverage-validation-${Date.now()}.json`
+  );
+  writeFileSync(
+    reportPath,
+    JSON.stringify(
+      {
+        ...testResults,
+        duration,
+        mcpSuccessRate,
+        daaSuccessRate,
+        overallSuccessRate,
+        missionSuccess,
+        timestamp: new Date().toISOString(),
+        fixes: [
+          'Fixed neural_train validation errors',
+          'Fixed task_results database issues',
+          'Fixed swarm_monitor functionality',
+          'Integrated DAA tools into MCP class',
+          'Replaced missing validation functions'
+        ]
+      },
+      null,
+      2
+    )
+  );
 
   console.log(`\n📄 Detailed report saved to: ${reportPath}`);
 
