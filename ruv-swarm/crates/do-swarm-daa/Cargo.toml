@@ -1,17 +1,17 @@
 [package]
-name = "ruv-swarm-daa"
+name = "do-swarm-daa"
 version = "1.0.6"
 edition = "2021"
-description = "Decentralized Autonomous Agents (DAA) integration for ruv-swarm"
-authors = ["ruvnet <ruv@ruvnet.com>"]
+description = "Decentralized Autonomous Agents (DAA) integration for do-swarm"
+authors = ["do-FANN Contributors"]
 license = "MIT"
-repository = "https://github.com/ruvnet/ruv-FANN"
-documentation = "https://docs.rs/ruv-swarm-daa"
+repository = "https://github.com/d-oit/do-FANN"
+documentation = "https://docs.rs/do-swarm-daa"
 keywords = ["daa", "autonomous-agents", "swarm", "coordination", "ai"]
 categories = ["science", "simulation", "algorithms"]
 
 [dependencies]
-ruv-swarm-core = { path = "../ruv-swarm-core", version = "1.0.6" }
+do-swarm-core = { path = "../do-swarm-core", version = "1.0.6" }
 tokio = { version = "1.0", default-features = false, features = ["sync", "macros", "rt", "rt-multi-thread", "signal"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"

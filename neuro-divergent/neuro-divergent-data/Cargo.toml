@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 description = "Comprehensive data processing and validation pipeline for neural forecasting"
 license = "MIT OR Apache-2.0"
-authors = ["ruv-FANN Contributors"]
-repository = "https://github.com/ruv-inc/ruv-FANN"
+authors = ["do-FANN Contributors"]
+repository = "https://github.com/d-oit/do-FANN"
 keywords = ["neural-networks", "time-series", "forecasting", "data-processing", "machine-learning"]
 categories = ["science", "mathematics", "algorithms"]
 

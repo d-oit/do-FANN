@@ -1,15 +1,15 @@
 [package]
-name = "ruv-swarm-ml"
+name = "do-swarm-ml"
 version = "1.0.5"
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Machine learning integration for RUV Swarm"
+description = "Machine learning integration for do-FANN Swarm"
 
 [dependencies]
-ruv-swarm-core = { path = "../ruv-swarm-core", version = "1.0.6" }
+do-swarm-core = { path = "../do-swarm-core", version = "1.0.6" }
 do-fann = { path = "../../..", features = ["gpu", "serde"] }
 
 # Core dependencies
@@ -24,7 +24,7 @@ js-sys = { workspace = true, optional = true }
 web-sys = { workspace = true, optional = true }
 
 # Neural network and ML dependencies
-# ruv-fann provides the actual neural network implementation
+# do-fann provides the actual neural network implementation
 
 [features]
 default = []

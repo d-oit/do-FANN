@@ -1,9 +1,9 @@
 [package]
-name = "ruv-swarm-transport"
+name = "do-swarm-transport"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
-description = "Transport layer for RUV-FANN swarm communication with WebSocket and SharedMemory support"
+description = "Transport layer for do-FANN swarm communication with WebSocket and SharedMemory support"
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true

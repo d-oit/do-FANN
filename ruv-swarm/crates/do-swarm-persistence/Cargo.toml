@@ -1,12 +1,12 @@
 [package]
-name = "ruv-swarm-persistence"
+name = "do-swarm-persistence"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Persistence layer with SQLite and ORM for RUV-Swarm"
+description = "Persistence layer with SQLite and ORM for do-FANN Swarm"
 
 [dependencies]
 # Core dependencies

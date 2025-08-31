@@ -1,12 +1,12 @@
 [package]
-name = "ruv-swarm-core"
+name = "do-swarm-core"
 version = "1.0.6"
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Core orchestration and agent traits for RUV Swarm"
+description = "Core orchestration and agent traits for do-FANN Swarm"
 
 [features]
 default = ["std"]

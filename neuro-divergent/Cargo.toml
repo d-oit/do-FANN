@@ -3,7 +3,7 @@ name = "neuro-divergent"
 version = "0.1.0"
 edition = "2021"
 authors = ["Claude Code <noreply@anthropic.com>"]
-description = "High-performance neural forecasting library providing 100% compatibility with NeuralForecast Python API, built on ruv-FANN foundation"
+description = "High-performance neural forecasting library providing 100% compatibility with NeuralForecast Python API, built on do-FANN foundation"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/d-oit/do-FANN"
 homepage = "https://github.com/d-oit/do-FANN"
@@ -67,8 +67,8 @@ neuro-divergent-core = "0.1.0"
 neuro-divergent-models = { version = "0.1.0", optional = true }
 neuro-divergent-registry = { version = "0.1.0", optional = true }
 
-# ruv-FANN dependency
-ruv-fann = "0.1"
+# do-FANN dependency
+do-fann = { path = "../", version = "0.1.6" }
 
 [dev-dependencies]
 approx = "0.5"

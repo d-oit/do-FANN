@@ -1,12 +1,12 @@
 [package]
-name = "ruv-swarm-wasm-unified"
+name = "do-swarm-wasm-unified"
 version = "1.0.5"
 edition = "2021"
-authors = ["The ruv-swarm Contributors"]
-description = "Unified WASM module exposing all ruv-FANN ecosystem capabilities"
+authors = ["do-FANN Contributors"]
+description = "Unified WASM module exposing all do-FANN ecosystem capabilities"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/ruv-fann/ruv-swarm"
-keywords = ["wasm", "neural-network", "swarm", "ruv-fann", "forecasting"]
+repository = "https://github.com/d-oit/do-FANN"
+keywords = ["wasm", "neural-network", "swarm", "do-fann", "forecasting"]
 categories = ["wasm", "science", "algorithms", "mathematics", "concurrency"]
 
 [lib]
@@ -24,10 +24,10 @@ rayon = { version = "1.8", optional = true }
 lazy_static = "1.4"
 
 # Internal crate dependencies with WASM features
-ruv-swarm-core = { path = "../ruv-swarm-core", features = ["wasm"], default-features = false }
-ruv-swarm-ml = { path = "../ruv-swarm-ml", features = ["wasm"], default-features = false }
-ruv-swarm-wasm = { path = "../ruv-swarm-wasm", default-features = false }
-ruv-swarm-persistence = { path = "../ruv-swarm-persistence", default-features = false }
+do-swarm-core = { path = "../do-swarm-core", features = ["wasm"], default-features = false }
+do-swarm-ml = { path = "../do-swarm-ml", features = ["wasm"], default-features = false }
+do-swarm-wasm = { path = "../do-swarm-wasm", default-features = false }
+do-swarm-persistence = { path = "../do-swarm-persistence", default-features = false }
 
 [dependencies.web-sys]
 version = "0.3"
@@ -48,7 +48,7 @@ parallel = ["rayon"]
 optimize = []
 wee_alloc_feature = ["wee_alloc"]
 console_error_panic_hook = []
-ruv-fann = []
+do-fann = []
 neuro-divergent = []
 
 # WASM-specific optimizations

@@ -1,17 +1,17 @@
 [workspace]
 members = [
-    "crates/ruv-swarm-core",
+    "crates/do-swarm-core",
     "crates/claude-parser",
-    "crates/ruv-swarm-transport",   # Fixed dependency conflicts
-    "crates/ruv-swarm-persistence", # Fixed dependency conflicts
-    "crates/ruv-swarm-agents",
-    "crates/ruv-swarm-ml",
-    "crates/ruv-swarm-mcp",
-    "crates/ruv-swarm-wasm",
-    "crates/ruv-swarm-wasm-unified", # Unified WASM module for all features
-    "crates/ruv-swarm-daa",          # DAA integration for autonomous agents
+    "crates/do-swarm-transport",   # Fixed dependency conflicts
+    "crates/do-swarm-persistence", # Fixed dependency conflicts
+    "crates/do-swarm-agents",
+    "crates/do-swarm-ml",
+    "crates/do-swarm-mcp",
+    "crates/do-swarm-wasm",
+    "crates/do-swarm-wasm-unified", # Unified WASM module for all features
+    "crates/do-swarm-daa",          # DAA integration for autonomous agents
     "crates/swe-bench-adapter",      # SWE-Bench adapter for evaluation
-    "crates/ruv-swarm-cli",
+    "crates/do-swarm-cli",
     "ml-training",
     "benchmarking",                   # Comprehensive benchmarking framework
 ]
@@ -22,10 +22,10 @@ exclude = []  # No exclusions
 [workspace.package]
 version = "1.0.7"
 edition = "2021"
-authors = ["rUv Contributors <noreply@ruvnet.com>"]
+authors = ["do-FANN Contributors <noreply@d-oit.com>"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/ruvnet/ruv-FANN"
-homepage = "https://github.com/ruvnet/ruv-FANN/tree/main/ruv-swarm"
+repository = "https://github.com/d-oit/do-FANN"
+homepage = "https://github.com/d-oit/do-FANN/tree/main/do-swarm"
 documentation = "https://docs.rs/ruv-swarm"
 description = "High-performance neural network swarm orchestration framework with WebAssembly acceleration and MCP integration"
 readme = "README.md"

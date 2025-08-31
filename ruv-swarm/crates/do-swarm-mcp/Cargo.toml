@@ -1,12 +1,12 @@
 [package]
-name = "ruv-swarm-mcp"
+name = "do-swarm-mcp"
 version = "1.0.5"
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Model Context Protocol (MCP) integration for RUV Swarm"
+description = "Model Context Protocol (MCP) integration for do-FANN Swarm"
 
 [[bin]]
 name = "ruv-swarm-mcp"

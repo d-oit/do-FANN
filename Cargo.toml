@@ -19,10 +19,10 @@ exclude = [
     "*.log",
     "tmp/**",
     "claude-code-flow/**",
-    "ruv-swarm/npm/node_modules/**",
-    "ruv-swarm/npm/.nyc_output/**",
-    "ruv-swarm/npm/coverage/**",
-    "ruv-swarm/target/**",
+    "do-swarm/npm/node_modules/**",
+    "do-swarm/npm/.nyc_output/**",
+    "do-swarm/npm/coverage/**",
+    "do-swarm/target/**",
     "*.wasm",
     "*.onnx",
     "*.pt",
@@ -30,7 +30,7 @@ exclude = [
     "*.safetensors",
     "*.bin",
     ".dev.json",
-    "ruv-swarm/npm/**",
+    "do-swarm/npm/**",
     "*.o",
     "*.a",
     "*.so",
@@ -43,7 +43,7 @@ exclude = [
     ".github/**",
     ".gitignore",
     ".gitmodules",
-    "ruv-swarm/**"
+    "do-swarm/**"
 ]
 
 [workspace]
@@ -134,12 +134,12 @@ webgpu = ["dep:wgpu", "dep:futures", "dep:bytemuck", "wasm", "logging"]
 wasm-gpu = ["webgpu", "wasm"]
 
 # Swarm integration - external features that may not be available
-ruv-swarm = []
-ruv-swarm-daa = ["ruv-swarm"]
+do-swarm = []
+do-swarm-daa = ["do-swarm"]
 benchmarking = []
 
 # Test configurations
-test-all = ["gpu", "ruv-swarm", "ruv-swarm-daa", "benchmarking"]
+test-all = ["gpu", "do-swarm", "do-swarm-daa", "benchmarking"]
 test-core = ["std", "parallel"]
 test-gpu = ["gpu", "webgpu"]
 test-no-external = []  # For tests that don't require external crates

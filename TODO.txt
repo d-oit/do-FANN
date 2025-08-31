@@ -1,0 +1,2 @@
+1. ruv-swarm should be used generic as mcp and optional implement for claude code, opencode
+2. consolidate the complite codebase

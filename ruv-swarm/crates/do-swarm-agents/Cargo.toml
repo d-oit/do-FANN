@@ -1,12 +1,12 @@
 [package]
-name = "ruv-swarm-agents"
+name = "do-swarm-agents"
 version = "1.0.5"
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Specialized AI agents for RUV Swarm"
+description = "Specialized AI agents for do-FANN Swarm"
 
 [dependencies]
-ruv-swarm-core = { path = "../ruv-swarm-core", version = "1.0.6" }
+do-swarm-core = { path = "../do-swarm-core", version = "1.0.6" }

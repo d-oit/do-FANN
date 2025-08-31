@@ -2,9 +2,9 @@
 name = "neuro-divergent-training"
 version = "0.1.0"
 edition = "2021"
-authors = ["rUv Contributors"]
+authors = ["do-FANN Contributors"]
 description = "Comprehensive training infrastructure for neural forecasting models"
-repository = "https://github.com/ruvnet/ruv-FANN"
+repository = "https://github.com/d-oit/do-FANN"
 license = "MIT OR Apache-2.0"
 keywords = ["neural-network", "forecasting", "training", "machine-learning", "time-series"]
 categories = ["science", "algorithms", "mathematics"]
@@ -13,7 +13,7 @@ categories = ["science", "algorithms", "mathematics"]
 # Internal dependencies
 neuro-divergent-core = { version = "0.1.0", path = "../neuro-divergent-core" }
 # Core dependencies
-ruv-fann = "0.1"
+do-fann = { path = "../../", version = "0.1.6" }
 num-traits = "0.2"
 thiserror = "1.0"
 serde = { version = "1.0", features = ["derive"], optional = true }
