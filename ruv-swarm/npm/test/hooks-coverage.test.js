@@ -7,11 +7,11 @@ import assert from 'assert';
 import { HooksManager } from '../src/hooks/index.js';
 import { CLIHooks } from '../src/hooks/cli.js';
 import {
-  ClaudeIntegration,
+  AIIntegration,
   AdvancedCommands,
   RemoteIntegration
-} from '../src/claude-integration/index.js';
-import { GitHubCoordinator, ClaudeHooks } from '../src/github-coordinator/index.js';
+} from '../src/ai-integration/index.js';
+import { GitHubCoordinator, AIGitHubHooks } from '../src/github-coordinator/index.js';
 
 describe('Hooks System 100% Coverage', () => {
   let hooks;
@@ -136,25 +136,25 @@ describe('Hooks System 100% Coverage', () => {
     });
   });
 
-  describe('Claude Integration', () => {
-    let claude;
+  describe('AI Integration', () => {
+    let ai;
 
     beforeEach(() => {
-      claude = new ClaudeIntegration();
+      ai = new AIIntegration();
     });
 
     it('should handle API key validation', async () => {
-      claude.setApiKey(''); // Empty API key
+      ai.setApiKey(''); // Empty API key
 
-      await assert.rejects(claude.complete({ prompt: 'test' }), /Invalid API key/);
+      await assert.rejects(ai.complete({ prompt: 'test' }), /Invalid API key/);
     });
 
     it('should handle rate limiting', async () => {
-      claude.setRateLimit(1); // 1 request per second
+      ai.setRateLimit(1); // 1 request per second
 
       const promises = [];
       for (let i = 0; i < 5; i++) {
-        promises.push(claude.complete({ prompt: `test ${i}` }));
+        promises.push(ai.complete({ prompt: `test ${i}` }));
       }
 
       const results = await Promise.allSettled(promises);
@@ -164,15 +164,15 @@ describe('Hooks System 100% Coverage', () => {
     });
 
     it('should handle response parsing errors', async () => {
-      claude._mockResponse = 'invalid-json';
+      ai._mockResponse = 'invalid-json';
 
-      await assert.rejects(claude.complete({ prompt: 'test' }), /Failed to parse response/);
+      await assert.rejects(ai.complete({ prompt: 'test' }), /Failed to parse response/);
     });
 
     it('should handle context window overflow', async () => {
       const hugePrompt = 'x'.repeat(200000); // Exceeds context window
 
-      await assert.rejects(claude.complete({ prompt: hugePrompt }), /Context window exceeded/);
+      await assert.rejects(ai.complete({ prompt: hugePrompt }), /Context window exceeded/);
     });
   });
 

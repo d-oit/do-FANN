@@ -1,5 +1,5 @@
 /**
- * Core Claude Code integration module
+ * Core AI integration module
  * Handles MCP server setup and basic integration
  */
 
@@ -7,7 +7,7 @@ import { execSync } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-class ClaudeIntegrationCore {
+class AIIntegrationCore {
   constructor(options = {}) {
     this.autoSetup = options.autoSetup || false;
     this.forceSetup = options.forceSetup || false;
@@ -15,9 +15,9 @@ class ClaudeIntegrationCore {
   }
 
   /**
-   * Check if Claude CLI is available
+   * Check if AI CLI is available
    */
-  async isClaudeAvailable() {
+  async isAIAvailable() {
     try {
       execSync('claude --version', { stdio: 'ignore' });
       return true;
@@ -27,20 +27,20 @@ class ClaudeIntegrationCore {
   }
 
   /**
-   * Add ruv-swarm MCP server to Claude Code
+   * Add ruv-swarm MCP server to AI platform
    */
   async addMcpServer() {
-    if (!(await this.isClaudeAvailable())) {
+    if (!(await this.isAIAvailable())) {
       throw new Error(
-        'Claude Code CLI not found. Install with: npm install -g @anthropic-ai/claude-code'
+        'AI platform CLI not found. Please install the appropriate AI platform CLI'
       );
     }
 
     try {
       // Add ruv-swarm MCP server using stdio (no port needed)
-      const mcpCommand = 'claude mcp add ruv-swarm npx ruv-swarm mcp start';
+      const mcpCommand = 'ai mcp add ruv-swarm npx ruv-swarm mcp start';
       execSync(mcpCommand, { stdio: 'inherit', cwd: this.workingDir });
-      return { success: true, message: 'Added ruv-swarm MCP server to Claude Code (stdio)' };
+      return { success: true, message: 'Added ruv-swarm MCP server to AI platform (stdio)' };
     } catch (error) {
       throw new Error(`Failed to add MCP server: ${error.message}`);
     }
@@ -60,14 +60,14 @@ class ClaudeIntegrationCore {
   }
 
   /**
-   * Initialize Claude integration
+   * Initialize AI integration
    */
   async initialize() {
-    console.log('🔧 Initializing Claude Code integration...');
+    console.log('🔧 Initializing AI integration...');
 
     // Check if files exist (unless force setup)
     if (!this.forceSetup && (await this.checkExistingFiles())) {
-      console.log('   ℹ️  Claude integration files already exist (use --force to regenerate)');
+      console.log('   ℹ️  AI integration files already exist (use --force to regenerate)');
       return { success: true, message: 'Integration files already exist' };
     }
 
@@ -77,38 +77,38 @@ class ClaudeIntegrationCore {
         success: true
       };
 
-      console.log('✅ Claude integration initialized successfully');
+      console.log('✅ AI integration initialized successfully');
       return results;
     } catch (error) {
-      console.error('❌ Failed to initialize Claude integration:', error.message);
+      console.error('❌ Failed to initialize AI integration:', error.message);
       throw error;
     }
   }
 
   /**
-   * Invoke Claude with a prompt (supports both secure and legacy modes)
+   * Invoke AI with a prompt (supports both secure and legacy modes)
    */
-  async invokeClaudeWithPrompt(prompt, options = {}) {
+  async invokeAIWithPrompt(prompt, options = {}) {
     if (!prompt || !prompt.trim()) {
       throw new Error('No prompt provided');
     }
 
-    if (!(await this.isClaudeAvailable())) {
-      throw new Error('Claude Code CLI not found');
+    if (!(await this.isAIAvailable())) {
+      throw new Error('AI platform CLI not found');
     }
 
     // Default behavior for backward compatibility (legacy mode)
     const addPermissions = options.secure !== true;
     const permissions = addPermissions ? ' --dangerously-skip-permissions' : '';
-    const claudeCommand = `claude "${prompt.trim()}"${permissions}`;
+    const aiCommand = `ai "${prompt.trim()}"${permissions}`;
 
     try {
-      execSync(claudeCommand, { stdio: 'inherit', cwd: this.workingDir });
-      return { success: true, message: 'Claude invocation completed' };
+      execSync(aiCommand, { stdio: 'inherit', cwd: this.workingDir });
+      return { success: true, message: 'AI invocation completed' };
     } catch (error) {
-      throw new Error(`Claude invocation failed: ${error.message}`);
+      throw new Error(`AI invocation failed: ${error.message}`);
     }
   }
 }
 
-export { ClaudeIntegrationCore };
+export { AIIntegrationCore };

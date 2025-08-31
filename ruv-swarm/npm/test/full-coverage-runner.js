@@ -120,16 +120,16 @@ async function runCoverageTests() {
   await loadModule('../src/hooks/cli.js');
   console.log('  ✓ hooks - loaded');
 
-  // Claude integration
-  await loadModule('../src/claude-integration/index.js');
-  await loadModule('../src/claude-integration/core.js');
-  await loadModule('../src/claude-integration/docs.js');
-  await loadModule('../src/claude-integration/advanced-commands.js');
-  await loadModule('../src/claude-integration/remote.js');
-  console.log('  ✓ claude-integration - loaded');
+  // AI integration
+  await loadModule('../src/ai-integration/index.js');
+  await loadModule('../src/ai-integration/core.js');
+  await loadModule('../src/ai-integration/docs.js');
+  await loadModule('../src/ai-integration/advanced-commands.js');
+  await loadModule('../src/ai-integration/remote.js');
+  console.log('  ✓ ai-integration - loaded');
 
   // GitHub coordinator
-  await loadModule('../src/github-coordinator/claude-hooks.js');
+  await loadModule('../src/github-coordinator/ai-hooks.js');
   await loadModule('../src/github-coordinator/gh-cli-coordinator.js');
   console.log('  ✓ github-coordinator - loaded');
 

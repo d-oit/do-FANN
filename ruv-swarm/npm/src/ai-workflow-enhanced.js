@@ -1,17 +1,17 @@
 /**
- * Claude Code Flow Enhanced Integration
+ * AI Workflow Enhanced Integration
  *
  * Provides mandatory BatchTool enforcement, parallel execution patterns,
- * and enhanced MCP tool coordination for Claude Code workflows.
+ * and enhanced MCP tool coordination for AI workflows.
  */
 
 import { RuvSwarm } from './index-enhanced.js';
 import { EnhancedMCPTools } from './mcp-tools-enhanced.js';
 
-class ClaudeFlowError extends Error {
-  constructor(message, code = 'CLAUDE_FLOW_ERROR') {
+class AIWorkflowError extends Error {
+  constructor(message, code = 'AI_WORKFLOW_ERROR') {
     super(message);
-    this.name = 'ClaudeFlowError';
+    this.name = 'AIWorkflowError';
     this.code = code;
   }
 }
@@ -125,9 +125,9 @@ class BatchToolEnforcer {
 }
 
 /**
- * Enhanced Claude Code Flow manager with mandatory BatchTool enforcement
+ * Enhanced AI Workflow manager with mandatory BatchTool enforcement
  */
-class ClaudeFlowEnhanced {
+class AIWorkflowEnhanced {
   constructor() {
     this.ruvSwarm = null;
     this.mcpTools = null;
@@ -143,10 +143,10 @@ class ClaudeFlowEnhanced {
   }
 
   /**
-   * Initialize Claude Code Flow with ruv-swarm integration
+   * Initialize AI Workflow with ruv-swarm integration
    */
   async initialize(options = {}) {
-    console.log('🚀 Initializing Claude Code Flow Enhanced...');
+    console.log('🚀 Initializing AI Workflow Enhanced...');
 
     const {
       enforceBatching = true,
@@ -795,50 +795,50 @@ class ClaudeFlowEnhanced {
 }
 
 // Global instance management
-let claudeFlowInstance = null;
+let aiWorkflowInstance = null;
 
 /**
- * Get or create Claude Code Flow Enhanced instance
+ * Get or create AI Workflow Enhanced instance
  */
-export async function getClaudeFlow(options = {}) {
-  if (!claudeFlowInstance) {
-    claudeFlowInstance = new ClaudeFlowEnhanced();
-    await claudeFlowInstance.initialize(options);
+export async function getAIWorkflow(options = {}) {
+  if (!aiWorkflowInstance) {
+    aiWorkflowInstance = new AIWorkflowEnhanced();
+    await aiWorkflowInstance.initialize(options);
   }
-  return claudeFlowInstance;
+  return aiWorkflowInstance;
 }
 
 /**
  * Create workflow with mandatory optimization
  */
 export async function createOptimizedWorkflow(config) {
-  const claudeFlow = await getClaudeFlow();
-  return claudeFlow.createOptimizedWorkflow(config);
+  const aiWorkflow = await getAIWorkflow();
+  return aiWorkflow.createOptimizedWorkflow(config);
 }
 
 /**
  * Execute workflow with parallel coordination
  */
 export async function executeWorkflow(workflowId, context = {}) {
-  const claudeFlow = await getClaudeFlow();
-  return claudeFlow.executeWorkflow(workflowId, context);
+  const aiWorkflow = await getAIWorkflow();
+  return aiWorkflow.executeWorkflow(workflowId, context);
 }
 
 /**
  * Get performance and batching report
  */
 export async function getPerformanceReport() {
-  const claudeFlow = await getClaudeFlow();
-  return claudeFlow.getPerformanceReport();
+  const aiWorkflow = await getAIWorkflow();
+  return aiWorkflow.getPerformanceReport();
 }
 
 /**
  * Validate workflow for optimization
  */
 export async function validateWorkflow(workflow) {
-  const claudeFlow = await getClaudeFlow();
-  return claudeFlow.validateWorkflowOptimization(workflow);
+  const aiWorkflow = await getAIWorkflow();
+  return aiWorkflow.validateWorkflowOptimization(workflow);
 }
 
-export { ClaudeFlowEnhanced, BatchToolEnforcer, ClaudeFlowError };
-export default ClaudeFlowEnhanced;
+export { AIWorkflowEnhanced, BatchToolEnforcer, AIWorkflowError };
+export default AIWorkflowEnhanced;

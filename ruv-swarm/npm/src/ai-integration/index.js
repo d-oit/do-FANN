@@ -1,13 +1,13 @@
 /**
- * Main Claude Code integration orchestrator
+ * Main AI integration orchestrator
  * Coordinates all integration modules for modular, remote-capable setup
  */
 
-import { ClaudeIntegrationCore } from './core.js';
-import { ClaudeDocsGenerator } from './docs.js';
+import { AIIntegrationCore } from './core.js';
+import { AIDocsGenerator } from './docs.js';
 import { RemoteWrapperGenerator } from './remote.js';
 
-class ClaudeIntegrationOrchestrator {
+class AIIntegrationOrchestrator {
   constructor(options = {}) {
     this.options = {
       autoSetup: options.autoSetup || false,
@@ -22,8 +22,8 @@ class ClaudeIntegrationOrchestrator {
     };
 
     // Initialize modules
-    this.core = new ClaudeIntegrationCore(this.options);
-    this.docs = new ClaudeDocsGenerator(this.options);
+    this.core = new AIIntegrationCore(this.options);
+    this.docs = new AIDocsGenerator(this.options);
     this.remote = new RemoteWrapperGenerator(this.options);
   }
 
@@ -113,10 +113,10 @@ class ClaudeIntegrationOrchestrator {
   }
 
   /**
-   * Invoke Claude with a prompt using the core module
+   * Invoke AI with a prompt using the core module
    */
-  async invokeClaudeWithPrompt(prompt) {
-    return await this.core.invokeClaudeWithPrompt(prompt);
+  async invokeAIWithPrompt(prompt) {
+    return await this.core.invokeAIWithPrompt(prompt);
   }
 
   /**
@@ -185,23 +185,23 @@ class ClaudeIntegrationOrchestrator {
 }
 
 // Convenience function for simple setup
-async function setupClaudeIntegration(options = {}) {
-  const orchestrator = new ClaudeIntegrationOrchestrator(options);
+async function setupAIIntegration(options = {}) {
+  const orchestrator = new AIIntegrationOrchestrator(options);
   return await orchestrator.setupIntegration();
 }
 
-// Convenience function for Claude invocation
-async function invokeClaudeWithSwarm(prompt, options = {}) {
-  const orchestrator = new ClaudeIntegrationOrchestrator(options);
-  return await orchestrator.invokeClaudeWithPrompt(prompt);
+// Convenience function for AI invocation
+async function invokeAIWithSwarm(prompt, options = {}) {
+  const orchestrator = new AIIntegrationOrchestrator(options);
+  return await orchestrator.invokeAIWithPrompt(prompt);
 }
 
 export {
-  ClaudeIntegrationOrchestrator,
-  setupClaudeIntegration,
-  invokeClaudeWithSwarm,
+  AIIntegrationOrchestrator,
+  setupAIIntegration,
+  invokeAIWithSwarm,
   // Export individual modules for advanced usage
-  ClaudeIntegrationCore,
-  ClaudeDocsGenerator,
+  AIIntegrationCore,
+  AIDocsGenerator,
   RemoteWrapperGenerator
 };

@@ -1,19 +1,19 @@
 /**
- * Edge Cases and E2E Tests for src/claude-flow-enhanced.js
+ * Edge Cases and E2E Tests for src/ai-workflow-enhanced.js
  * Comprehensive coverage for BatchTool enforcement, parallel execution, and workflow optimization
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
-  ClaudeFlowEnhanced,
+  AIWorkflowEnhanced,
   BatchToolEnforcer,
-  ClaudeFlowError,
-  getClaudeFlow,
+  AIWorkflowError,
+  getAIWorkflow,
   createOptimizedWorkflow,
   executeWorkflow,
   getPerformanceReport,
   validateWorkflow
-} from '../../src/claude-flow-enhanced.js';
+} from '../../src/ai-workflow-enhanced.js';
 
 // Mock dependencies
 const mockRuvSwarm = {
@@ -85,7 +85,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    claudeFlow = new ClaudeFlowEnhanced();
+    claudeFlow = new AIWorkflowEnhanced();
     batchEnforcer = new BatchToolEnforcer();
 
     // Reset global session ID
@@ -183,7 +183,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
     });
   });
 
-  describe('ClaudeFlowEnhanced Initialization Edge Cases', () => {
+  describe('AIWorkflowEnhanced Initialization Edge Cases', () => {
     it('should initialize successfully with default options', async () => {
       const flow = await claudeFlow.initialize();
 
@@ -215,7 +215,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
     it('should handle initialization failures gracefully', async () => {
       mockRuvSwarm.initialize.mockRejectedValueOnce(new Error('WASM load failed'));
 
-      await expect(claudeFlow.initialize()).rejects.toThrow(ClaudeFlowError);
+      await expect(claudeFlow.initialize()).rejects.toThrow(AIWorkflowError);
       await expect(claudeFlow.initialize()).rejects.toThrow(
         'Initialization failed: WASM load failed'
       );
@@ -236,7 +236,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
     it('should handle MCP tools initialization failure', async () => {
       mockMcpTools.initialize.mockRejectedValueOnce(new Error('MCP init failed'));
 
-      await expect(claudeFlow.initialize()).rejects.toThrow(ClaudeFlowError);
+      await expect(claudeFlow.initialize()).rejects.toThrow(AIWorkflowError);
     });
   });
 
@@ -387,7 +387,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
     });
 
     it('should handle non-existent workflow', async () => {
-      await expect(claudeFlow.executeWorkflow('non-existent')).rejects.toThrow(ClaudeFlowError);
+      await expect(claudeFlow.executeWorkflow('non-existent')).rejects.toThrow(AIWorkflowError);
       await expect(claudeFlow.executeWorkflow('non-existent')).rejects.toThrow(
         'Workflow not found'
       );
@@ -418,7 +418,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
       ];
 
       expect(() => claudeFlow.createExecutionBatches(stepsWithCircularDeps)).toThrow(
-        ClaudeFlowError
+        AIWorkflowError
       );
       expect(() => claudeFlow.createExecutionBatches(stepsWithCircularDeps)).toThrow(
         'Circular dependency detected'
@@ -435,7 +435,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
         steps: [{ id: 'fail-step', type: 'mcp_tool_call', toolName: 'task_orchestrate' }]
       });
 
-      await expect(claudeFlow.executeWorkflow('fail-test')).rejects.toThrow(ClaudeFlowError);
+      await expect(claudeFlow.executeWorkflow('fail-test')).rejects.toThrow(AIWorkflowError);
     });
 
     it('should execute parallel steps in batches', async () => {
@@ -506,7 +506,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
         parameters: {}
       };
 
-      await expect(claudeFlow.executeStep(step, {}, null)).rejects.toThrow(ClaudeFlowError);
+      await expect(claudeFlow.executeStep(step, {}, null)).rejects.toThrow(AIWorkflowError);
       await expect(claudeFlow.executeStep(step, {}, null)).rejects.toThrow('Unknown MCP tool');
     });
 
@@ -548,7 +548,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
         modelConfig: { type: 'transformer' }
       };
 
-      await expect(claudeFlow.executeStep(step, {}, null)).rejects.toThrow(ClaudeFlowError);
+      await expect(claudeFlow.executeStep(step, {}, null)).rejects.toThrow(AIWorkflowError);
       await expect(claudeFlow.executeStep(step, {}, null)).rejects.toThrow(
         'Neural networks not available'
       );
@@ -740,11 +740,11 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
 
   describe('Global Functions Edge Cases', () => {
     it('should create and reuse claude flow instance', async () => {
-      const flow1 = await getClaudeFlow();
-      const flow2 = await getClaudeFlow();
+      const flow1 = await getAIWorkflow();
+      const flow2 = await getAIWorkflow();
 
       expect(flow1).toBe(flow2);
-      expect(flow1).toBeInstanceOf(ClaudeFlowEnhanced);
+      expect(flow1).toBeInstanceOf(AIWorkflowEnhanced);
     });
 
     it('should create optimized workflow through global function', async () => {
@@ -799,17 +799,17 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
       await claudeFlow.initialize();
     });
 
-    it('should create ClaudeFlowError with correct properties', () => {
-      const error = new ClaudeFlowError('Test error', 'TEST_CODE');
+    it('should create AIWorkflowError with correct properties', () => {
+      const error = new AIWorkflowError('Test error', 'TEST_CODE');
 
       expect(error.message).toBe('Test error');
-      expect(error.name).toBe('ClaudeFlowError');
+      expect(error.name).toBe('AIWorkflowError');
       expect(error.code).toBe('TEST_CODE');
       expect(error).toBeInstanceOf(Error);
     });
 
     it('should use default error code when not provided', () => {
-      const error = new ClaudeFlowError('Default code test');
+      const error = new AIWorkflowError('Default code test');
 
       expect(error.code).toBe('CLAUDE_FLOW_ERROR');
     });
@@ -836,7 +836,7 @@ describe('Claude Flow Enhanced Edge Cases and E2E Tests', () => {
         steps: [{ id: 'step1', dependencies: ['non-existent'] }]
       });
 
-      await expect(claudeFlow.executeWorkflow('missing-deps')).rejects.toThrow(ClaudeFlowError);
+      await expect(claudeFlow.executeWorkflow('missing-deps')).rejects.toThrow(AIWorkflowError);
     });
   });
 

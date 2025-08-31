@@ -1,22 +1,22 @@
 /**
- * Documentation generation module for Claude Code integration
- * Generates claude.md and .claude/commands/ documentation
+ * Documentation generation module for AI integration
+ * Generates ai.md and .dev/commands/ documentation
  */
 
 import fs from 'fs/promises';
 import path from 'path';
 import { AdvancedCommandsGenerator } from './advanced-commands.js';
 
-class ClaudeDocsGenerator {
+class AIDocsGenerator {
   constructor(options = {}) {
     this.workingDir = options.workingDir || process.cwd();
     this.advancedGenerator = new AdvancedCommandsGenerator(options);
   }
 
   /**
-   * Generate main claude.md configuration file with protection
+   * Generate main ai.md configuration file with protection
    */
-  async generateClaudeMd(options = {}) {
+  async generateAIMd(options = {}) {
     const {
       force = false,
       merge = false,
@@ -25,8 +25,8 @@ class ClaudeDocsGenerator {
       interactive = true
     } = options;
 
-    // Check if CLAUDE.md already exists
-    const filePath = path.join(this.workingDir, 'CLAUDE.md');
+    // Check if AI.md already exists
+    const filePath = path.join(this.workingDir, 'AI.md');
     const fileExists = await this.fileExists(filePath);
 
     if (fileExists && !force && !merge && !backup) {
@@ -34,23 +34,23 @@ class ClaudeDocsGenerator {
         // Interactive prompt for action
         const action = await this.promptUserAction(filePath);
         if (action === 'cancel') {
-          throw new Error('CLAUDE.md generation cancelled by user');
+          throw new Error('AI.md generation cancelled by user');
         } else if (action === 'overwrite') {
           await this.createBackup(filePath);
         } else if (action === 'merge') {
-          return await this.mergeClaudeMd(filePath);
+          return await this.mergeAIMd(filePath);
         }
       } else {
         // Non-interactive mode - fail safely
         throw new Error(
-          'CLAUDE.md already exists. Use --force to overwrite, --backup to backup existing, or --merge to combine.'
+          'AI.md already exists. Use --force to overwrite, --backup to backup existing, or --merge to combine.'
         );
       }
     } else if (fileExists && force) {
       // Force flag: overwrite with optional backup creation
       if (!noBackup) {
         await this.createBackup(filePath);
-        console.log('📄 Backing up existing CLAUDE.md before force overwrite');
+        console.log('📄 Backing up existing AI.md before force overwrite');
       } else {
         console.log(
           '⚠️  Force overwriting existing CLAUDE.md (no backup - disabled by --no-backup)'
@@ -1542,7 +1542,7 @@ Remember: **ruv-swarm coordinates, Claude Code creates!** Start with \`mcp__ruv-
 
     try {
       const results = {
-        claudeMd: await this.generateClaudeMd(options),
+        aiMd: await this.generateAIMd(options),
         commands: await this.generateCommandDocs(),
         advancedCommands: await this.advancedGenerator.generateAdvancedCommands(),
         settings: await this.generateSettingsJson(),
@@ -1566,4 +1566,4 @@ Remember: **ruv-swarm coordinates, Claude Code creates!** Start with \`mcp__ruv-
   }
 }
 
-export { ClaudeDocsGenerator };
+export { AIDocsGenerator };

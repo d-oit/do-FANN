@@ -3,7 +3,7 @@
  * Target: 80%+ coverage for all integration and advanced feature components
  *
  * Focus Areas:
- * - Claude Code Integration (claude-integration/)
+ * - AI Integration (ai-integration/)
  * - Hooks System (hooks/index.js)
  * - GitHub Coordination (github-coordinator/)
  * - Cognitive Pattern Evolution (cognitive-pattern-evolution.js)
@@ -23,10 +23,10 @@ const __dirname = path.dirname(__filename);
 
 // Import modules under test
 import {
-  ClaudeIntegrationOrchestrator,
-  setupClaudeIntegration,
-  invokeClaudeWithSwarm
-} from '../src/claude-integration/index.js';
+  AIIntegrationOrchestrator,
+  setupAIIntegration,
+  invokeAIWithSwarm
+} from '../src/ai-integration/index.js';
 
 // Mock file system operations
 jest.mock('fs/promises');
@@ -69,9 +69,9 @@ describe('Integration & Advanced Features Coverage', () => {
   });
 
   describe('Claude Integration - Core Functionality', () => {
-    describe('ClaudeIntegrationOrchestrator', () => {
+    describe('AIIntegrationOrchestrator', () => {
       test('should initialize with default options', () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator();
+        const orchestrator = new AIIntegrationOrchestrator();
 
         expect(orchestrator.options).toBeDefined();
         expect(orchestrator.options.autoSetup).toBe(false);
@@ -92,7 +92,7 @@ describe('Integration & Advanced Features Coverage', () => {
           customOption: 'test'
         };
 
-        const orchestrator = new ClaudeIntegrationOrchestrator(customOptions);
+        const orchestrator = new AIIntegrationOrchestrator(customOptions);
 
         expect(orchestrator.options.autoSetup).toBe(true);
         expect(orchestrator.options.forceSetup).toBe(true);
@@ -102,7 +102,7 @@ describe('Integration & Advanced Features Coverage', () => {
       });
 
       test('should setup integration successfully with auto setup disabled', async () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator({
+        const orchestrator = new AIIntegrationOrchestrator({
           workingDir: testTempDir,
           autoSetup: false
         });
@@ -129,7 +129,7 @@ describe('Integration & Advanced Features Coverage', () => {
       });
 
       test('should setup integration with auto setup enabled', async () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator({
+        const orchestrator = new AIIntegrationOrchestrator({
           workingDir: testTempDir,
           autoSetup: true
         });
@@ -147,7 +147,7 @@ describe('Integration & Advanced Features Coverage', () => {
       });
 
       test('should handle core setup failure gracefully', async () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator({
+        const orchestrator = new AIIntegrationOrchestrator({
           workingDir: testTempDir,
           autoSetup: true
         });
@@ -165,7 +165,7 @@ describe('Integration & Advanced Features Coverage', () => {
       });
 
       test('should invoke Claude with prompt', async () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator();
+        const orchestrator = new AIIntegrationOrchestrator();
         const mockResult = { response: 'test response' };
 
         orchestrator.core.invokeClaudeWithPrompt = jest.fn().mockResolvedValue(mockResult);
@@ -177,23 +177,23 @@ describe('Integration & Advanced Features Coverage', () => {
       });
 
       test('should check status', async () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator({
+        const orchestrator = new AIIntegrationOrchestrator({
           workingDir: testTempDir
         });
 
-        orchestrator.core.isClaudeAvailable = jest.fn().mockResolvedValue(true);
+        orchestrator.core.isAIAvailable = jest.fn().mockResolvedValue(true);
         orchestrator.core.checkExistingFiles = jest.fn().mockResolvedValue(false);
 
         const status = await orchestrator.checkStatus();
 
-        expect(status.claudeAvailable).toBe(true);
+        expect(status.aiAvailable).toBe(true);
         expect(status.filesExist).toBe(false);
         expect(status.workingDir).toBe(testTempDir);
         expect(status.timestamp).toBeDefined();
       });
 
       test('should cleanup integration files', async () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator({
+        const orchestrator = new AIIntegrationOrchestrator({
           workingDir: testTempDir,
           packageName: 'test-package'
         });
@@ -206,7 +206,7 @@ describe('Integration & Advanced Features Coverage', () => {
       });
 
       test('should handle cleanup errors', async () => {
-        const orchestrator = new ClaudeIntegrationOrchestrator();
+        const orchestrator = new AIIntegrationOrchestrator();
 
         fs.rm.mockRejectedValue(new Error('Permission denied'));
 
@@ -220,14 +220,14 @@ describe('Integration & Advanced Features Coverage', () => {
         const mockSetupResult = { success: true, modules: {} };
 
         // We need to mock the constructor since it's used in the convenience function
-        const originalConstructor = ClaudeIntegrationOrchestrator;
+        const originalConstructor = AIIntegrationOrchestrator;
         const mockOrchestrator = {
           setupIntegration: jest.fn().mockResolvedValue(mockSetupResult)
         };
 
         // Temporarily replace the constructor
         jest.doMock('../src/claude-integration/index.js', () => ({
-          ClaudeIntegrationOrchestrator: jest.fn(() => mockOrchestrator),
+          AIIntegrationOrchestrator: jest.fn(() => mockOrchestrator),
           setupClaudeIntegration: originalConstructor.setupClaudeIntegration
         }));
 
@@ -243,7 +243,7 @@ describe('Integration & Advanced Features Coverage', () => {
         };
 
         jest.doMock('../src/claude-integration/index.js', () => ({
-          ClaudeIntegrationOrchestrator: jest.fn(() => mockOrchestrator),
+          AIIntegrationOrchestrator: jest.fn(() => mockOrchestrator),
           invokeClaudeWithSwarm: require('../src/claude-integration/index.js').invokeClaudeWithSwarm
         }));
 
@@ -1621,7 +1621,7 @@ describe('Integration & Advanced Features Coverage', () => {
 
   describe('Error Handling and Edge Cases', () => {
     test('should handle file system errors in Claude integration', async () => {
-      const orchestrator = new ClaudeIntegrationOrchestrator();
+      const orchestrator = new AIIntegrationOrchestrator();
 
       // Mock file system error
       fs.mkdir.mockRejectedValue(new Error('Permission denied'));

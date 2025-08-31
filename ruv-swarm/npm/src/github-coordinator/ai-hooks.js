@@ -1,5 +1,5 @@
 /**
- * Claude Code Hooks for GitHub Coordination
+ * AI Hooks for GitHub Coordination
  * Automatically coordinates swarm activities with GitHub
  */
 
@@ -7,7 +7,7 @@ const GHCoordinator = require('./gh-cli-coordinator');
 // const fs = require('fs').promises; // Unused - will be used in future implementation
 const path = require('path');
 
-class ClaudeGitHubHooks {
+class AIGitHubHooks {
   constructor(options = {}) {
     this.coordinator = new GHCoordinator(options);
     this.swarmId = options.swarmId || this.generateSwarmId();
@@ -16,7 +16,7 @@ class ClaudeGitHubHooks {
 
   generateSwarmId() {
     // Generate swarm ID from environment or random
-    return process.env.CLAUDE_SWARM_ID || `claude-${Date.now().toString(36)}`;
+    return process.env.AI_SWARM_ID || `ai-${Date.now().toString(36)}`;
   }
 
   /**
@@ -142,14 +142,14 @@ class ClaudeGitHubHooks {
   }
 }
 
-// Hook registration for Claude Code
+// Hook registration for AI platforms
 async function registerHooks() {
-  const hooks = new ClaudeGitHubHooks({
-    owner: process.env.GITHUB_OWNER || 'ruvnet',
-    repo: process.env.GITHUB_REPO || 'ruv-FANN'
+  const hooks = new AIGitHubHooks({
+    owner: process.env.GITHUB_OWNER || 'd-oit',
+    repo: process.env.GITHUB_REPO || 'do-FANN'
   });
 
-  // Register with Claude Code's hook system
+  // Register with AI platform's hook system
   return {
     'pre-task': args => hooks.preTask(args.description),
     'post-edit': args => hooks.postEdit(args.file, args.changes),
@@ -159,4 +159,4 @@ async function registerHooks() {
   };
 }
 
-module.exports = { ClaudeGitHubHooks, registerHooks };
+module.exports = { AIGitHubHooks, registerHooks };
